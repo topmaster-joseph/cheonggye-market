@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="무안군 청계면상인회 공식 홈페이지. 청계의 가게와 소식, 상생 프로그램을 만나보세요." />
+  <title>청계면상인회 | 오늘도 청계에서 만나요</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip" href="#main">본문 바로가기</a>
+  <header class="header">
+    <a class="brand" href="#top" aria-label="청계면상인회 홈">
+      <span class="brand-mark" aria-hidden="true">청</span>
+      <span><b>청계면상인회</b><small>CHEONGGYE MERCHANTS</small></span>
+    </a>
+    <button class="menu-btn" aria-expanded="false" aria-controls="nav" aria-label="메뉴 열기"><span></span><span></span></button>
+    <nav id="nav" aria-label="주요 메뉴">
+      <a href="#about">상인회 소개</a><a href="#shops">우리동네 가게</a><a href="#program">상생 프로그램</a><a href="#news">소식</a><a class="nav-cta" href="#join">함께하기</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <p class="eyebrow">전남 무안 · 목포대 후문 골목상권</p>
+        <h1>사람이 오고,<br><em>마음이 머무는</em> 청계</h1>
+        <p class="lead">오래된 가게의 온기와 새로운 아이디어가 만나는 곳.<br>청계의 오늘을 함께 걷고, 먹고, 누려보세요.</p>
+        <div class="hero-actions"><a class="btn primary" href="#shops">가게 둘러보기 <span>↗</span></a><a class="text-link" href="#program">지금 진행 중인 이야기 <span>→</span></a></div>
+        <div class="hero-stats"><div><strong>49</strong><span>함께하는 정회원</span></div><div><strong>72+</strong><span>골목의 다양한 가게</span></div><div><strong>1</strong><span>마음으로 연결된 동네</span></div></div>
+      </div>
+      <div class="hero-art" aria-label="청계 골목의 활기찬 풍경을 표현한 그래픽">
+        <div class="sun"></div><div class="mountain m1"></div><div class="mountain m2"></div>
+        <div class="shop shop-a"><span>책 · 문구</span></div><div class="shop shop-b"><span>맛있는 한 끼</span></div><div class="shop shop-c"><span>커피 한 잔</span></div>
+        <div class="road"></div><div class="walk w1">●</div><div class="walk w2">●</div>
+        <p class="art-caption">승달산길에서 도림길까지<br><b>우리의 하루가 이어집니다</b></p>
+      </div>
+      <div class="scroll-hint">SCROLL <span></span></div>
+    </section>
+
+    <section class="ticker" aria-label="청계면상인회 주요 가치"><div>같이 사는 골목 <i>✦</i> 대학과 동네의 만남 <i>✦</i> 매일 발견하는 로컬 <i>✦</i> 같이 사는 골목 <i>✦</i> 대학과 동네의 만남 <i>✦</i></div></section>
+
+    <section class="section about" id="about">
+      <div class="section-kicker">ABOUT US <span>01</span></div>
+      <div class="about-grid">
+        <h2>혼자보다 함께,<br>가게를 넘어 <em>동네로</em></h2>
+        <div><p class="big-copy">청계면상인회는 상인의 목소리를 모으고, 지역과 대학을 잇고, 다시 찾고 싶은 골목을 만듭니다.</p><p>정기 모임과 골목축제, 상생스탬프, 콘텐츠 공모전까지. 작은 가게들이 서로의 이웃이 되어 청계만의 내일을 차근차근 만들고 있습니다.</p><a class="text-link" href="#join">상인회와 함께하기 <span>→</span></a></div>
+      </div>
+      <div class="value-cards"><article><span>01</span><div class="value-icon">⌂</div><h3>상권을 잇다</h3><p>상인과 주민, 대학이 서로의 이웃이 되는 연결을 만듭니다.</p></article><article><span>02</span><div class="value-icon">✦</div><h3>매력을 알리다</h3><p>청계의 가게와 사람, 골목의 이야기를 더 넓게 전합니다.</p></article><article><span>03</span><div class="value-icon">↗</div><h3>함께 성장하다</h3><p>교육과 공동 프로젝트로 지속 가능한 상권을 가꿉니다.</p></article></div>
+    </section>
+
+    <section class="section shops" id="shops">
+      <div class="section-kicker light">OUR NEIGHBORS <span>02</span></div>
+      <div class="shops-head"><div><h2>오늘, 어디로 갈까요?</h2><p>청계 골목의 다채로운 가게를 만나보세요.</p></div><label class="search"><span aria-hidden="true">⌕</span><input id="shopSearch" type="search" placeholder="가게 이름으로 찾아보세요" aria-label="가게 검색"></label></div>
+      <div class="filters" role="group" aria-label="업종 필터"><button class="active" data-filter="all">전체</button><button data-filter="food">맛집</button><button data-filter="cafe">카페</button><button data-filter="life">생활·편의</button><button data-filter="culture">문화·서비스</button></div>
+      <div class="shop-grid" id="shopGrid"></div>
+      <p class="no-result" hidden>조건에 맞는 가게를 찾지 못했어요.</p>
+      <button class="more-btn" id="moreShops">가게 더 보기 <span>＋</span></button>
+    </section>
+
+    <section class="section program" id="program">
+      <div class="section-kicker"><span>03</span> LOCAL PROGRAM</div>
+      <div class="program-title"><h2>청계에서 시작되는<br><em>즐거운 변화</em></h2><p>소비가 응원이 되고, 참여가 동네의 기록이 되는<br>청계면상인회의 상생 프로젝트입니다.</p></div>
+      <div class="program-feature">
+        <div class="stamp-card"><div class="stamp-top"><span>SANGSAENG<br>STAMP</span><b>청계</b></div><div class="stamp-dots"><i>✓</i><i>✓</i><i>✓</i><i>4</i><i>5</i><i>6</i></div><small>우리 동네에서 차곡차곡</small></div>
+        <div class="program-copy"><span class="badge">2026 NEW</span><h3>쓰면 쓸수록<br>우리 동네가 가까워져요</h3><p>참여 상가를 이용하고 스탬프를 모아보세요. 단골 가게가 늘어날수록 청계의 골목은 더 활기차집니다.</p><a class="btn dark" href="#join">상생스탬프 알아보기 <span>↗</span></a></div>
+      </div>
+      <div class="program-list"><article><div class="program-num">01</div><div><span>CONTENTS</span><h3>Play 청계후문상권</h3><p>대학생과 주민이 함께 만드는 30–60초 유튜브 쇼츠 공모전</p></div><b>영상 공모전 ↗</b></article><article><div class="program-num">02</div><div><span>FESTIVAL</span><h3>청계 골목축제</h3><p>상점과 거리, 사람을 하나로 잇는 청계의 특별한 하루</p></div><b>골목의 만남 ↗</b></article><article><div class="program-num">03</div><div><span>COMMUNITY</span><h3>상인 역량강화</h3><p>배움과 교류로 함께 성장하는 상인 커뮤니티</p></div><b>같이 성장 ↗</b></article></div>
+    </section>
+
+    <section class="section news" id="news">
+      <div class="section-kicker">NEWS & STORIES <span>04</span></div><div class="news-head"><h2>청계의 새로운 소식</h2><p>골목 곳곳에서 피어나는<br>우리의 이야기를 전합니다.</p></div>
+      <div class="news-grid"><article class="news-main"><div class="news-visual video"><span>PLAY</span><b>▶</b><small>60 SEC</small></div><div class="news-meta"><span>공모전</span><time>2026. 04</time></div><h3>「Play 청계후문상권」 유튜브 영상 공모전</h3><p>대학생과 지역 주민이 팀을 이뤄 청계후문상권의 매력을 30–60초 세로 영상에 담습니다.</p></article><article><div class="news-visual festival"><i>청</i><i>계</i><i>골</i><i>목</i><span>함께여서<br>더 즐거운 날</span></div><div class="news-meta"><span>골목축제</span><time>2025. 10</time></div><h3>가게 밖에서 만난 이웃들</h3><p>먹거리와 체험, 대화가 골목을 채웠던 청계 골목축제의 기록입니다.</p></article><article><div class="news-visual meeting"><span>100×</span><p>한 번의 만남이<br>백 배의 연결로</p></div><div class="news-meta"><span>커뮤니티</span><time>상시</time></div><h3>상인의 목소리를 모읍니다</h3><p>정기 회의와 작은 모임으로 청계 상권의 오늘과 내일을 함께 이야기합니다.</p></article></div>
+    </section>
+
+    <section class="join" id="join"><div><span class="eyebrow">TOGETHER, CHEONGGYE</span><h2>청계의 내일에<br><em>함께해 주세요.</em></h2></div><div><p>상인회원 가입, 프로그램 참여, 협업 제안까지<br>청계를 더 즐겁게 만드는 모든 마음을 기다립니다.</p><a class="btn cream" href="mailto:cheonggye.market@example.com">문의하기 <span>↗</span></a><small>※ 연락처와 공식 채널은 운영 정보 확정 후 교체해 주세요.</small></div></section>
+  </main>
+  <footer><a class="brand footer-brand" href="#top"><span class="brand-mark">청</span><span><b>청계면상인회</b><small>CHEONGGYE MERCHANTS</small></span></a><div><p>전라남도 무안군 청계면 · 목포대 후문 상권</p><p>청계의 가게와 사람을 연결합니다.</p></div><div class="footer-links"><a href="#about">상인회 소개</a><a href="#shops">가게 안내</a><a href="#program">상생 프로그램</a></div><p class="copyright">© 2026 청계면상인회. All rights reserved.</p></footer>
+  <script src="script.js"></script>
+</body>
+</html>
