@@ -26,3 +26,56 @@ document.querySelectorAll('.filters button').forEach(b=>b.addEventListener('clic
 search.addEventListener('input',render);more.addEventListener('click',()=>{expanded=!expanded;render()});render();
 const menu=document.querySelector('.menu-btn'),nav=document.querySelector('#nav');menu.addEventListener('click',()=>{const open=nav.classList.toggle('open');menu.setAttribute('aria-expanded',open)});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');menu.setAttribute('aria-expanded','false')}));
 const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.12});document.querySelectorAll('.value-cards article,.program-list article,.news-grid article').forEach(el=>{el.classList.add('reveal');observer.observe(el)});
+
+const escapeHtml=(value='')=>String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const newsFeed=document.querySelector('#newsFeed'),newsStatus=document.querySelector('#newsStatus'),refreshNews=document.querySelector('#refreshNews');
+let newsType='market';
+async function loadNews(){
+  if(!newsFeed)return;
+  newsStatus.textContent='최신 공개 소식을 불러오는 중입니다.';
+  newsFeed.innerHTML='<div class="news-empty">소식을 확인하고 있습니다…</div>';
+  try{
+    const response=await fetch(`/api/news?type=${encodeURIComponent(newsType)}`);
+    if(!response.ok)throw new Error('news');
+    const data=await response.json();
+    if(!data.items?.length)throw new Error('empty');
+    newsFeed.innerHTML=data.items.map(item=>{
+      const date=item.publishedAt?new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'long',day:'numeric'}).format(new Date(item.publishedAt)):'최근';
+      return `<article class="auto-news-card"><span class="source">${escapeHtml(item.source)}</span><h3>${escapeHtml(item.title)}</h3><time>${date}</time><a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">원문 보기 →</a></article>`;
+    }).join('');
+    newsStatus.textContent=`${data.items.length}건의 최신 소식 · 30분마다 자동 갱신`;
+  }catch{
+    newsFeed.innerHTML='<div class="news-empty"><b>지금은 새 소식을 불러오지 못했습니다.</b><p>잠시 후 다시 시도하거나 상인회에 직접 소식을 제보해 주세요.</p></div>';
+    newsStatus.textContent='자동 수집 연결을 다시 확인하고 있습니다.';
+  }
+}
+document.querySelectorAll('[data-news]').forEach(button=>button.addEventListener('click',()=>{
+  document.querySelectorAll('[data-news]').forEach(item=>{item.classList.remove('active');item.setAttribute('aria-selected','false')});
+  button.classList.add('active');button.setAttribute('aria-selected','true');newsType=button.dataset.news;loadNews();
+}));
+refreshNews?.addEventListener('click',loadNews);loadNews();
+
+const SUPABASE_URL='https://renzehysxirjilvdxacv.supabase.co';
+const SUPABASE_KEY='sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_';
+const authMessage=document.querySelector('#authMessage');
+const authClient=window.supabase?.createClient(SUPABASE_URL,SUPABASE_KEY);
+authClient?.auth.getSession().then(({data})=>{
+  const grade=data.session?.user?.app_metadata?.grade||data.session?.user?.app_metadata?.role;
+  const adminNav=document.querySelector('#adminNav');
+  if(adminNav&&['admin','manager'].includes(grade))adminNav.hidden=false;
+});
+document.querySelectorAll('[data-provider]').forEach(button=>button.addEventListener('click',async()=>{
+  const provider=button.dataset.provider;
+  if(provider==='phone'){
+    const phone=window.prompt('인증번호를 받을 휴대전화 번호를 입력하세요. 예: 01035018542');
+    if(!phone)return;
+    const normalized=`+82${phone.replace(/\D/g,'').replace(/^0/,'')}`;
+    authMessage.textContent='인증번호를 요청하고 있습니다…';
+    const {error}=await authClient.auth.signInWithOtp({phone:normalized});
+    authMessage.textContent=error?'휴대전화 인증 서비스 설정 후 이용할 수 있습니다. 상인회로 문의해 주세요.':'문자로 받은 인증번호를 입력해 로그인을 완료해 주세요.';
+    return;
+  }
+  authMessage.textContent='로그인 화면으로 이동합니다…';
+  const {error}=await authClient.auth.signInWithOAuth({provider,options:{redirectTo:'https://cheonggye-market.pages.dev/#login'}});
+  if(error)authMessage.textContent=`${provider==='kakao'?'카카오':'Google'} 로그인 제공자 설정을 완료한 뒤 이용할 수 있습니다.`;
+}));
