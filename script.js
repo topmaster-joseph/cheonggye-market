@@ -59,6 +59,11 @@ const SUPABASE_URL='https://renzehysxirjilvdxacv.supabase.co';
 const SUPABASE_KEY='sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_';
 const authMessage=document.querySelector('#authMessage');
 const authClient=window.supabase?.createClient(SUPABASE_URL,SUPABASE_KEY);
+authClient?.auth.getSession().then(({data})=>{
+  const grade=data.session?.user?.app_metadata?.grade||data.session?.user?.app_metadata?.role;
+  const adminNav=document.querySelector('#adminNav');
+  if(adminNav&&['admin','manager'].includes(grade))adminNav.hidden=false;
+});
 document.querySelectorAll('[data-provider]').forEach(button=>button.addEventListener('click',async()=>{
   const provider=button.dataset.provider;
   if(provider==='phone'){
