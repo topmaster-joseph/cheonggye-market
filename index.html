@@ -73,8 +73,16 @@
     </section>
 
     <section class="section news" id="news">
-      <div class="section-kicker">NEWS & STORIES <span>04</span></div><div class="news-head"><h2>청계의 새로운 소식</h2><p>골목 곳곳에서 피어나는<br>우리의 이야기를 전합니다.</p></div>
-      <div class="news-grid"><article class="news-main"><div class="news-visual video"><span>PLAY</span><b>▶</b><small>60 SEC</small></div><div class="news-meta"><span>공모전</span><time>2026. 04</time></div><h3>「Play 청계후문상권」 유튜브 영상 공모전</h3><p>대학생과 지역 주민이 팀을 이뤄 청계후문상권의 매력을 30–60초 세로 영상에 담습니다.</p></article><article><div class="news-visual festival"><i>청</i><i>계</i><i>골</i><i>목</i><span>함께여서<br>더 즐거운 날</span></div><div class="news-meta"><span>골목축제</span><time>2025. 10</time></div><h3>가게 밖에서 만난 이웃들</h3><p>먹거리와 체험, 대화가 골목을 채웠던 청계 골목축제의 기록입니다.</p></article><article><div class="news-visual meeting"><span>100×</span><p>한 번의 만남이<br>백 배의 연결로</p></div><div class="news-meta"><span>커뮤니티</span><time>상시</time></div><h3>상인의 목소리를 모읍니다</h3><p>정기 회의와 작은 모임으로 청계 상권의 오늘과 내일을 함께 이야기합니다.</p></article></div>
+      <div class="section-kicker">NEWS & STORIES <span>04</span></div>
+      <div class="news-head"><h2>청계와 이웃의<br>새로운 소식</h2><p>공식·공개 소식을 자동으로 모아<br>원문 출처와 함께 전합니다.</p></div>
+      <div class="news-tabs" role="tablist" aria-label="소식 분류">
+        <button class="active" data-news="market" role="tab" aria-selected="true">상권소식</button>
+        <button data-news="region" role="tab" aria-selected="false">지역소식</button>
+        <button data-news="university" role="tab" aria-selected="false">대학소식</button>
+      </div>
+      <div class="auto-news-status"><span class="news-pulse"></span><span id="newsStatus">최신 공개 소식을 불러오는 중입니다.</span><button id="refreshNews" type="button">새로고침</button></div>
+      <div class="news-feed" id="newsFeed" aria-live="polite"></div>
+      <div class="news-contribute"><div><b>우리 가게 이벤트를 알려주세요</b><p>할인, 신메뉴, 공연, 채용 등 상권의 직접 소식을 보내주시면 확인 후 공유합니다.</p></div><a class="btn dark" href="mailto:cgma4989@gmail.com?subject=%EC%B2%AD%EA%B3%84%EB%A9%B4%20%EC%83%81%EA%B6%8C%EC%86%8C%EC%8B%9D%20%EC%A0%9C%EB%B3%B4">소식 제보 <span>↗</span></a></div>
     </section>
 
     <section class="section members" id="members">
@@ -106,9 +114,20 @@
       </div>
     </section>
 
-    <section class="join" id="join"><div><span class="eyebrow">TOGETHER, CHEONGGYE</span><h2>청계의 내일에<br><em>함께해 주세요.</em></h2></div><div><p>상인회원 가입, 프로그램 참여, 협업 제안까지<br>청계를 더 즐겁게 만드는 모든 마음을 기다립니다.</p><div class="contact-actions"><a class="btn cream" href="mailto:cgma4989@gmail.com">이메일 문의 <span>↗</span></a><a class="btn contact-phone" href="tel:01035018542">전화 문의 <span>☎</span></a></div><address><a href="mailto:cgma4989@gmail.com">cgma4989@gmail.com</a><br><a href="tel:01035018542">010-3501-8542</a></address></div></section>
+    <section class="section member-login" id="login">
+      <div class="section-kicker">MEMBER LOGIN <span>07</span></div>
+      <div class="login-layout"><div><h2>회원 전용 소통을<br>간편하게 시작하세요.</h2><p>Google, 휴대전화, 카카오 계정으로 로그인할 수 있도록 통합 인증 기반을 연결했습니다.</p></div><div class="login-panel">
+        <button class="login-provider google" data-provider="google"><span>G</span> Google로 계속하기</button>
+        <button class="login-provider phone" data-provider="phone"><span>☎</span> 휴대전화로 계속하기</button>
+        <button class="login-provider kakao" data-provider="kakao"><span>●</span> 카카오로 계속하기</button>
+        <p id="authMessage" class="auth-message">처음 로그인하면 준회원으로 접수되며, 상인회 확인 후 정회원 권한이 부여됩니다.</p>
+      </div></div>
+    </section>
+
+    <section class="join" id="join"><div><span class="eyebrow">TOGETHER, CHEONGGYE</span><h2>청계의 내일에<br><em>함께해 주세요.</em></h2></div><div><p>상인회원 가입, 프로그램 참여, 협업 제안까지<br>청계를 더 즐겁게 만드는 모든 마음을 기다립니다.</p><div class="contact-actions"><a class="btn cream" href="#login">회원 로그인 <span>↗</span></a><a class="btn kakao-chat" href="https://open.kakao.com/" target="_blank" rel="noopener noreferrer">카카오 오픈채팅 <span>●</span></a><a class="btn contact-phone" href="tel:01035018542">전화 문의 <span>☎</span></a></div><small>상인회 전용 오픈채팅방 주소가 확정되면 이 버튼에 바로 연결됩니다.</small><address><a href="mailto:cgma4989@gmail.com">cgma4989@gmail.com</a><br><a href="tel:01035018542">010-3501-8542</a></address></div></section>
   </main>
   <footer><a class="brand footer-brand" href="#top"><span class="brand-mark">청</span><span><b>청계면상인회</b><small>CHEONGGYE MERCHANTS</small></span></a><div><p>전라남도 무안군 청계면 · 목포대 후문 상권</p><p><a href="mailto:cgma4989@gmail.com">cgma4989@gmail.com</a><br><a href="tel:01035018542">010-3501-8542</a></p></div><div class="footer-links"><a href="#about">상인회 소개</a><a href="#shops">가게 안내</a><a href="#program">상생 프로그램</a><a href="#live">온라인 LIVE</a></div><p class="copyright">© 2026 청계면상인회. All rights reserved.</p></footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="script.js"></script>
 </body>
 </html>
