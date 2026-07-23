@@ -1,0 +1,58 @@
+.live {
+  background: var(--green);
+  color: #fff;
+}
+
+.live-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin: 4rem 0 2.5rem;
+}
+
+.live-head h2 {
+  font-size: clamp(2.5rem, 5vw, 4.7rem);
+  line-height: 1.08;
+  letter-spacing: -.055em;
+  margin: .8rem 0 0;
+}
+
+.live-head p { color: #b9c9c4; }
+.live-head > div > span:nth-child(2) { color: var(--lime); font-size: .78rem; font-weight: 800; letter-spacing: .08em; }
+
+.live-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: .55rem;
+  border-radius: 50%;
+  background: #ff3b30;
+  box-shadow: 0 0 0 7px rgba(255, 59, 48, .16);
+  animation: live-pulse 1.5s infinite;
+}
+
+@keyframes live-pulse { 50% { box-shadow: 0 0 0 12px rgba(255, 59, 48, 0); } }
+
+.live-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+.live-card { min-height: 370px; padding: 3rem; display: flex; flex-direction: column; }
+.meeting-room { background: var(--lime); color: var(--green); }
+.youtube-live { background: #ff3b30; }
+.live-label { font-size: .68rem; font-weight: 900; letter-spacing: .16em; }
+.live-card h3 { font-size: clamp(1.8rem, 3vw, 3rem); line-height: 1.1; margin: 2rem 0 1rem; }
+.live-card p { max-width: 560px; margin: 0 0 2rem; }
+.live-card .btn { margin-top: auto; align-self: flex-start; }
+.live-card small { display: block; margin-top: 1rem; opacity: .78; }
+.live-btn { background: var(--green); color: #fff; }
+.youtube-btn { background: #fff; color: #c00; }
+.contact-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1rem; }
+.contact-actions .cream { margin-top: 0; }
+.contact-phone { background: var(--green); color: #fff; }
+.join address { font-style: normal; margin-top: 1.2rem; font-weight: 700; }
+.join address a { display: inline-block; margin: .1rem 0; }
+
+@media (max-width: 900px) {
+  .live-head { align-items: start; flex-direction: column; gap: 1.5rem; }
+  .live-grid { grid-template-columns: 1fr; }
+  .live-card { min-height: 330px; padding: 2rem; }
+  .contact-actions { align-items: flex-start; flex-direction: column; }
+}
