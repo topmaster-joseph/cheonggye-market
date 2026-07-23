@@ -50,9 +50,34 @@
 .join address { font-style: normal; margin-top: 1.2rem; font-weight: 700; }
 .join address a { display: inline-block; margin: .1rem 0; }
 
+.members { background: #efe8dc; }
+.members-head { display: flex; justify-content: space-between; align-items: end; gap: 3rem; margin: 4rem 0 2.5rem; }
+.members-head h2 { font-size: clamp(2.5rem, 5vw, 4.7rem); line-height: 1.08; letter-spacing: -.055em; margin: 0 0 1rem; }
+.members-head p { color: var(--muted); margin: 0; }
+.members-head .btn { flex: 0 0 auto; }
+.member-groups { display: grid; grid-template-columns: 2fr 1fr; gap: 1.2rem; }
+.member-group { background: var(--cream); padding: 2.4rem; border-top: 5px solid var(--green); }
+.member-group.associate { border-color: var(--orange); }
+.member-group-title { display: flex; align-items: start; justify-content: space-between; }
+.member-group-title span { color: var(--muted); font-size: .65rem; font-weight: 800; letter-spacing: .15em; }
+.member-group-title h3 { font-size: 2rem; margin: .2rem 0 0; }
+.member-group-title b { color: var(--green); font-size: 3.5rem; line-height: 1; }
+.associate .member-group-title b { color: var(--orange); }
+.member-rule { color: var(--muted); border-bottom: 1px solid #d3cec4; padding-bottom: 1.3rem; }
+.member-list { list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: .65rem; }
+.member-list li { background: #e8e0d3; padding: .65rem .75rem; font-size: .85rem; font-weight: 700; }
+.member-pending { margin-top: 2rem; padding: 1.5rem; background: #e8e0d3; }
+.member-pending strong { font-size: 1.2rem; }
+.member-pending p { color: var(--muted); font-size: .85rem; }
+.member-pending a { color: var(--orange); font-weight: 800; font-size: .85rem; }
+.privacy-note { color: var(--muted); font-size: .75rem; margin: 1.5rem 0 0; }
+
 @media (max-width: 900px) {
   .live-head { align-items: start; flex-direction: column; gap: 1.5rem; }
   .live-grid { grid-template-columns: 1fr; }
   .live-card { min-height: 330px; padding: 2rem; }
   .contact-actions { align-items: flex-start; flex-direction: column; }
+  .members-head { align-items: start; flex-direction: column; }
+  .member-groups { grid-template-columns: 1fr; }
+  .member-list { grid-template-columns: repeat(2, 1fr); }
 }
