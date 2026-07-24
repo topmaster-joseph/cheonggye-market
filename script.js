@@ -24,6 +24,28 @@ const grid=document.querySelector('#shopGrid'),noResult=document.querySelector('
 function render(){const q=search.value.trim().toLowerCase();let list=shops.filter(s=>(active==='all'||s.c===active)&&s.n.toLowerCase().includes(q));const visible=expanded||q||active!=='all'?list:list.slice(0,8);grid.innerHTML=visible.map(s=>`<article class="shop-card"><span class="tag">${labels[s.c]}</span><h3>${s.n}</h3><p>전남 무안군 청계면 ${s.a}</p>${s.p?`<b>${s.p}</b>`:''}</article>`).join('');noResult.hidden=list.length>0;more.hidden=q||active!=='all'||list.length<=8;more.innerHTML=expanded?'간단히 보기 <span>−</span>':'가게 더 보기 <span>＋</span>'}
 document.querySelectorAll('.filters button').forEach(b=>b.addEventListener('click',()=>{document.querySelector('.filters .active').classList.remove('active');b.classList.add('active');active=b.dataset.filter;render()}));
 search.addEventListener('input',render);more.addEventListener('click',()=>{expanded=!expanded;render()});render();
+
+const mapPositions=[
+  [18,68],[73,24],[44,64],[58,57],[29,72],[78,35],[70,43],[36,60],[50,54],
+  [63,49],[82,30],[24,70],[86,38],[55,45],[13,76],[41,71],[21,79],[89,52]
+];
+const mapEscape=(value='')=>String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const mapPoints=document.querySelector('#mapPoints');
+const mapDetail=document.querySelector('#mapDetail');
+function selectMapShop(index){
+  const shop=shops[index];
+  if(!shop||!mapDetail)return;
+  document.querySelectorAll('.map-point').forEach((point,i)=>point.classList.toggle('active',i===index));
+  mapDetail.innerHTML=`<span class="map-detail-tag">${labels[shop.c]}</span><h3>${mapEscape(shop.n)}</h3><p>청계 상권에서 만나는 ${mapEscape(shop.t)} 상가입니다.</p><dl><div><dt>주소</dt><dd>전남 무안군 청계면 ${mapEscape(shop.a)}</dd></div><div><dt>연락처</dt><dd>${shop.p?`<a href="tel:${shop.p.replace(/\D/g,'')}">${mapEscape(shop.p)}</a>`:'상인회에 문의해 주세요'}</dd></div></dl><a class="map-list-link" href="#shops">상가명단에서 더 보기 →</a>`;
+}
+if(mapPoints){
+  mapPoints.innerHTML=shops.map((shop,index)=>{
+    const [x,y]=mapPositions[index];
+    return `<button class="map-point ${shop.c}" style="--x:${x}%;--y:${y}%" type="button" aria-label="${mapEscape(shop.n)} 위치" title="${mapEscape(shop.n)}"><span>${index+1}</span></button>`;
+  }).join('');
+  mapPoints.querySelectorAll('.map-point').forEach((point,index)=>point.addEventListener('click',()=>selectMapShop(index)));
+}
+
 const menu=document.querySelector('.menu-btn'),nav=document.querySelector('#nav');menu.addEventListener('click',()=>{const open=nav.classList.toggle('open');menu.setAttribute('aria-expanded',open)});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');menu.setAttribute('aria-expanded','false')}));
 const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.12});document.querySelectorAll('.value-cards article,.program-list article,.news-grid article').forEach(el=>{el.classList.add('reveal');observer.observe(el)});
 
