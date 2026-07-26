@@ -90,3 +90,10 @@ body{padding-top:84px}
   .art-map{min-height:390px}.map-point{width:27px;height:27px}.map-campus{width:28%;font-size:.75rem}
   .map-legend{gap:.55rem}.member-list{columns:2}
 }
+
+/* Natural Korean word wrapping */
+body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+h1,h2,h3,h4,h5,h6,p,li,dd,.lead,.big-copy,.member-rule,.member-recommend{text-wrap:pretty}
+.header nav a,.btn,button,.criteria-label,.section-kicker,.section-kicker-inline,.map-detail-tag{white-space:nowrap;word-break:keep-all}
+address a,.map-detail dd a,.live-card small a,.footer-brand+div a{overflow-wrap:anywhere;word-break:break-all}
+@media(max-width:560px){h1,h2,h3,h4,p,li{word-break:keep-all}.member-list li{break-inside:avoid}}
