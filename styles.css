@@ -129,3 +129,15 @@ address a,.map-detail dd a,.live-card small a,.footer-brand+div a{overflow-wrap:
 .form-pending{justify-content:center}
 @media(max-width:900px){.map-directory{grid-template-columns:repeat(2,1fr)}.map-count{width:100%;margin-left:0}.map-search{width:100%}}
 @media(max-width:560px){.map-directory{grid-template-columns:1fr}.member-filters{width:100%;overflow:auto}.art-map{min-height:470px}.directory-item{padding:.65rem}}
+
+/* Free OpenStreetMap + Leaflet market map */
+.leaflet-map{position:relative;min-height:560px;overflow:hidden;border-radius:26px;border:1px solid rgba(20,63,53,.18);background:#dce7db;z-index:1}
+.leaflet-map .leaflet-tile-pane{filter:saturate(.82) contrast(.96)}
+.leaflet-map .leaflet-control-zoom a{color:var(--green)}
+.leaflet-map .leaflet-control-attribution{font-size:10px}
+.leaflet-tooltip{border:0;border-radius:10px;box-shadow:0 5px 18px rgba(0,0,0,.18);color:var(--green);font-family:Pretendard,sans-serif;line-height:1.35}
+.map-directions{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-top:1.2rem}
+.map-directions a{display:flex;justify-content:center;align-items:center;text-align:center;min-height:44px;padding:.65rem;border:1px solid #628079;border-radius:10px;color:var(--lime);font-size:.78rem;font-weight:800}
+.map-directions a:hover{background:#315f55}
+@media(max-width:900px){.leaflet-map{min-height:480px}}
+@media(max-width:560px){.leaflet-map{min-height:440px}.map-directions{grid-template-columns:1fr}}
