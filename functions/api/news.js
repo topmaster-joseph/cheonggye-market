@@ -1,41 +1,13 @@
-const feeds = {
-  market: '"청계면" (상가 OR 상권 OR 축제 OR 행사 OR 이벤트)',
-  region: 'site:muan.go.kr (행사 OR 축제 OR 공연 OR 모집)',
-  university: 'site:mokpo.ac.kr (행사 OR 축제 OR 공연 OR 모집)'
+const feeds={
+ support:'(site:mss.go.kr OR site:semas.or.kr OR site:sbiz24.kr OR site:jeonnam.go.kr OR site:muan.go.kr) (소상공인 지원사업 OR 공고 OR 모집)',
+ education:'(site:semas.or.kr OR site:sbiz24.kr OR site:mokpo.ac.kr OR site:muan.go.kr) (소상공인 교육 OR 컨설팅 OR 특강 OR 모집)',
+ event:'(site:muan.go.kr OR site:mokpo.ac.kr OR site:semas.or.kr OR site:youtube.com/@cgma4989) (행사 OR 이벤트 OR 판로 OR 축제 OR 라이브)'
 };
-
-const decode = (s = '') => s
-  .replace(/<!\[CDATA\[|\]\]>/g, '')
-  .replace(/&amp;/g, '&').replace(/&quot;/g, '"')
-  .replace(/&#39;|&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-
-const text = (xml, tag) => {
-  const match = xml.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i'));
-  return decode(match?.[1] || '').replace(/<[^>]+>/g, '').trim();
-};
-
-export async function onRequestGet({ request }) {
-  const type = new URL(request.url).searchParams.get('type') || 'market';
-  if (!feeds[type]) return Response.json({ error: 'invalid news type' }, { status: 400 });
-  const rss = `https://news.google.com/rss/search?q=${encodeURIComponent(feeds[type])}&hl=ko&gl=KR&ceid=KR:ko`;
-  try {
-    const response = await fetch(rss, { cf: { cacheTtl: 1800, cacheEverything: true } });
-    if (!response.ok) throw new Error(`upstream ${response.status}`);
-    const xml = await response.text();
-    const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)].slice(0, 9).map((m) => {
-      const rawTitle = text(m[1], 'title');
-      const split = rawTitle.lastIndexOf(' - ');
-      return {
-        title: split > 0 ? rawTitle.slice(0, split) : rawTitle,
-        source: split > 0 ? rawTitle.slice(split + 3) : text(m[1], 'source') || '공개 소식',
-        url: text(m[1], 'link'),
-        publishedAt: text(m[1], 'pubDate')
-      };
-    }).filter((item) => item.title && item.url);
-    return Response.json({ type, updatedAt: new Date().toISOString(), items }, {
-      headers: { 'Cache-Control': 'public, max-age=900, s-maxage=1800' }
-    });
-  } catch {
-    return Response.json({ type, items: [], error: '소식을 불러오지 못했습니다.' }, { status: 502 });
-  }
+const decode=(s='')=>s.replace(/<!\[CDATA\[|\]\]>/g,'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+const text=(xml,tag)=>decode(xml.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`,'i'))?.[1]||'').replace(/<[^>]+>/g,'').trim();
+function parse(xml){return[...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)].map(m=>{const raw=text(m[1],'title'),cut=raw.lastIndexOf(' - ');return{title:cut>0?raw.slice(0,cut):raw,source:cut>0?raw.slice(cut+3):text(m[1],'source')||'공식기관',url:text(m[1],'link'),publishedAt:text(m[1],'pubDate')}}).filter(x=>x.title&&x.url)}
+export async function onRequestGet({request}){
+ const type=new URL(request.url).searchParams.get('type')||'support';if(!feeds[type])return Response.json({error:'invalid news type'},{status:400});
+ try{const rss=`https://news.google.com/rss/search?q=${encodeURIComponent(feeds[type])}&hl=ko&gl=KR&ceid=KR:ko`;const response=await fetch(rss,{cf:{cacheTtl:900,cacheEverything:true}});if(!response.ok)throw new Error(String(response.status));const items=parse(await response.text()).slice(0,12);return Response.json({type,updatedAt:new Date().toISOString(),items},{headers:{'Cache-Control':'public, max-age=300, s-maxage=900'}})}
+ catch{return Response.json({type,items:[],error:'공고를 불러오지 못했습니다.'},{status:502})}
 }
