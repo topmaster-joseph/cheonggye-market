@@ -20,7 +20,7 @@
     </a>
     <button class="menu-btn" aria-expanded="false" aria-controls="nav" aria-label="메뉴 열기"><span></span><span></span></button>
     <nav id="nav" aria-label="주요 메뉴">
-      <a href="#about">상인회 소개</a><a href="#market-map">상권지도</a><a href="#shops">상가명단</a><a href="#members">정회원명단</a><a href="#live">온라인 LIVE</a><a id="adminNav" href="admin.html" hidden>관리자</a><a class="nav-cta" href="#join">가입하기</a>
+      <a href="#about">상인회 소개</a><a href="#market-map">상권지도 및 상가명단</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a><a id="adminNav" href="admin.html" hidden>관리자</a><a class="nav-cta" href="#join">가입하기</a>
     </nav>
   </header>
 
@@ -62,65 +62,39 @@
     </section>
 
     <section class="section market-map-section" id="market-map">
-      <div class="section-kicker">CHEONGGYE MARKET MAP <span>02</span></div>
-      <div class="map-heading"><div><h2>한눈에 만나는<br><em>청계 상권지도</em></h2><p>승달산길과 도림길을 따라 이어진 상가를 눌러보세요.</p></div><div class="map-legend"><span><i class="food"></i>맛집</span><span><i class="cafe"></i>카페</span><span><i class="life"></i>생활·편의</span><span><i class="culture"></i>문화·서비스</span></div></div>
+      <div class="section-kicker">MARKET MAP & DIRECTORY <span>02</span></div>
+      <div class="map-heading"><div><h2>한눈에 만나는<br><em>상권지도 및 상가명단</em></h2><p>왼쪽 지도에서 상가를 선택하면 오른쪽에서 회원 구분과 정보를 확인할 수 있습니다.</p></div><div class="map-legend"><span><i class="regular-dot"></i>정회원</span><span><i class="associate-dot"></i>준회원</span></div></div>
+      <div class="map-toolbar">
+        <label class="map-search"><span>⌕</span><input id="mapSearch" type="search" placeholder="상가명·업종 검색" aria-label="상가명 또는 업종 검색"></label>
+        <div class="member-filters" role="group" aria-label="회원 구분"><button class="active" data-member-filter="all">전체</button><button data-member-filter="regular">정회원</button><button data-member-filter="associate">준회원</button></div>
+        <span id="mapCount" class="map-count"></span>
+      </div>
       <div class="map-layout">
-        <div class="art-map" id="marketMap" aria-label="청계면 상권 상가 위치 안내도">
-          <div class="map-mountain">승달산</div><div class="map-campus">목포대학교<br><b>후문</b></div>
-          <div class="map-road road-a"><span>승달산길</span></div><div class="map-road road-b"><span>도림길</span></div>
-          <div class="map-stream"></div><div class="map-compass">N<br><span>↑</span></div>
-          <div id="mapPoints"></div>
+        <div class="art-map" id="marketMap" aria-label="청계면 상권 전체 상가 안내도">
+          <div class="map-mountain">승달산</div><div class="map-campus">국립목포대학교<br><b>후문</b></div>
+          <div class="map-road road-main"><span>영산로</span></div><div class="map-road road-a"><span>승달산길</span></div><div class="map-road road-b"><span>도림길</span></div><div class="map-road road-c"><span>청계중앙길</span></div>
+          <div class="map-compass">N<br><span>↑</span></div><div id="mapPoints"></div>
         </div>
         <aside class="map-detail" id="mapDetail" aria-live="polite">
-          <span class="map-detail-tag">상가 위치를 선택하세요</span>
-          <h3>청계 상권 둘러보기</h3>
-          <p>지도 위 번호를 누르면 상호, 업종, 주소와 연락처를 확인할 수 있습니다.</p>
-          <dl><div><dt>권역</dt><dd>무안군 청계면 · 목포대 후문</dd></div><div><dt>안내</dt><dd>표시 위치는 이해를 돕기 위한 상권 안내도입니다.</dd></div></dl>
+          <span class="map-detail-tag">상가를 선택하세요</span><h3>청계 상권 둘러보기</h3><p>지도 위 표시를 누르면 정회원·준회원 구분과 상가 정보를 확인할 수 있습니다.</p>
+          <dl><div><dt>정회원</dt><dd>상호, 업종, 주소 등 자세한 정보</dd></div><div><dt>준회원</dt><dd>상호와 업종 중심의 간단한 정보</dd></div></dl>
         </aside>
       </div>
-    </section>
-
-    <section class="section shops" id="shops">
-      <div class="section-kicker light">SHOP DIRECTORY <span>03</span></div>
-      <div class="shops-head"><div><h2>청계 상가명단</h2><p>업종별로 찾고 필요한 기본정보를 빠르게 확인하세요.</p></div><label class="search"><span aria-hidden="true">⌕</span><input id="shopSearch" type="search" placeholder="상가 이름으로 찾아보세요" aria-label="상가 검색"></label></div>
-      <div class="filters" role="group" aria-label="업종 필터"><button class="active" data-filter="all">전체</button><button data-filter="food">맛집</button><button data-filter="cafe">카페</button><button data-filter="life">생활·편의</button><button data-filter="culture">문화·서비스</button></div>
-      <div class="shop-grid" id="shopGrid"></div>
-      <p class="no-result" hidden>조건에 맞는 가게를 찾지 못했어요.</p>
-      <button class="more-btn" id="moreShops">가게 더 보기 <span>＋</span></button>
+      <div class="map-directory" id="mapDirectory" aria-label="지도에 표시된 상가 목록"></div>
+      <p class="map-source-note">※ 정회원은 2026년 정회원 현황을 기준으로 표시합니다. 준회원은 공개 가능한 등록자료 기준이며, 최신 상태는 상인회 확인 후 갱신됩니다.</p>
     </section>
 
     <section class="section news" id="news">
-      <div class="section-kicker">NEWS & STORIES <span>04</span></div>
-      <div class="news-head"><h2>청계와 이웃의<br>새로운 소식</h2><p>공식·공개 소식을 자동으로 모아<br>원문 출처와 함께 전합니다.</p></div>
+      <div class="section-kicker">SMALL BUSINESS NEWS <span>03</span></div>
+      <div class="news-head"><h2>소상공인을 위한<br>실시간 상권소식</h2><p>지원사업, 교육, 판로, 행사·이벤트 공고를<br>관공서와 공식기관 출처 링크로 전합니다.</p></div>
       <div class="news-tabs" role="tablist" aria-label="소식 분류">
-        <button class="active" data-news="market" role="tab" aria-selected="true">상권소식</button>
-        <button data-news="region" role="tab" aria-selected="false">지역소식</button>
-        <button data-news="university" role="tab" aria-selected="false">대학소식</button>
+        <button class="active" data-news="support" role="tab" aria-selected="true">지원사업</button>
+        <button data-news="education" role="tab" aria-selected="false">교육·컨설팅</button>
+        <button data-news="event" role="tab" aria-selected="false">행사·판로</button>
       </div>
       <div class="auto-news-status"><span class="news-pulse"></span><span id="newsStatus">최신 공개 소식을 불러오는 중입니다.</span><button id="refreshNews" type="button">새로고침</button></div>
       <div class="news-feed" id="newsFeed" aria-live="polite"></div>
       <div class="news-contribute"><div><b>우리 가게 이벤트를 알려주세요</b><p>할인, 신메뉴, 공연, 채용 등 상권의 직접 소식을 보내주시면 확인 후 공유합니다.</p></div><a class="btn dark" href="mailto:cgma4989@gmail.com?subject=%EC%B2%AD%EA%B3%84%EB%A9%B4%20%EC%83%81%EA%B6%8C%EC%86%8C%EC%8B%9D%20%EC%A0%9C%EB%B3%B4">소식 제보 <span>↗</span></a></div>
-    </section>
-
-    <section class="section members" id="members">
-      <div class="section-kicker">REGULAR MEMBERS <span>05</span></div>
-      <div class="members-head"><div><h2>믿고 찾는<br>청계 정회원명단</h2><p>상권의 오늘을 지키고 내일을 함께 만드는 정회원 상가입니다. 익숙한 단골집부터 새롭게 발견할 가게까지, 청계에서 식사하고 장보고 서비스를 이용할 때 정회원 상가를 먼저 찾아주세요. 한 번의 방문과 한 번의 추천이 우리 골목의 지속 가능한 힘이 됩니다.</p></div><div class="member-actions"><a class="btn dark" href="mailto:cgma4989@gmail.com?subject=청계면상인회%20정회원%20가입%20문의">정회원 가입 문의 <span>↗</span></a><a class="btn band-btn" href="https://band.us/" target="_blank" rel="noopener noreferrer">네이버밴드에서 소통하기 <span>↗</span></a></div></div>
-      <div class="member-recommend"><strong>정회원 상가를 추천합니다</strong><p>지역 안에서 소비가 순환하면 상가의 경쟁력이 높아지고, 더 좋은 상품과 서비스, 행사로 다시 이웃에게 돌아옵니다. 방문 후 좋은 경험은 가족·친구·온라인 커뮤니티에 알려주세요.</p><small>※ 상인회 공식 밴드의 전용 초대 주소가 확정되면 현재 네이버밴드 연결 버튼에 바로 반영됩니다.</small></div>
-      <div class="member-groups">
-        <article class="member-group">
-          <div class="member-group-title"><div><span>REGULAR MEMBER</span><h3>정회원</h3></div><b>51</b></div>
-          <p class="member-rule">사업장을 직접 운영하며 2026년도 정회원 현황에 등재된 회원입니다.</p>
-          <ul class="member-list">
-            <li>일오삼</li><li>자담치킨</li><li>카페인</li><li>하늘애한의원</li><li>1st헤어샵</li><li>메가커피</li><li>세븐</li><li>미스터빈</li><li>참새방앗간</li><li>세븐도림</li><li>대림식당</li><li>토굽사</li><li>빽다방</li><li>컴포즈</li><li>평화자기</li><li>무안하다</li><li>우후죽순</li><li>산들카페</li><li>청계화원</li><li>고깃집</li><li>커피에빠지다</li><li>삼일종합광고</li><li>대패세끼</li><li>롯데리아</li><li>세븐</li><li>만남게임랜드</li><li>이디야</li><li>아트랜드</li><li>나주곰탕</li><li>바른탐정행정사</li><li>이모네칼국수</li><li>다마당구장</li><li>무안남부신협</li><li>모모홀딩스</li><li>공차</li><li>국제협력처</li><li>안흥찐빵</li><li>지에스25</li><li>한국그린케어</li><li>동경야시장</li><li>행복한커피</li><li>다담코리아</li><li>만복환경자원</li><li>김정호스튜디오</li><li>승달마트</li><li>완미국밥</li><li>책마당</li><li>술도가</li><li>노래방</li><li>한식뷔페</li><li>목대신한은행</li>
-          </ul>
-        </article>
-        <article class="member-group associate">
-          <div class="member-group-title"><div><span>ASSOCIATE MEMBER</span><h3>준회원</h3></div><b>—</b></div>
-          <p class="member-rule">정회원 요건을 충족하지 않은 참여 회원입니다.</p>
-          <div class="member-pending"><strong>공개 명단 확인 중</strong><p>Google Drive에서 최신 준회원 명단이 별도로 확인되지 않아 임의로 분류하지 않았습니다. 명단 확정은 상인회로 문의해 주세요.</p><a href="mailto:cgma4989@gmail.com">cgma4989@gmail.com →</a></div>
-        </article>
-      </div>
-      <p class="privacy-note">※ 개인정보 보호를 위해 대표자 이름, 개인 연락처, 회비 납부액은 공개하지 않습니다.</p>
     </section>
 
     <section class="section live" id="live">
@@ -142,10 +116,20 @@
       </div></div>
     </section>
 
-    <section class="join" id="join"><div><span class="eyebrow">TOGETHER, CHEONGGYE</span><h2>청계의 내일에<br><em>함께해 주세요.</em></h2><div class="member-criteria"><span class="criteria-label">정회원 가입 기준</span><ul><li>청계면 상권에서 사업장을 실제 운영하는 상인 또는 사업자 대표</li><li>상인회의 목적과 회칙에 동의하고 공동사업·상권 활성화 활동에 참여할 분</li><li>가입 신청서와 사업장 확인자료를 제출하고 상인회 승인을 받은 분</li><li>회비 등 상인회가 정한 회원 의무를 성실히 이행할 분</li></ul><p>※ 사업장 확인과 최종 가입 승인은 상인회 회칙 및 심사 결과에 따릅니다.</p></div></div><div><p>상인회원 가입, 프로그램 참여, 협업 제안까지<br>청계를 더 즐겁게 만드는 모든 마음을 기다립니다.</p><div class="contact-actions"><a class="btn cream" href="#login">회원 로그인 <span>↗</span></a><a class="btn kakao-chat" href="https://open.kakao.com/" target="_blank" rel="noopener noreferrer">카카오 오픈채팅 <span>●</span></a><a class="btn contact-phone" href="tel:01035018542">전화 문의 <span>☎</span></a></div><small>상인회 전용 오픈채팅방 주소가 확정되면 이 버튼에 바로 연결됩니다.</small><address><a href="mailto:cgma4989@gmail.com">cgma4989@gmail.com</a><br><a href="tel:01035018542">010-3501-8542</a></address></div></section>
+    <section class="join" id="join">
+      <div><span class="eyebrow">TOGETHER, CHEONGGYE</span><h2>청계의 내일에<br><em>함께해 주세요.</em></h2>
+        <details class="join-guide" open><summary>가입안내 보기</summary>
+          <div class="join-guide-body"><p><b>회원 구분</b> 정회원은 청계면 상권에서 사업을 직접 영위하고 회원 의무를 이행하는 상인이며, 준회원은 정회원 요건을 충족하지 않은 참여 회원입니다.</p><p><b>회비</b> 회비와 공동사업비의 금액·납부시기는 이사회에서 정하며 가입 심사 시 개별 안내합니다.</p><p><b>정관과 의무</b> 정관 준수, 회비·공동사업비 납부, 자료 제출 협조와 공동사업 참여가 기본 의무입니다.</p><p><b>가입 절차</b> 온라인 신청서 제출 → 임원 협의·심사 → 회원 구분 및 회비 안내 → 가입 확정 순서로 진행합니다.</p><a href="https://docs.google.com/document/d/1evwPd2PeuquMn3nS1SHb3JaJXS2cy4Zhyw0_Zv7-BcI" target="_blank" rel="noopener noreferrer">최신 정관 확인하기 →</a></div>
+        </details>
+      </div>
+      <div><p>온라인 신청서 원본의 공개 작성 주소를 확인하고 있습니다. 개인정보가 포함된 응답 문서는 공개하지 않습니다.</p>
+        <div class="contact-actions"><a class="btn cream form-pending" href="mailto:cgma4989@gmail.com?subject=청계면상인회%20온라인%20가입신청서%20요청">온라인 가입신청서 작성하기 <span>↗</span></a><a class="btn contact-phone" href="tel:01035018542">전화 문의 <span>☎</span></a></div>
+        <small>현재 버튼은 신청서 작성 주소 요청 메일로 연결됩니다. Google Form 공개 주소가 확인되는 즉시 바로 작성 화면으로 교체됩니다.</small><address><a href="mailto:cgma4989@gmail.com">cgma4989@gmail.com</a><br><a href="tel:01035018542">010-3501-8542</a></address>
+      </div>
+    </section>
   </main>
-  <footer><a class="brand footer-brand" href="#top"><span class="brand-mark">청</span><span><b>청계면상인회</b><small>CHEONGGYE MERCHANTS</small></span></a><div><p>전라남도 무안군 청계면 · 목포대 후문 상권</p><p><a href="mailto:cgma4989@gmail.com">cgma4989@gmail.com</a><br><a href="tel:01035018542">010-3501-8542</a></p></div><div class="footer-links"><a href="#about">상인회 소개</a><a href="#market-map">상권지도</a><a href="#shops">상가명단</a><a href="#members">정회원명단</a><a href="#live">온라인 LIVE</a></div><p class="copyright">© 2026 청계면상인회. All rights reserved.</p></footer>
+  <footer><a class="brand footer-brand" href="#top"><span class="brand-mark">청</span><span><b>청계면상인회</b><small>CHEONGGYE MERCHANTS</small></span></a><div><p>전라남도 무안군 청계면 · 목포대 후문 상권</p><p><a href="mailto:cgma4989@gmail.com">cgma4989@gmail.com</a><br><a href="tel:01035018542">010-3501-8542</a></p></div><div class="footer-links"><a href="#about">상인회 소개</a><a href="#market-map">상권지도 및 상가명단</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a></div><p class="copyright">© 2026 청계면상인회. All rights reserved.</p></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="script.js?v=20260724-map"></script>
+  <script src="script.js?v=20260729-mapnews"></script>
 </body>
 </html>
