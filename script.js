@@ -30,11 +30,11 @@ function selectShop(index,move=true){
  const s=shops[index];if(!s||!mapDetail)return;
  markerByIndex.forEach((marker,i)=>marker.setStyle(markerStyle(shops[i],i===index)).setRadius(i===index?11:shops[i].m==='regular'?8:6));
  document.querySelectorAll('.directory-item').forEach(p=>p.classList.toggle('active',Number(p.dataset.index)===index));
- const fullAddress=`전남 무안군 청계면 ${s.a}`,query=encodeURIComponent(`${s.n} ${fullAddress}`);
- const directions=`<div class="map-directions"><a href="https://www.google.com/maps/search/?api=1&query=${query}" target="_blank" rel="noopener noreferrer">Google 길찾기 ↗</a><a href="https://map.kakao.com/link/search/${query}" target="_blank" rel="noopener noreferrer">카카오맵 길찾기 ↗</a></div>`;
+ const fullAddress=`전남 무안군 청계면 ${s.a}`,destination=encodeURIComponent(fullAddress);
+ const directions=`<div class="map-directions"><a href="https://www.google.com/maps/dir/?api=1&destination=${destination}" target="_blank" rel="noopener noreferrer">Google 길찾기 ↗</a><a href="https://map.kakao.com/link/search/${destination}" target="_blank" rel="noopener noreferrer">카카오맵 길찾기 ↗</a></div>`;
  const detail=s.m==='regular'
- ?`<span class="member-status regular">정회원</span><span class="map-detail-tag">${labels[s.c]}</span><h3>${esc(s.n)}</h3><p>청계면상인회 정회원 상가입니다. 지역 안에서 소비가 순환할 수 있도록 방문과 추천으로 함께해 주세요.</p><dl><div><dt>업종</dt><dd>${esc(s.t)}</dd></div><div><dt>주소</dt><dd>${esc(fullAddress)}</dd></div><div><dt>회원 안내</dt><dd>공동사업과 상권 활성화 활동에 참여하는 정회원입니다.</dd></div></dl>${directions}`
- :`<span class="member-status associate">준회원</span><span class="map-detail-tag">${labels[s.c]}</span><h3>${esc(s.n)}</h3><p>준회원 상가로 등록된 기본 안내입니다.</p><dl><div><dt>업종</dt><dd>${esc(s.t)}</dd></div><div><dt>위치</dt><dd>${esc(fullAddress)}</dd></div></dl><small>준회원 정보는 상호와 업종 중심으로 간단히 제공합니다.</small>${directions}`;
+ ?`<span class="member-status regular">정회원</span><span class="map-detail-tag">${labels[s.c]}</span><h3>${esc(s.n)}</h3><p>청계면상인회 정회원 상가입니다. 지역 안에서 소비가 순환할 수 있도록 방문과 추천으로 함께해 주세요.</p><dl><div><dt>업종</dt><dd>${esc(s.t)}</dd></div><div><dt>주소</dt><dd>${esc(fullAddress)}</dd></div><div><dt>회원 안내</dt><dd>공동사업과 상권 활성화 활동에 참여하는 정회원입니다.</dd></div></dl><div class="location-caution">지도 마커는 상권 안내용입니다. 정확한 위치는 등록주소 길찾기를 이용해 주세요.</div>${directions}`
+ :`<span class="member-status associate">준회원</span><span class="map-detail-tag">${labels[s.c]}</span><h3>${esc(s.n)}</h3><p>준회원 상가로 등록된 기본 안내입니다.</p><dl><div><dt>업종</dt><dd>${esc(s.t)}</dd></div><div><dt>위치</dt><dd>${esc(fullAddress)}</dd></div></dl><small>준회원 정보는 상호와 업종 중심으로 간단히 제공합니다.</small><div class="location-caution">지도 마커는 상권 안내용입니다. 정확한 위치는 등록주소 길찾기를 이용해 주세요.</div>${directions}`;
  mapDetail.innerHTML=detail;
  if(move&&leafletMap){leafletMap.panTo(latLngFor(s,index),{animate:true});markerByIndex.get(index)?.openTooltip();}
 }
@@ -84,6 +84,6 @@ const registeredBody=document.querySelector('#registeredBody'),registeredSearch=
 function renderRegistered(){
  if(!registeredBody)return;const q=(registeredSearch?.value||'').trim().toLowerCase();const list=registeredShops.filter(s=>!q||(`${s.name} ${s.address}`).toLowerCase().includes(q));
  registeredCount.textContent=`${list.length}개 상가`;
- registeredBody.innerHTML=list.map(s=>{const query=encodeURIComponent(`${s.name} 전남 무안군 ${s.address}`),phone=s.phone?`<a class="verified-phone" href="tel:${s.phone.replace(/\D/g,'')}">${s.phone}</a>`:'<span class="phone-unconfirmed">공개 대표전화 미확인</span>';return `<tr><td data-label="번호">${s.no}</td><td data-label="상가명"><b>${esc(s.name)}</b></td><td data-label="주소">전남 무안군 ${esc(s.address)}</td><td data-label="공개 대표전화">${phone}</td><td data-label="위치"><a class="registered-map-link" href="https://www.google.com/maps/search/?api=1&query=${query}" target="_blank" rel="noopener noreferrer">지도 보기 ↗</a></td></tr>`}).join('');
+ registeredBody.innerHTML=list.map(s=>{const destination=encodeURIComponent(`전남 무안군 ${s.address}`),phone=s.phone?`<a class="verified-phone" href="tel:${s.phone.replace(/\D/g,'')}">${s.phone}</a>`:'<span class="phone-unconfirmed">공개 대표전화 미확인</span>';return `<tr><td data-label="번호">${s.no}</td><td data-label="상가명"><b>${esc(s.name)}</b></td><td data-label="주소">전남 무안군 ${esc(s.address)}</td><td data-label="공개 대표전화">${phone}</td><td data-label="위치"><a class="registered-map-link" href="https://www.google.com/maps/dir/?api=1&destination=${destination}" target="_blank" rel="noopener noreferrer">지도 보기 ↗</a></td></tr>`}).join('');
 }
 registeredSearch?.addEventListener('input',renderRegistered);renderRegistered();
