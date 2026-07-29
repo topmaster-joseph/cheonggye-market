@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260729-mapform" />
-  <link rel="stylesheet" href="live.css" />
+  <link rel="stylesheet" href="styles.css?v=20260729-news-live" />
+  <link rel="stylesheet" href="live.css?v=20260729-embedded" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3ynVZVpFJUC7BZJ6q16ZK8CksNnM=" crossorigin="" />
 </head>
 <body>
@@ -21,7 +21,7 @@
     </a>
     <button class="menu-btn" aria-expanded="false" aria-controls="nav" aria-label="메뉴 열기"><span></span><span></span></button>
     <nav id="nav" aria-label="주요 메뉴">
-      <a href="#about">상인회 소개</a><a href="#market-map">상권지도 및 상가명단</a><a href="#registered-market">골목형상점가</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a><a id="adminNav" href="admin.html" hidden>관리자</a><a class="nav-cta" href="#join">가입하기</a>
+      <a href="#about">상인회 소개</a><a href="#market-map">상권지도</a><a href="#registered-market">골목형상점가</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a><a id="adminNav" href="admin.html" hidden>관리자</a><a class="nav-cta" href="#join">가입하기</a>
     </nav>
   </header>
 
@@ -54,7 +54,7 @@
       <div class="officer-board" aria-label="청계면상인회 임원진">
         <div class="officer-board-head"><span>ASSOCIATION LEADERS</span><h3>청계면상인회 임원진</h3></div>
         <div class="officer-grid">
-          <article><span class="officer-role">회장</span><h4>정찬균</h4><p>자담치킨피자마루</p></article>
+          <article><span class="officer-role">회장</span><h4>정찬균</h4><p>자담치킨&피자마루</p></article>
           <article><span class="officer-role">국장</span><h4>정미진</h4><p>평화자기</p></article>
           <article><span class="officer-role">총무</span><h4>김정윤</h4><p>하늘애한의원</p></article>
         </div>
@@ -71,7 +71,7 @@
 
     <section class="section market-map-section" id="market-map">
       <div class="section-kicker">MARKET MAP & DIRECTORY <span>02</span></div>
-      <div class="map-heading"><div><h2>한눈에 만나는<br><em>상권지도 및 상가명단</em></h2><p>왼쪽 지도에서 상가를 선택하면 오른쪽에서 회원 구분과 정보를 확인할 수 있습니다.</p></div><div class="map-legend"><span><i class="regular-dot"></i>정회원</span><span><i class="associate-dot"></i>준회원</span></div></div>
+      <div class="map-heading"><div><h2>한눈에 만나는<br><em>상권지도</em></h2><p>왼쪽 지도에서 상가를 선택하면 오른쪽에서 회원 구분과 정보를 확인할 수 있습니다.</p></div><div class="map-legend"><span><i class="regular-dot"></i>정회원</span><span><i class="associate-dot"></i>준회원</span></div></div>
       <div class="market-map-summary" aria-label="청계면 상권 현황"><div><small>표시 상가</small><strong id="summaryAll">-</strong></div><div><small>정회원</small><strong id="summaryRegular">-</strong></div><div><small>준회원</small><strong id="summaryAssociate">-</strong></div><div class="summary-area"><small>상권 중심</small><strong>목포대 후문 · 청계면</strong></div></div><div class="map-toolbar">
         <label class="map-search"><span>⌕</span><input id="mapSearch" type="search" placeholder="상가명·업종 검색" aria-label="상가명 또는 업종 검색"></label>
         <div class="member-filters" role="group" aria-label="회원 구분"><button class="active" data-member-filter="all">전체</button><button data-member-filter="regular">정회원</button><button data-member-filter="associate">준회원</button></div>
@@ -109,10 +109,28 @@
     <section class="section news" id="news">
       <div class="section-kicker">SMALL BUSINESS NEWS <span>04</span></div>
       <div class="news-head"><h2>소상공인을 위한<br>실시간 상권소식</h2><p>지원사업, 교육, 판로, 행사·이벤트 공고를<br>관공서와 공식기관 출처 링크로 전합니다.</p></div>
-      <div class="news-tabs" role="tablist" aria-label="소식 분류">
+      <section class="association-board" aria-labelledby="associationNoticeTitle">
+        <div class="board-head">
+          <div><span>OFFICIAL NOTICE</span><h3 id="associationNoticeTitle">상인회 공지사항</h3><p>청계면상인회가 직접 전하는 일정, 회원 안내와 긴급 공지입니다.</p></div>
+          <button class="board-write-button" id="noticeWriteToggle" type="button" hidden>공지 작성</button>
+        </div>
+        <div class="notice-editor" id="noticeEditor" hidden>
+          <form id="noticeForm">
+            <div class="notice-form-row"><label>분류<select name="category"><option>공지</option><option>회의</option><option>행사</option><option>회원</option><option>긴급</option></select></label><label>제목<input name="title" maxlength="120" required placeholder="공지 제목을 입력해 주세요"></label></div>
+            <label>내용<textarea name="content" maxlength="4000" rows="5" required placeholder="회원에게 알릴 내용을 입력해 주세요"></textarea></label>
+            <div class="notice-form-actions"><label class="notice-pin"><input name="pinned" type="checkbox"> 상단 고정</label><button type="submit">공지 등록</button></div><p id="noticeFormStatus" role="status"></p>
+          </form>
+        </div>
+        <div class="notice-list" id="associationNoticeList" aria-live="polite"><div class="notice-loading">공지사항을 불러오는 중입니다.</div></div>
+      </section>      <div class="news-tabs" role="tablist" aria-label="소식 분류">
         <button class="active" data-news="support" role="tab" aria-selected="true">지원사업</button>
+        <button data-news="finance" role="tab" aria-selected="false">자금·대출</button>
         <button data-news="education" role="tab" aria-selected="false">교육·컨설팅</button>
-        <button data-news="event" role="tab" aria-selected="false">행사·판로</button>
+        <button data-news="sales" role="tab" aria-selected="false">판로·마케팅</button>
+        <button data-news="event" role="tab" aria-selected="false">상권행사</button>
+        <button data-news="local" role="tab" aria-selected="false">무안·지역</button>
+        <button data-news="university" role="tab" aria-selected="false">목포대소식</button>
+        <button data-news="safety" role="tab" aria-selected="false">안전·환경</button>
       </div>
       <div class="auto-news-status"><span class="news-pulse"></span><span id="newsStatus">최신 공개 소식을 불러오는 중입니다.</span><button id="refreshNews" type="button">새로고침</button></div>
       <div class="news-feed" id="newsFeed" aria-live="polite"></div>
@@ -122,11 +140,10 @@
     <section class="section live" id="live">
       <div class="section-kicker light">ONLINE LIVE <span>06</span></div>
       <div class="live-head"><div><span class="live-dot" aria-hidden="true"></span><span>실시간 소통 공간</span><h2>어디서든 함께하는<br>청계면상인회</h2></div><p>정기회의와 온라인 설명회는 Jitsi에서,<br>현장 행사와 상권 소식은 유튜브 라이브에서 만나보세요.</p></div>
-      <div class="live-grid">
-        <article class="live-card meeting-room"><span class="live-label">JITSI MEET</span><h3>온라인 실시간 회의실</h3><p>회원 가입이나 프로그램 설치 없이 브라우저에서 바로 참여할 수 있습니다. 입장할 때 표시할 이름을 입력해 주세요.</p><a class="btn live-btn" href="https://meet.jit.si/CheonggyeMerchantsAssociation4989" target="_blank" rel="noopener noreferrer">회의실 입장 <span>↗</span></a><small>회의실 이름: CheonggyeMerchantsAssociation4989</small></article>
-        <article class="live-card youtube-live"><span class="live-label">YOUTUBE LIVE</span><h3>실시간 라이브 방송</h3><p>청계면상인회 공식 유튜브 채널에서 행사 생중계와 상권 소식 영상을 확인하세요.</p><a class="btn youtube-btn" href="https://www.youtube.com/@cgma4989/live" target="_blank" rel="noopener noreferrer">유튜브 라이브 보기 <span>▶</span></a><small>공식 채널: <a href="https://www.youtube.com/@cgma4989" target="_blank" rel="noopener noreferrer">youtube.com/@cgma4989</a></small></article>
-      </div>
-    </section>
+      <div class="live-grid embedded-live-grid">
+        <article class="live-card meeting-room embedded-live-card"><div class="live-card-copy"><span class="live-label">JITSI MEET</span><h3>온라인 실시간 회의실</h3><p>홈페이지 안에서 이름을 입력하고 회의에 참여할 수 있습니다. 카메라와 마이크는 참여자가 직접 허용할 때만 사용됩니다.</p></div><div class="live-frame-wrap jitsi-frame"><iframe src="https://meet.jit.si/CheonggyeMerchantsAssociation4989#config.prejoinPageEnabled=true" title="청계면상인회 Jitsi 온라인 회의실" allow="camera; microphone; fullscreen; display-capture; autoplay" loading="lazy"></iframe></div><a class="live-fallback" href="https://meet.jit.si/CheonggyeMerchantsAssociation4989" target="_blank" rel="noopener noreferrer">회의실을 새 창에서 열기 ↗</a></article>
+        <article class="live-card youtube-live embedded-live-card"><div class="live-card-copy"><span class="live-label">YOUTUBE LIVE</span><h3>실시간 라이브 방송</h3><p>청계면상인회 공식 유튜브 채널의 현재 라이브 방송을 홈페이지에서 바로 시청하세요. 방송이 없을 때는 대기 화면이 표시됩니다.</p></div><div class="live-frame-wrap youtube-frame"><iframe src="https://www.youtube-nocookie.com/embed/live_stream?channel=UC001JT9opxVBt9z_h-tsx8A&amp;autoplay=0" title="청계면상인회 유튜브 실시간 라이브" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe></div><a class="live-fallback" href="https://www.youtube.com/@cgma4989/live" target="_blank" rel="noopener noreferrer">유튜브에서 보기 ↗</a></article>
+      </div>    </section>
 
     <section class="section member-login" id="login">
       <div class="section-kicker">MEMBER LOGIN <span>07</span></div>
@@ -167,9 +184,9 @@
       </div>
       <p class="form-privacy-note">입력한 개인정보는 회원가입 심사와 연락 목적으로만 사용됩니다. 양식이 보이지 않으면 ‘새 창에서 작성’을 이용해 주세요.</p>
     </section>  </main>
-  <footer><a class="brand footer-brand" href="#top"><span class="brand-mark">청</span><span><b>청계면상인회</b><small>CHEONGGYE MERCHANTS</small></span></a><div><p>전라남도 무안군 청계면 · 목포대 후문 상권</p><p><a href="mailto:cgma4989@gmail.com">cgma4989@gmail.com</a><br><a href="tel:01035018542">010-3501-8542</a></p></div><div class="footer-links"><a href="#about">상인회 소개</a><a href="#market-map">상권지도 및 상가명단</a><a href="#registered-market">골목형상점가</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a></div><p class="copyright">© 2026 청계면상인회. All rights reserved.</p></footer>
+  <footer><a class="brand footer-brand" href="#top"><span class="brand-mark">청</span><span><b>청계면상인회</b><small>CHEONGGYE MERCHANTS</small></span></a><div><p>전라남도 무안군 청계면 · 목포대 후문 상권</p><p><a href="mailto:cgma4989@gmail.com">cgma4989@gmail.com</a><br><a href="tel:01035018542">010-3501-8542</a></p></div><div class="footer-links"><a href="#about">상인회 소개</a><a href="#market-map">상권지도</a><a href="#registered-market">골목형상점가</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a></div><p class="copyright">© 2026 청계면상인회. All rights reserved.</p></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="script.js?v=20260729-official72doc"></script>
+  <script src="script.js?v=20260729-news-live"></script>
 </body>
 </html>

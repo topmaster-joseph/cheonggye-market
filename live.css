@@ -81,3 +81,12 @@
   .member-groups { grid-template-columns: 1fr; }
   .member-list { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Embedded meeting and live broadcast */
+.embedded-live-grid{grid-template-columns:1fr;gap:1.5rem}
+.embedded-live-card{min-height:0;padding:1.5rem;display:grid;grid-template-columns:minmax(240px,.55fr) minmax(0,1.45fr);gap:1.5rem;align-items:center;border-radius:20px}
+.embedded-live-card .live-card-copy{align-self:start;padding:.75rem}.embedded-live-card h3{font-size:clamp(1.7rem,3vw,2.8rem);margin:1rem 0}.embedded-live-card p{font-size:.85rem;line-height:1.7;margin:0}
+.live-frame-wrap{position:relative;min-height:440px;border-radius:14px;overflow:hidden;background:#0d1715;box-shadow:0 10px 30px rgba(0,0,0,.22)}.live-frame-wrap iframe{display:block;width:100%;height:440px;border:0}
+.live-fallback{grid-column:1/-1;justify-self:end;color:inherit;font-size:.78rem;font-weight:800;text-decoration:underline}.meeting-room .live-fallback{color:var(--green)}
+@media(max-width:900px){.embedded-live-card{grid-template-columns:1fr}.live-frame-wrap,.live-frame-wrap iframe{min-height:400px;height:400px}.live-fallback{justify-self:start}}
+@media(max-width:560px){.embedded-live-card{padding:.8rem;border-radius:14px}.live-frame-wrap,.live-frame-wrap iframe{min-height:360px;height:360px}}

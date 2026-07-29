@@ -1,0 +1,8 @@
+name = "cheonggye-market"
+compatibility_date = "2026-07-29"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "cheonggye_market_notices"
+database_name = "cheonggye-market-notices"
+database_id = "ed7be9c5-af55-4a64-ad69-2df562284295"
