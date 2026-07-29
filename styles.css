@@ -170,3 +170,5 @@ address a,.map-detail dd a,.live-card small a,.footer-brand+div a{overflow-wrap:
  .registered-table td{display:grid;grid-template-columns:104px 1fr;gap:.65rem;padding:.45rem 0;border:0;line-height:1.45}.registered-table td:before{content:attr(data-label);color:var(--muted);font-size:.7rem;font-weight:800}
  .registered-table td:first-child{position:absolute;width:auto;opacity:.55}.registered-table td:nth-child(2){padding-left:2rem}.registered-table td:nth-child(2):before{display:none}.registered-table td:nth-child(2) b{font-size:1.05rem}
 }
+
+.location-caution{margin-top:1rem;padding:.75rem .85rem;border-radius:10px;background:rgba(255,255,255,.09);color:#dce8e4;font-size:.72rem;line-height:1.55}
