@@ -6,7 +6,7 @@ const labels={food:'음식·외식',cafe:'카페·디저트',life:'생활·편�
 const memberLabels={regular:'정회원',associate:'준회원'};
 const esc=(v='')=>String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const marketMapElement=document.querySelector('#marketMap'),mapDetail=document.querySelector('#mapDetail'),mapDirectory=document.querySelector('#mapDirectory'),mapSearch=document.querySelector('#mapSearch'),mapCount=document.querySelector('#mapCount');
-let memberFilter='all',leafletMap,markerLayer;
+let memberFilter='all',categoryFilter='all',leafletMap,markerLayer;
 const markerByIndex=new Map();
 const categoryColors={food:'#ff6038',cafe:'#8a5cff',life:'#e2a719',culture:'#1f8065'};
 function latLngFor(shop,index){
@@ -21,7 +21,7 @@ function latLngFor(shop,index){
 }
 function selectedShops(){
  const q=(mapSearch?.value||'').trim().toLowerCase();
- return shops.map((s,i)=>({...s,i})).filter(s=>(memberFilter==='all'||s.m===memberFilter)&&(!q||[s.n,s.t,s.a,labels[s.c]].join(' ').toLowerCase().includes(q)));
+ return shops.map((s,i)=>({...s,i})).filter(s=>(memberFilter==='all'||s.m===memberFilter)&&(categoryFilter==='all'||s.c===categoryFilter)&&(!q||[s.n,s.t,s.a,labels[s.c]].join(' ').toLowerCase().includes(q)));
 }
 function markerStyle(shop,active=false){
  return {radius:active?11:shop.m==='regular'?8:6,color:shop.m==='regular'?'#ff6038':'#66747d',weight:active?5:3,fillColor:categoryColors[shop.c],fillOpacity:shop.m==='regular'?.96:.72,opacity:1};
@@ -39,7 +39,7 @@ function selectShop(index,move=true){
  if(move&&leafletMap){leafletMap.panTo(latLngFor(s,index),{animate:true});markerByIndex.get(index)?.openTooltip();}
 }
 function renderMap(){
- const list=selectedShops();if(mapCount)mapCount.textContent=`표시 상가 ${list.length}곳`;
+ const list=selectedShops();const allCount=shops.length,regularCount=shops.filter(s=>s.m==='regular').length,associateCount=shops.filter(s=>s.m==='associate').length;document.querySelector('#summaryAll')&&(document.querySelector('#summaryAll').textContent=allCount+'개');document.querySelector('#summaryRegular')&&(document.querySelector('#summaryRegular').textContent=regularCount+'개');document.querySelector('#summaryAssociate')&&(document.querySelector('#summaryAssociate').textContent=associateCount+'개');if(mapCount)mapCount.textContent=`표시 상가 ${list.length}곳`;
  markerLayer?.clearLayers();markerByIndex.clear();
  const bounds=[];
  list.forEach(s=>{const pos=latLngFor(s,s.i),marker=L.circleMarker(pos,markerStyle(s)).bindTooltip(`<b>${esc(s.n)}</b><br>${memberLabels[s.m]}`,{direction:'top',offset:[0,-8]});marker.on('click',()=>selectShop(s.i,false));marker.addTo(markerLayer);markerByIndex.set(s.i,marker);bounds.push(pos);});
@@ -51,10 +51,10 @@ function renderMap(){
 if(marketMapElement&&window.L){
  leafletMap=L.map(marketMapElement,{scrollWheelZoom:false,zoomControl:true}).setView([34.9127,126.4345],15);
  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(leafletMap);
- markerLayer=L.layerGroup().addTo(leafletMap);
+ L.polygon([[34.90925,126.42865],[34.91035,126.42735],[34.9138,126.42815],[34.91685,126.43155],[34.9164,126.4389],[34.91315,126.44255],[34.91035,126.4399]],{color:'#f15a32',weight:3,dashArray:'9 7',fillColor:'#ff8a4c',fillOpacity:.13,interactive:false}).addTo(leafletMap);L.control.scale({imperial:false,position:'bottomleft'}).addTo(leafletMap);const zoneLabel=L.control({position:'topleft'});zoneLabel.onAdd=()=>{const el=L.DomUtil.create('div','market-zone-label');el.innerHTML='<b>청계면 골목형상점가</b><small>상권 안내 영역</small>';return el};zoneLabel.addTo(leafletMap);markerLayer=L.layerGroup().addTo(leafletMap);
  leafletMap.on('focus',()=>leafletMap.scrollWheelZoom.enable());leafletMap.on('blur',()=>leafletMap.scrollWheelZoom.disable());
 }
-document.querySelectorAll('[data-member-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-member-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');memberFilter=btn.dataset.memberFilter;renderMap()}));
+document.querySelectorAll('[data-member-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-member-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');memberFilter=btn.dataset.memberFilter;renderMap()}));document.querySelectorAll('[data-category-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-category-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');categoryFilter=btn.dataset.categoryFilter;renderMap()}));
 mapSearch?.addEventListener('input',renderMap);renderMap();
 
 const menu=document.querySelector('.menu-btn'),nav=document.querySelector('#nav');
