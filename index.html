@@ -21,7 +21,7 @@
     </a>
     <button class="menu-btn" aria-expanded="false" aria-controls="nav" aria-label="메뉴 열기"><span></span><span></span></button>
     <nav id="nav" aria-label="주요 메뉴">
-      <a href="#about">상인회 소개</a><a href="#market-map">상권지도 및 상가명단</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a><a id="adminNav" href="admin.html" hidden>관리자</a><a class="nav-cta" href="#join">가입하기</a>
+      <a href="#about">상인회 소개</a><a href="#market-map">상권지도 및 상가명단</a><a href="#registered-market">골목형상점가</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a><a id="adminNav" href="admin.html" hidden>관리자</a><a class="nav-cta" href="#join">가입하기</a>
     </nav>
   </header>
 
@@ -81,8 +81,24 @@
       <p class="map-source-note">※ 정회원은 2026년 정회원 현황을 기준으로 표시합니다. 준회원은 공개 가능한 등록자료 기준이며, 최신 상태는 상인회 확인 후 갱신됩니다.</p>
     </section>
 
+
+    <section class="section registered-market" id="registered-market">
+      <div class="section-kicker">REGISTERED ALLEY MARKET <span>03</span></div>
+      <div class="registered-head">
+        <div><h2>청계면 목대후문<br><em>골목형상점가</em></h2><p>공식 등록자료에 등재된 72개 상가를 빠짐없이 확인할 수 있습니다.</p></div>
+        <div class="registered-stat"><strong>72</strong><span>공식 등록상가</span></div>
+      </div>
+      <div class="registered-tools">
+        <label class="registered-search"><span aria-hidden="true">⌕</span><input id="registeredSearch" type="search" placeholder="상가명 또는 주소 검색" aria-label="골목형상점가 검색"></label>
+        <span id="registeredCount">72개 상가</span>
+      </div>
+      <div class="registered-table-wrap">
+        <table class="registered-table"><thead><tr><th>번호</th><th>상가명</th><th>주소</th><th>공개 대표전화</th><th>위치</th></tr></thead><tbody id="registeredBody"></tbody></table>
+      </div>
+      <p class="registered-source">기준: Google Drive ‘240119상인회명단(전체)’ 72개 등록행 · 대표전화는 2026년 7월 웹 공개정보 확인 기준입니다. 개인 휴대전화는 공개하지 않습니다.</p>
+    </section>
     <section class="section news" id="news">
-      <div class="section-kicker">SMALL BUSINESS NEWS <span>03</span></div>
+      <div class="section-kicker">SMALL BUSINESS NEWS <span>04</span></div>
       <div class="news-head"><h2>소상공인을 위한<br>실시간 상권소식</h2><p>지원사업, 교육, 판로, 행사·이벤트 공고를<br>관공서와 공식기관 출처 링크로 전합니다.</p></div>
       <div class="news-tabs" role="tablist" aria-label="소식 분류">
         <button class="active" data-news="support" role="tab" aria-selected="true">지원사업</button>
@@ -125,7 +141,7 @@
       </div>
     </section>
   </main>
-  <footer><a class="brand footer-brand" href="#top"><span class="brand-mark">청</span><span><b>청계면상인회</b><small>CHEONGGYE MERCHANTS</small></span></a><div><p>전라남도 무안군 청계면 · 목포대 후문 상권</p><p><a href="mailto:cgma4989@gmail.com">cgma4989@gmail.com</a><br><a href="tel:01035018542">010-3501-8542</a></p></div><div class="footer-links"><a href="#about">상인회 소개</a><a href="#market-map">상권지도 및 상가명단</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a></div><p class="copyright">© 2026 청계면상인회. All rights reserved.</p></footer>
+  <footer><a class="brand footer-brand" href="#top"><span class="brand-mark">청</span><span><b>청계면상인회</b><small>CHEONGGYE MERCHANTS</small></span></a><div><p>전라남도 무안군 청계면 · 목포대 후문 상권</p><p><a href="mailto:cgma4989@gmail.com">cgma4989@gmail.com</a><br><a href="tel:01035018542">010-3501-8542</a></p></div><div class="footer-links"><a href="#about">상인회 소개</a><a href="#market-map">상권지도 및 상가명단</a><a href="#registered-market">골목형상점가</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a></div><p class="copyright">© 2026 청계면상인회. All rights reserved.</p></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="script.js?v=20260729-leaflet"></script>
