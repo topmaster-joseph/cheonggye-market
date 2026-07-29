@@ -172,3 +172,28 @@ address a,.map-detail dd a,.live-card small a,.footer-brand+div a{overflow-wrap:
 }
 
 .location-caution{margin-top:1rem;padding:.75rem .85rem;border-radius:10px;background:rgba(255,255,255,.09);color:#dce8e4;font-size:.72rem;line-height:1.55}
+
+/* 2026-07-29 Seoul commercial-analysis inspired map dashboard */
+.market-map-section{background:#eef2f1;padding-top:5rem;padding-bottom:5rem}
+.market-map-section .map-heading{margin-bottom:1.5rem}
+.market-map-summary{display:grid;grid-template-columns:repeat(3,minmax(120px,1fr)) minmax(240px,1.5fr);background:var(--green);color:#fff;border-radius:20px 20px 0 0;overflow:hidden;box-shadow:0 14px 38px rgba(20,63,53,.12)}
+.market-map-summary>div{padding:1.2rem 1.35rem;border-right:1px solid rgba(255,255,255,.14)}
+.market-map-summary>div:last-child{border-right:0}
+.market-map-summary small{display:block;color:#b8d2ca;font-size:.7rem;font-weight:700;margin-bottom:.3rem}
+.market-map-summary strong{font-size:1.55rem;letter-spacing:-.04em}
+.market-map-summary .summary-area strong{font-size:1rem;color:var(--lime)}
+.market-map-section .map-toolbar{margin:0;padding:1rem 1.1rem;background:#fff;border:1px solid rgba(20,63,53,.12);border-top:0;box-shadow:0 12px 32px rgba(20,63,53,.08)}
+.category-filters{display:flex;gap:.3rem;padding-left:.8rem;border-left:1px solid #dfe5e2}
+.category-filters button{border:0;background:#edf1ef;color:#405650;border-radius:7px;padding:.58rem .72rem;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer}
+.category-filters button.active{background:var(--orange);color:#fff}
+.market-map-section .map-layout{grid-template-columns:minmax(0,1.65fr) minmax(300px,.7fr);gap:0;background:#fff;border-radius:0 0 22px 22px;overflow:hidden;box-shadow:0 18px 44px rgba(20,63,53,.12)}
+.market-map-section .leaflet-map{border:0;border-radius:0;min-height:650px}
+.market-map-section .map-detail{border-radius:0;min-height:650px;padding:2rem 1.65rem;border-left:1px solid rgba(255,255,255,.08)}
+.market-map-section .map-directory{grid-template-columns:repeat(4,1fr);background:#fff;margin:1rem 0 0;padding:1rem;border-radius:18px;box-shadow:0 10px 30px rgba(20,63,53,.08)}
+.market-zone-label{display:flex;flex-direction:column;gap:.2rem;background:rgba(255,255,255,.94);color:var(--green);padding:.7rem .9rem;border-left:4px solid var(--orange);border-radius:4px 10px 10px 4px;box-shadow:0 5px 18px rgba(20,63,53,.2);font-family:Pretendard,sans-serif}
+.market-zone-label b{font-size:.82rem}.market-zone-label small{font-size:.64rem;color:#687b75}
+.market-map-section .leaflet-control-zoom{border:0!important;box-shadow:0 5px 18px rgba(20,63,53,.18)!important}
+.market-map-section .leaflet-control-zoom a{border:0!important;margin-bottom:1px}
+@media(max-width:1100px){.category-filters{order:3;width:100%;padding:0;border:0;overflow:auto}.market-map-section .map-layout{grid-template-columns:1fr .7fr}.market-map-section .map-directory{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:800px){.market-map-summary{grid-template-columns:repeat(3,1fr)}.market-map-summary .summary-area{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14)}.market-map-section .map-layout{grid-template-columns:1fr}.market-map-section .map-detail{min-height:390px;border-left:0}.market-map-section .leaflet-map{min-height:520px}.market-map-section .map-directory{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.market-map-section{padding-top:3.5rem}.market-map-summary>div{padding:.9rem .7rem}.market-map-summary strong{font-size:1.15rem}.market-map-section .map-toolbar{padding:.8rem}.member-filters,.category-filters{width:100%;overflow-x:auto;flex-wrap:nowrap}.member-filters button,.category-filters button{flex:0 0 auto}.market-map-section .leaflet-map{min-height:470px}.market-map-section .map-directory{grid-template-columns:1fr}.market-zone-label{max-width:170px}}

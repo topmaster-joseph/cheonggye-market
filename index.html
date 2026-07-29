@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260729-addressfix" />
+  <link rel="stylesheet" href="styles.css?v=20260729-marketdashboard" />
   <link rel="stylesheet" href="live.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3ynVZVpFJUC7BZJ6q16ZK8CksNnM=" crossorigin="" />
 </head>
@@ -65,10 +65,10 @@
     <section class="section market-map-section" id="market-map">
       <div class="section-kicker">MARKET MAP & DIRECTORY <span>02</span></div>
       <div class="map-heading"><div><h2>한눈에 만나는<br><em>상권지도 및 상가명단</em></h2><p>왼쪽 지도에서 상가를 선택하면 오른쪽에서 회원 구분과 정보를 확인할 수 있습니다.</p></div><div class="map-legend"><span><i class="regular-dot"></i>정회원</span><span><i class="associate-dot"></i>준회원</span></div></div>
-      <div class="map-toolbar">
+      <div class="market-map-summary" aria-label="청계면 상권 현황"><div><small>표시 상가</small><strong id="summaryAll">-</strong></div><div><small>정회원</small><strong id="summaryRegular">-</strong></div><div><small>준회원</small><strong id="summaryAssociate">-</strong></div><div class="summary-area"><small>상권 중심</small><strong>목포대 후문 · 청계면</strong></div></div><div class="map-toolbar">
         <label class="map-search"><span>⌕</span><input id="mapSearch" type="search" placeholder="상가명·업종 검색" aria-label="상가명 또는 업종 검색"></label>
         <div class="member-filters" role="group" aria-label="회원 구분"><button class="active" data-member-filter="all">전체</button><button data-member-filter="regular">정회원</button><button data-member-filter="associate">준회원</button></div>
-        <span id="mapCount" class="map-count"></span>
+        <div class="category-filters" role="group" aria-label="업종 선택"><button class="active" data-category-filter="all">전체업종</button><button data-category-filter="food">음식</button><button data-category-filter="cafe">카페</button><button data-category-filter="life">생활</button><button data-category-filter="culture">문화·서비스</button></div><span id="mapCount" class="map-count"></span>
       </div>
       <div class="map-layout">
         <div class="leaflet-map" id="marketMap" aria-label="OpenStreetMap 기반 청계면 실제 상권지도"></div>
@@ -144,6 +144,6 @@
   <footer><a class="brand footer-brand" href="#top"><span class="brand-mark">청</span><span><b>청계면상인회</b><small>CHEONGGYE MERCHANTS</small></span></a><div><p>전라남도 무안군 청계면 · 목포대 후문 상권</p><p><a href="mailto:cgma4989@gmail.com">cgma4989@gmail.com</a><br><a href="tel:01035018542">010-3501-8542</a></p></div><div class="footer-links"><a href="#about">상인회 소개</a><a href="#market-map">상권지도 및 상가명단</a><a href="#registered-market">골목형상점가</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a></div><p class="copyright">© 2026 청계면상인회. All rights reserved.</p></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="script.js?v=20260729-addressfix"></script>
+  <script src="script.js?v=20260729-marketdashboard"></script>
 </body>
 </html>
