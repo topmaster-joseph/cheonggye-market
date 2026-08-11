@@ -1,0 +1,22 @@
+name: Supabase Auth Provider Probe
+
+on:
+  push:
+    branches: [ops/auth-provider-probe]
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Read public auth provider settings
+        env:
+          SUPABASE_URL: https://renzehysxirjilvdxacv.supabase.co
+          SUPABASE_KEY: sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_
+        run: |
+          set -euo pipefail
+          settings="$(curl -fsS --max-time 15 -H "apikey: ${SUPABASE_KEY}" "${SUPABASE_URL}/auth/v1/settings")"
+          echo "$settings" | jq '{disable_signup, mailer_autoconfirm, phone_autoconfirm, external: {google: .external.google, kakao: .external.kakao}}'
