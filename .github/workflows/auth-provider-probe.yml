@@ -19,4 +19,4 @@ jobs:
         run: |
           set -euo pipefail
           settings="$(curl -fsS --max-time 15 -H "apikey: ${SUPABASE_KEY}" "${SUPABASE_URL}/auth/v1/settings")"
-          echo "$settings" | jq '{disable_signup, mailer_autoconfirm, phone_autoconfirm, external: {google: .external.google, kakao: .external.kakao}}'
+          echo "$settings" | jq '{site_url, uri_allow_list, disable_signup, mailer_autoconfirm, phone_autoconfirm, external: {google: .external.google, kakao: .external.kakao}}'
