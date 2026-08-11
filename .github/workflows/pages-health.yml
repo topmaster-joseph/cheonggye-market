@@ -15,6 +15,30 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Diagnose deployed files and redirects
+        shell: bash
+        env:
+          BASE_URL: https://cheonggye-market.pages.dev
+        run: |
+          set -u
+          diagnose() {
+            local path="$1"
+            echo "===== HEAD ${path} ====="
+            curl -sSIL --max-time 15 "${BASE_URL}${path}" || true
+            echo "===== TITLE/BODY ${path} ====="
+            body="$(curl -sSL --max-time 15 "${BASE_URL}${path}" 2>&1 || true)"
+            printf '%s' "$body" | grep -o '<title>[^<]*</title>' | head -1 || true
+            printf '%s\n' "$body" | head -c 700 || true
+            echo
+          }
+          diagnose "/"
+          diagnose "/ai"
+          diagnose "/market-ai.html"
+          diagnose "/member"
+          diagnose "/member.html"
+          diagnose "/store-admin"
+          diagnose "/store-admin.html"
+
       - name: Verify public routes
         shell: bash
         env:
@@ -26,14 +50,14 @@ jobs:
             local path="$1"
             local expected="$2"
             local body=""
-            for attempt in $(seq 1 20); do
+            for attempt in $(seq 1 5); do
               body="$(curl -fsSL --max-time 15 "${BASE_URL}${path}" 2>/dev/null || true)"
               if printf '%s' "$body" | grep -Fq "$expected"; then
                 echo "OK ${path} contains: ${expected}"
                 return 0
               fi
-              echo "Retry ${attempt}/20: ${path} not ready"
-              sleep 5
+              echo "Retry ${attempt}/5: ${path} not ready"
+              sleep 3
             done
             echo "FAILED ${path}: expected text not found: ${expected}"
             return 1
