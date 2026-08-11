@@ -3,6 +3,7 @@
 /member  /member.html  200
 /member-admin  /member-admin.html  200
 /store-admin  /store-admin.html  200
+/qr-print  /qr-print.html  200
 /order/*  /order.html  200
 /payment-success  /payment-success.html  200
 /payment-fail  /payment-fail.html  200
