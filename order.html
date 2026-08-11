@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="청계상권 매장 QR 주문" />
+  <title>QR 주문 | 청계상권 AI</title>
+  <link rel="stylesheet" href="/order.css?v=20260811" />
+  <script src="https://js.tosspayments.com/v2/standard"></script>
+</head>
+<body>
+  <header class="top"><a href="/ai">← 청계상권 AI</a><span id="topName">QR 주문</span></header>
+  <main class="wrap">
+    <section class="hero"><span class="eyebrow">STORE ORDER</span><h1 id="storeName">매장을 불러오는 중입니다.</h1><p id="storeInfo" class="muted"></p></section>
+    <div id="status" class="status">메뉴와 주문 가능 상태를 확인하고 있습니다.</div>
+
+    <section id="menuCard" class="card hide"><h2>메뉴</h2><div id="menu" class="menu"></div></section>
+
+    <section id="customerCard" class="card hide">
+      <h2>주문 정보</h2>
+      <div class="grid2"><div><label for="customerName">이름</label><input id="customerName" autocomplete="name" maxlength="80" placeholder="주문자 이름" /></div><div><label for="customerPhone">연락처</label><input id="customerPhone" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="010-0000-0000" /></div></div>
+      <div class="grid2"><div><label for="fulfillment">받는 방법</label><select id="fulfillment"><option value="pickup">포장</option><option value="table">매장 테이블</option></select></div><div id="tableWrap" class="hide"><label for="tableRef">테이블</label><input id="tableRef" maxlength="40" placeholder="예: 3번" /></div></div>
+    </section>
+
+    <section id="summaryCard" class="card hide"><h2>주문 확인</h2><div id="summary"></div><div class="summary-line total"><span>결제금액</span><strong id="total">0원</strong></div><p class="muted">가격과 주문금액은 서버에서 다시 계산합니다. 결제 카드정보는 청계상권 AI 서버가 저장하지 않습니다.</p></section>
+  </main>
+
+  <div id="checkoutBar" class="checkout hide"><div class="checkout-inner"><div><small class="muted">총 결제금액</small><br><strong id="bottomTotal">0원</strong></div><button id="payButton" disabled>주문 · 결제</button></div></div>
+  <script src="/order.js?v=20260811" defer></script>
+</body>
+</html>
