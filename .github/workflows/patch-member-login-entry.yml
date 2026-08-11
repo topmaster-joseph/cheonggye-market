@@ -1,0 +1,50 @@
+name: One-time Patch Member Login Entry
+
+on:
+  push:
+    branches: [fix/auth-ui-email-primary]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: fix/auth-ui-email-primary
+      - name: Replace inactive provider login section
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('index.html')
+          text=p.read_text(encoding='utf-8')
+          old='''    <section class="section member-login" id="login">
+      <div class="section-kicker">MEMBER LOGIN <span>07</span></div>
+      <div class="login-layout"><div><h2>회원 전용 소통을<br>간편하게 시작하세요.</h2><p>Google, 휴대전화, 카카오 계정으로 로그인할 수 있도록 통합 인증 기반을 연결했습니다.</p></div><div class="login-panel">
+        <button class="login-provider google" data-provider="google"><span>G</span> Google로 계속하기</button>
+        <button class="login-provider phone" data-provider="phone"><span>☎</span> 휴대전화로 계속하기</button>
+        <button class="login-provider kakao" data-provider="kakao"><span>●</span> 카카오로 계속하기</button>
+        <p id="authMessage" class="auth-message">처음 로그인하면 준회원으로 접수되며, 상인회 확인 후 정회원 권한이 부여됩니다.</p>
+      </div></div>
+    </section>'''
+          new='''    <section class="section member-login" id="login">
+      <div class="section-kicker">MEMBER LOGIN <span>07</span></div>
+      <div class="login-layout"><div><h2>내 가게와 회원 서비스를<br>간편하게 시작하세요.</h2><p>현재는 비밀번호 없는 이메일 로그인 링크를 사용합니다. 로그인 후 기존 상가에서 내 가게를 선택하면 상인회 승인과 점포 관리가 같은 계정으로 이어집니다.</p></div><div class="login-panel">
+        <a class="btn primary" href="/member">정회원 · 내 가게 로그인 <span>→</span></a>
+        <p id="authMessage" class="auth-message">Google·Kakao 로그인은 제공자 연결 후 추가할 수 있습니다.</p>
+      </div></div>
+    </section>'''
+          if text.count(old)!=1:
+              raise SystemExit(f'Expected exactly one member-login block, found {text.count(old)}')
+          p.write_text(text.replace(old,new),encoding='utf-8')
+          Path('.github/workflows/patch-member-login-entry.yml').unlink()
+      - name: Commit patch and remove one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/patch-member-login-entry.yml
+          git commit -m "메인 회원 로그인을 실제 이메일 흐름으로 정리"
+          git push origin HEAD:fix/auth-ui-email-primary
