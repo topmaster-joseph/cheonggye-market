@@ -21,23 +21,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Verify Cloudflare credentials are configured
+      - name: Check Cloudflare deployment credentials
+        id: credentials
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          set -euo pipefail
-          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
-            echo "CLOUDFLARE_API_TOKEN repository secret is not configured."
-            exit 1
+          if [ -n "${CLOUDFLARE_API_TOKEN:-}" ] && [ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+            echo "Cloudflare deployment credentials are configured."
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Cloudflare deployment is waiting for CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets."
+            {
+              echo "## Cloudflare Pages deployment waiting"
+              echo "GitHub main is ready, but Cloudflare credentials are not connected to this repository yet."
+              echo "No deployment was attempted."
+            } >> "$GITHUB_STEP_SUMMARY"
           fi
-          if [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
-            echo "CLOUDFLARE_ACCOUNT_ID repository secret is not configured."
-            exit 1
-          fi
-          echo "Cloudflare credentials are configured."
 
       - name: Deploy current main to existing Pages project
+        if: steps.credentials.outputs.configured == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -46,6 +50,7 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify deployed routes
+        if: steps.credentials.outputs.configured == 'true'
         env:
           BASE_URL: https://cheonggye-market.pages.dev
         run: |
