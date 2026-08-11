@@ -2,22 +2,22 @@ name: One-time Patch Member Login Entry
 
 on:
   push:
-    branches: [fix/auth-ui-email-primary]
+    branches:
+      - fix/auth-ui-email-primary
 
 permissions:
   contents: write
 
 jobs:
   patch:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
           ref: fix/auth-ui-email-primary
       - name: Replace inactive provider login section
-        shell: python
         run: |
+          python3 <<'PY'
           from pathlib import Path
           p=Path('index.html')
           text=p.read_text(encoding='utf-8')
@@ -37,10 +37,12 @@ jobs:
         <p id="authMessage" class="auth-message">Google·Kakao 로그인은 제공자 연결 후 추가할 수 있습니다.</p>
       </div></div>
     </section>'''
-          if text.count(old)!=1:
-              raise SystemExit(f'Expected exactly one member-login block, found {text.count(old)}')
+          count=text.count(old)
+          if count != 1:
+              raise SystemExit(f'Expected exactly one member-login block, found {count}')
           p.write_text(text.replace(old,new),encoding='utf-8')
           Path('.github/workflows/patch-member-login-entry.yml').unlink()
+          PY
       - name: Commit patch and remove one-time workflow
         run: |
           git config user.name "github-actions[bot]"
