@@ -1,0 +1,47 @@
+name: One-time Patch Main AI Entry
+
+on:
+  push:
+    branches: [feat/main-ai-entry]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: feat/main-ai-entry
+      - name: Patch exact navigation and hero anchors
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+
+          nav_old = '<a href="#about">상인회 소개</a><a href="#market-map">상권지도</a><a href="#registered-market">골목형상점가</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a><a id="adminNav" href="admin.html" hidden>관리자</a><a class="nav-cta" href="#join">가입하기</a>'
+          nav_new = '<a href="#about">상인회 소개</a><a href="#market-map">상권지도</a><a href="#registered-market">골목형상점가</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a><a href="/ai">청계상권 AI</a><a id="adminNav" href="admin.html" hidden>관리자</a><a class="nav-cta" href="#join">가입하기</a>'
+
+          hero_old = '<div class="hero-actions"><a class="btn primary" href="#shops">가게 둘러보기 <span>↗</span></a><a class="text-link" href="#program">지금 진행 중인 이야기 <span>→</span></a></div>'
+          hero_new = '<div class="hero-actions"><a class="btn primary" href="/ai">청계상권 AI <span>↗</span></a><a class="text-link" href="#market-map">가게·상권 둘러보기 <span>→</span></a></div>'
+
+          if text.count(nav_old) != 1:
+              raise SystemExit(f'Expected one nav target, found {text.count(nav_old)}')
+          if text.count(hero_old) != 1:
+              raise SystemExit(f'Expected one hero target, found {text.count(hero_old)}')
+
+          text = text.replace(nav_old, nav_new).replace(hero_old, hero_new)
+          p.write_text(text, encoding='utf-8')
+
+          workflow = Path('.github/workflows/patch-main-ai-entry.yml')
+          workflow.unlink()
+      - name: Commit patch and remove one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/patch-main-ai-entry.yml
+          git commit -m "메인에서 청계상권 AI 바로가기 연결"
+          git push origin HEAD:feat/main-ai-entry
