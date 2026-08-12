@@ -10,10 +10,11 @@ const ACCESS=`${SUPABASE_URL}/functions/v1/access-api`;
 const TENANT='cheonggye';
 const SITE='cgma';
 const AUTH_REDIRECT='https://cgma.ekodi.kr/member';
+const AUTH_HUB=`https://auth.ekodi.kr/?site=${encodeURIComponent(SITE)}&return_to=${encodeURIComponent(AUTH_REDIRECT)}`;
 const sb=createClient(SUPABASE_URL,PUBLISHABLE_KEY,{auth:{flowType:'implicit',detectSessionInUrl:true,persistSession:true}});
 
 const $=id=>document.getElementById(id);
-const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[m]));
 let stores=[];let selectedStore=null;let activeApprovedStore=null;
 let authReadiness={google:false,emailRedirect:false};
 
@@ -34,17 +35,21 @@ async function probeAuthSettings(){
     authReadiness.emailRedirect=site.startsWith('https://cgma.ekodi.kr')||allow.includes('https://cgma.ekodi.kr/member');
   }catch{}
   const google=$('googleLogin'),googleText=$('googleLoginText'),send=$('sendLink');
-  if(google){google.disabled=!authReadiness.google;google.dataset.ready=authReadiness.google?'true':'false';}
-  if(googleText)googleText.textContent=authReadiness.google?'Google 계정으로 계속':'Google 로그인 연결 준비 중';
+  if(google){google.disabled=false;google.dataset.ready='central';}
+  if(googleText)googleText.textContent='Google 계정으로 계속';
   if(send)send.disabled=!authReadiness.emailRedirect;
-  if(!authReadiness.google&&!authReadiness.emailRedirect)status('loginStatus','중앙 Google 인증 설정을 연결 중입니다. 기존에 로그인된 정회원 계정은 계속 사용할 수 있습니다.','warn');
+  if(!authReadiness.emailRedirect)status('loginStatus','Google 로그인은 EKODI 통합 인증센터에서 진행합니다. 이메일 보조 인증은 Redirect 설정이 완료될 때까지 발송하지 않습니다.','warn');
 }
 
 async function oauth(provider){
-  if(provider==='google'&&!authReadiness.google)return status('loginStatus','Google OAuth 제공자 연결이 완료된 뒤 자동으로 활성화됩니다.','warn');
-  status('loginStatus','Google 로그인 화면으로 이동합니다.');
+  if(provider==='google'){
+    status('loginStatus','EKODI 통합 인증센터로 이동합니다.');
+    location.assign(AUTH_HUB);
+    return;
+  }
+  status('loginStatus',`${provider} 로그인 화면으로 이동합니다.`);
   const {error}=await sb.auth.signInWithOAuth({provider,options:{redirectTo:AUTH_REDIRECT}});
-  if(error)status('loginStatus','Google 로그인 설정을 확인해 주세요.','error');
+  if(error)status('loginStatus','로그인 제공자 설정을 확인해 주세요.','error');
 }
 
 async function loadSiteAccess(){return api(ACCESS,`/me?site=${encodeURIComponent(SITE)}`)}
