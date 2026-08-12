@@ -1,4 +1,4 @@
-name: CGMA Client Auth CI
+name: CGMA Auth CI
 
 on:
   push:
@@ -17,25 +17,39 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: '24'
-      - name: Validate customer portal scripts
+      - name: Validate authentication scripts
         run: |
           node --check client.js
+          node --check member.js
           node --check functions/_middleware.js
-      - name: Verify customer authentication contract
+      - name: Verify isolated customer authentication contract
         shell: bash
         run: |
           set -euo pipefail
           grep -Fq 'EKODI 고객관리 | 청계면상인회' client/index.html
           grep -Fq 'connect-src https://api.ekodi.kr' client/index.html
-          grep -Fq '/client.js' client/index.html
-          grep -Fq "const TENANT = 'cgma'" client.js
           grep -Fq '/api/customer/login' client.js
           grep -Fq '/api/customer/accept-invite' client.js
-          grep -Fq '/api/customer/session' client.js
-          grep -Fq '/api/customer/logout' client.js
-          grep -Fq "url.pathname === '/'" functions/_middleware.js
+          grep -Fq "const TENANT = 'cgma'" client.js
           grep -Fq "new URL('/client/', url.origin)" functions/_middleware.js
           if grep -Eq 'innerHTML|insertAdjacentHTML|Math\.random' client.js; then
             echo 'Unsafe client portal rendering/token behavior detected'
+            exit 1
+          fi
+      - name: Verify Google-first member access contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'Google 계정으로 로그인' member/index.html
+          grep -Fq 'id="googleLogin"' member/index.html
+          grep -Fq 'id="accessCard"' member/index.html
+          grep -Fq '/member-auth.css' member/index.html
+          grep -Fq "const SITE='cgma'" member.js
+          grep -Fq 'functions/v1/access-api' member.js
+          grep -Fq '/me?site=' member.js
+          grep -Fq "site:SITE,tenant:TENANT,role:'member'" member.js
+          grep -Fq '/store">내 가게 관리' member/index.html
+          if grep -Fq '/store-admin">내 가게' member/index.html; then
+            echo 'Legacy long store-admin link detected'
             exit 1
           fi
