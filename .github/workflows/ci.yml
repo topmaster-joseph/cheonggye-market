@@ -1,0 +1,41 @@
+name: CGMA Client Auth CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Validate customer portal scripts
+        run: |
+          node --check client.js
+          node --check functions/_middleware.js
+      - name: Verify customer authentication contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'EKODI 고객관리 | 청계면상인회' client/index.html
+          grep -Fq 'connect-src https://api.ekodi.kr' client/index.html
+          grep -Fq '/client.js' client/index.html
+          grep -Fq "const TENANT = 'cgma'" client.js
+          grep -Fq '/api/customer/login' client.js
+          grep -Fq '/api/customer/accept-invite' client.js
+          grep -Fq '/api/customer/session' client.js
+          grep -Fq '/api/customer/logout' client.js
+          grep -Fq "url.pathname === '/'" functions/_middleware.js
+          grep -Fq "new URL('/client/', url.origin)" functions/_middleware.js
+          if grep -Eq 'innerHTML|insertAdjacentHTML|Math\.random' client.js; then
+            echo 'Unsafe client portal rendering/token behavior detected'
+            exit 1
+          fi
