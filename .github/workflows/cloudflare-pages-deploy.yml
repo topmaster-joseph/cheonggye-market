@@ -46,7 +46,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy . --project-name=cheonggye-market --branch=main --commit-hash=${{ github.sha }} --commit-message="${{ github.event.head_commit.message || 'Manual deployment' }}"
+          command: pages deploy . --project-name=cheonggye-market --branch=main --commit-hash=${{ github.sha }} --commit-dirty=true
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify deployed routes
