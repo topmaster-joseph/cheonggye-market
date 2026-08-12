@@ -1,0 +1,38 @@
+name: CGMA Client Portal Health
+
+on:
+  workflow_run:
+    workflows: ['Deploy Cloudflare Pages']
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Verify production customer portal and invitation routing
+        shell: bash
+        run: |
+          set -euo pipefail
+          fake='0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
+          for attempt in $(seq 1 15); do
+            portal_code=$(curl -sS -L -o /tmp/client.html -w '%{http_code}' --connect-timeout 5 --max-time 15 'https://cgma.ekodi.kr/client/' || true)
+            redirect_code=$(curl -sS --max-redirs 0 -D /tmp/invite-headers -o /dev/null -w '%{http_code}' --connect-timeout 5 --max-time 15 "https://cgma.ekodi.kr/?ekodi_invite=$fake" || true)
+            echo "client=$portal_code invite_redirect=$redirect_code"
+            if [ "$portal_code" = '200' ] \
+              && grep -Fq 'EKODI 고객관리 | 청계면상인회' /tmp/client.html \
+              && grep -Fq '/api/customer/login' /tmp/client.html \
+              && grep -Fq '/api/customer/accept-invite' /tmp/client.html \
+              && { [ "$redirect_code" = '302' ] || [ "$redirect_code" = '307' ]; } \
+              && grep -Fiq "location: https://cgma.ekodi.kr/client/?ekodi_invite=$fake" /tmp/invite-headers; then
+              echo 'CGMA isolated customer portal verified in production.'
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
