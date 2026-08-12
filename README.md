@@ -1,6 +1,6 @@
 # 청계면상인회 홈페이지
 
-구글드라이브의 상인회 자료(정회원 현황, 업종별 상가명단, 상생스탬프 운영안, 영상 공모전 사업개요, 상권활성화 일정)를 참고해 만든 정적 홈페이지 시안입니다.
+구글드라이브의 상인회 자료(정회원 현황, 업종별 상가명단, 상생스탬프 운영안, 영상 공모전 사업개요, 상권활성화 일정)를 참고해 만든 정적 홈페이지입니다.
 
 ## 실행
 
@@ -19,6 +19,13 @@ python -m http.server 8080
 - 상생스탬프 참여 링크와 공식 SNS 채널 연결
 - 행사 일정 확정 후 날짜 업데이트
 
-## 권장 배포
+## 배포
 
-Cloudflare Pages의 Direct Upload에서 이 폴더 또는 `cheonggye-merchants-deploy.zip`을 업로드할 수 있습니다. 별도 빌드 명령은 필요하지 않습니다.
+`main` 브랜치가 갱신되면 GitHub Actions가 기존 Cloudflare Pages 프로젝트 `cheonggye-market`에 자동 배포합니다.
+
+필요한 GitHub Repository Secrets:
+
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+
+배포 후 `/`, `/ai`, `/member`, `/store-admin` 주요 경로를 자동 헬스체크합니다.
