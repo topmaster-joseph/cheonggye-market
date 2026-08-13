@@ -22,16 +22,26 @@ jobs:
           node --check client.js
           node --check member.js
           node --check functions/_middleware.js
-      - name: Verify isolated customer authentication contract
+      - name: Verify isolated customer authorization with central identity
         shell: bash
         run: |
           set -euo pipefail
           grep -Fq 'EKODI 고객관리 | 청계면상인회' client/index.html
-          grep -Fq 'connect-src https://api.ekodi.kr' client/index.html
-          grep -Fq '/api/customer/login' client.js
-          grep -Fq '/api/customer/accept-invite' client.js
-          grep -Fq "const TENANT = 'cgma'" client.js
+          grep -Fq 'script-src' client/index.html
+          grep -Fq 'https://cdn.jsdelivr.net' client/index.html
+          grep -Fq 'https://renzehysxirjilvdxacv.supabase.co' client/index.html
+          grep -Fq 'EKODI 통합인증센터로 로그인' client/index.html
+          grep -Fq 'https://auth.ekodi.kr/?site=cgma-client' client.js
+          grep -Fq "const TENANT='cgma'" client.js
+          grep -Fq "hash.get('ekodi_token')" client.js
+          grep -Fq 'verifyOtp({token_hash:tokenHash' client.js
+          grep -Fq '/api/customer/federated-login' client.js
+          grep -Fq '/api/customer/accept-central-invite' client.js
           grep -Fq "new URL('/client/', url.origin)" functions/_middleware.js
+          if grep -Fq '/api/customer/login' client.js || grep -Fq '/api/customer/accept-invite' client.js; then
+            echo 'Legacy client password authentication detected'
+            exit 1
+          fi
           if grep -Eq 'innerHTML|insertAdjacentHTML|Math\.random' client.js; then
             echo 'Unsafe client portal rendering/token behavior detected'
             exit 1
