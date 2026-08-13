@@ -47,6 +47,9 @@ jobs:
           grep -Fq "const SITE='cgma'" member.js
           grep -Fq 'https://auth.ekodi.kr/?site=' member.js
           grep -Fq 'functions/v1/access-api' member.js
+          grep -Fq "hash.get('ekodi_token')" member.js
+          grep -Fq 'verifyOtp({token_hash:tokenHash' member.js
+          grep -Fq 'history.replaceState' member.js
           grep -Fq '/me?site=' member.js
           grep -Fq "site:SITE,tenant:TENANT,role:'member'" member.js
           grep -Fq '/store">내 가게 관리' member/index.html
