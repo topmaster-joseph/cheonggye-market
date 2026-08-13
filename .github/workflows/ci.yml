@@ -36,19 +36,24 @@ jobs:
             echo 'Unsafe client portal rendering/token behavior detected'
             exit 1
           fi
-      - name: Verify Google-first member access contract
+      - name: Verify EKODI central member access contract
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq 'Google 계정으로 로그인' member/index.html
+          grep -Fq 'EKODI 통합인증센터' member/index.html
           grep -Fq 'id="googleLogin"' member/index.html
           grep -Fq 'id="accessCard"' member/index.html
           grep -Fq '/member-auth.css' member/index.html
           grep -Fq "const SITE='cgma'" member.js
+          grep -Fq 'https://auth.ekodi.kr/?site=' member.js
           grep -Fq 'functions/v1/access-api' member.js
           grep -Fq '/me?site=' member.js
           grep -Fq "site:SITE,tenant:TENANT,role:'member'" member.js
           grep -Fq '/store">내 가게 관리' member/index.html
+          if grep -Fq 'signInWithOtp' member.js || grep -Fq 'signInWithOAuth' member.js; then
+            echo 'Direct Supabase authentication detected in CGMA member flow'
+            exit 1
+          fi
           if grep -Fq '/store-admin">내 가게' member/index.html; then
             echo 'Legacy long store-admin link detected'
             exit 1
