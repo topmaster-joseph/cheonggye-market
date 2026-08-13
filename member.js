@@ -11,10 +11,10 @@ const TENANT='cheonggye';
 const SITE='cgma';
 const AUTH_REDIRECT='https://cgma.ekodi.kr/member';
 const AUTH_HUB=`https://auth.ekodi.kr/?site=${encodeURIComponent(SITE)}&return_to=${encodeURIComponent(AUTH_REDIRECT)}`;
-const sb=createClient(SUPABASE_URL,PUBLISHABLE_KEY,{auth:{flowType:'implicit',detectSessionInUrl:true,persistSession:true}});
+const sb=createClient(SUPABASE_URL,PUBLISHABLE_KEY,{auth:{detectSessionInUrl:true,persistSession:true}});
 
 const $=id=>document.getElementById(id);
-const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[m]));
 let stores=[];let selectedStore=null;let activeApprovedStore=null;
 
 function show(id,on=true){const el=$(id);if(el)el.classList.toggle('hide',!on)}
@@ -23,6 +23,23 @@ function hideStatus(id){const el=$(id);if(el)el.classList.add('hide')}
 function setStage(stage){document.querySelectorAll('.progress-item').forEach(item=>{const n=Number(item.dataset.stage);item.classList.toggle('active',n===stage);item.classList.toggle('done',n<stage);item.setAttribute('aria-current',n===stage?'step':'false')});const label={1:'통합 로그인',2:'권한·가게 확인',3:'승인 확인',4:'AI 연결'};const current=$('progressCurrent');if(current)current.textContent=`현재 ${stage}단계 · ${label[stage]}`;}
 async function session(){const {data}=await sb.auth.getSession();return data.session}
 async function api(base,path,options={}){const s=await session();if(!s)throw new Error('login_required');const headers={apikey:PUBLISHABLE_KEY,Authorization:`Bearer ${s.access_token}`,...(options.headers||{})};if(options.body&&!headers['content-type'])headers['content-type']='application/json';const r=await fetch(`${base}${path}`,{...options,headers,cache:'no-store'});const text=await r.text();let data={};try{data=text?JSON.parse(text):{}}catch{data={raw:text}}if(!r.ok){const e=new Error(data.error||`http_${r.status}`);e.data=data;e.status=r.status;throw e}return data;}
+
+async function consumeCentralHandoff(){
+  const hash=new URLSearchParams(location.hash.replace(/^#/,''));
+  const tokenHash=hash.get('ekodi_token');
+  if(!tokenHash)return false;
+  const type=hash.get('ekodi_type')||'email';
+  history.replaceState({},document.title,location.pathname+location.search);
+  try{
+    const {error}=await sb.auth.verifyOtp({token_hash:tokenHash,type});
+    if(error)throw error;
+    return true;
+  }catch(e){
+    console.error('EKODI central handoff',e);
+    status('loginStatus','통합인증 연결이 만료되었거나 이미 사용되었습니다. 다시 로그인해 주세요.','error');
+    return false;
+  }
+}
 
 function openAuthHub(){
   status('loginStatus','EKODI 통합인증센터로 이동합니다.');
@@ -67,5 +84,6 @@ $('claimStore').onclick=async()=>{if(!selectedStore)return;const displayName=$('
 $('activateService').onclick=async()=>{if(!activeApprovedStore)return status('serviceStatus','승인된 점포를 먼저 선택해 주세요.','warn');$('activateService').disabled=true;try{status('serviceStatus','검증 완료 공개 점포정보를 안전하게 연결하고 있습니다.');const d=await api(ONBOARDING,'/activate',{method:'POST',body:JSON.stringify({source_store_id:activeApprovedStore,target_tenant:'ekodibiz',copy_public_menu:$('copyMenu').checked,consent:true})});try{await api(KNOWLEDGE,'/bootstrap',{method:'POST',body:JSON.stringify({store_id:d.target.store_id})})}catch{}const grant=d.link?.grant_project_id?' 지원사업 실증점으로 자동 연결되어 이후 AI 사용량·비용도 사업별로 기록됩니다.':'';status('serviceStatus',`마케팅AI 서비스 연결이 완료되었습니다. 기본 점포정보도 AI 지식으로 준비했습니다.${grant}`)}catch(e){status('serviceStatus',e.message==='merchant_access_required'?'점포 승인 권한을 확인해 주세요.':'서비스 연결을 완료하지 못했습니다.','error')}finally{$('activateService').disabled=false}};
 
 setStage(1);
+await consumeCentralHandoff();
 const {data:{session:initial}}=await sb.auth.getSession();if(initial)await signedInUI(initial);else await signedOutUI();
 sb.auth.onAuthStateChange(async(event,s)=>{if(event==='SIGNED_IN'&&s)await signedInUI(s);if(event==='SIGNED_OUT')await signedOutUI()});
