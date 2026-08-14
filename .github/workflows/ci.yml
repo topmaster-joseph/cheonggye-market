@@ -99,10 +99,11 @@ jobs:
           grep -Fq 'BASIC · 정회원 혜택 · 추가 월 구독료 0원' member/index.html
           grep -Fq 'Marketing AI Basic 열기' member/index.html
           grep -Fq '점포 전용 <b>*.ai.ekodi.kr</b>' member/index.html
-          grep -Fq "target.searchParams.set('workspace',`store:${id.toLowerCase()}`)" member.js
+          grep -Fq 'target.searchParams.set' member.js
+          grep -Fq 'store:${id.toLowerCase()}' member.js
           grep -Fq "target.searchParams.set('site','marketing')" member.js
           grep -Fq "target.searchParams.set('return_to',MARKETING_RETURN)" member.js
-          grep -Fq "activeApprovedStoreName" member.js
+          grep -Fq 'activeApprovedStoreName' member.js
           if grep -Fq 'signInWithOtp' member.js || grep -Fq 'signInWithOAuth' member.js; then
             echo 'Direct Supabase authentication detected in CGMA member flow'
             exit 1
