@@ -11,7 +11,7 @@ export async function onRequest(context) {
   }
 
   if (isRoot && isCgmaAiHost) {
-    const target = new URL('/ai', url.origin);
+    const target = new URL('/market-ai', url.origin);
     target.search = url.search;
     return Response.redirect(target.toString(), 302);
   }
