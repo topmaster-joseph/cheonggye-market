@@ -21,6 +21,7 @@ jobs:
         run: |
           node --check client.js
           node --check member.js
+          node --check central-auth-bridge.js
           node --check functions/_middleware.js
       - name: Verify isolated customer authorization with central identity
         shell: bash
@@ -44,6 +45,23 @@ jobs:
           fi
           if grep -Eq 'innerHTML|insertAdjacentHTML|Math\.random' client.js; then
             echo 'Unsafe client portal rendering/token behavior detected'
+            exit 1
+          fi
+      - name: Verify public homepage Google central login
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'data-central-auth' index.html
+          grep -Fq 'data-site="cgma"' index.html
+          grep -Fq 'Google 로그인' index.html
+          grep -Fq 'Google로 계속하기' index.html
+          grep -Fq 'https://auth.ekodi.kr/?site=cgma' index.html
+          grep -Fq 'central-auth-bridge.js' index.html
+          grep -Fq "const site=button?.dataset.site||'cgma'" central-auth-bridge.js
+          grep -Fq "hash.get('ekodi_token')" central-auth-bridge.js
+          grep -Fq 'verifyOtp({token_hash:tokenHash' central-auth-bridge.js
+          if grep -Fq 'data-provider="google"' index.html; then
+            echo 'Legacy direct Google OAuth button detected on public homepage'
             exit 1
           fi
       - name: Verify EKODI central member access contract

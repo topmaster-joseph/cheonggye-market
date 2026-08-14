@@ -21,7 +21,7 @@
     </a>
     <button class="menu-btn" aria-expanded="false" aria-controls="nav" aria-label="메뉴 열기"><span></span><span></span></button>
     <nav id="nav" aria-label="주요 메뉴">
-      <a href="#about">상인회 소개</a><a href="#market-map">상권지도</a><a href="#registered-market">골목형상점가</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a><a href="/ai">청계상권 AI</a><a id="adminNav" href="admin.html" hidden>관리자</a><a class="nav-cta" href="#join">가입하기</a>
+      <a href="#about">상인회 소개</a><a href="#market-map">상권지도</a><a href="#registered-market">골목형상점가</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a><a href="/ai">청계상권 AI</a><a id="adminNav" href="admin.html" hidden>관리자</a><a class="nav-cta" data-central-auth data-site="cgma" data-return-to="https://cgma.ekodi.kr/" href="#login">Google 로그인</a><a class="nav-cta" href="#join">가입하기</a>
     </nav>
   </header>
 
@@ -147,11 +147,9 @@
 
     <section class="section member-login" id="login">
       <div class="section-kicker">MEMBER LOGIN <span>07</span></div>
-      <div class="login-layout"><div><h2>회원 전용 소통을<br>간편하게 시작하세요.</h2><p>Google, 휴대전화, 카카오 계정으로 로그인할 수 있도록 통합 인증 기반을 연결했습니다.</p></div><div class="login-panel">
-        <button class="login-provider google" data-provider="google"><span>G</span> Google로 계속하기</button>
-        <button class="login-provider phone" data-provider="phone"><span>☎</span> 휴대전화로 계속하기</button>
-        <button class="login-provider kakao" data-provider="kakao"><span>●</span> 카카오로 계속하기</button>
-        <p id="authMessage" class="auth-message">처음 로그인하면 준회원으로 접수되며, 상인회 확인 후 정회원 권한이 부여됩니다.</p>
+      <div class="login-layout"><div><h2>회원 전용 소통을<br>Google로 시작하세요.</h2><p>Google 계정으로 EKODI 통합인증센터에 로그인한 뒤 청계면상인회 회원 기능을 이용할 수 있습니다.</p></div><div class="login-panel">
+        <a class="login-provider google" href="https://auth.ekodi.kr/?site=cgma&amp;return_to=https%3A%2F%2Fcgma.ekodi.kr%2F"><span>G</span> Google로 계속하기</a>
+        <p id="authMessage" data-central-auth-status class="auth-message">처음 로그인하면 준회원으로 접수되며, 상인회 확인 후 정회원 권한이 부여됩니다.</p>
       </div></div>
     </section>
 
@@ -188,5 +186,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="script.js?v=20260729-news-live"></script>
+  <script type="module" src="central-auth-bridge.js?v=20260815-google-login"></script>
 </body>
 </html>
