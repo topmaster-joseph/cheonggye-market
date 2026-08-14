@@ -52,7 +52,7 @@ jobs:
         run: |
           set -euo pipefail
           grep -Fq "url.hostname.toLowerCase() === 'cgma.ai.ekodi.kr'" functions/_middleware.js
-          grep -Fq "new URL('/ai', url.origin)" functions/_middleware.js
+          grep -Fq "new URL('/market-ai', url.origin)" functions/_middleware.js
       - name: Verify public homepage Google central login
         shell: bash
         run: |
