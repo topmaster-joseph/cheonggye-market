@@ -3,33 +3,33 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="청계면상인회 정회원 EKODI 통합인증 및 점포 연결" />
+  <meta name="description" content="청계면상인회 Google 무료 로그인 및 정회원 신청" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>정회원 내 가게 | 청계면상인회</title>
-  <link rel="stylesheet" href="/member.css?v=20260813" />
+  <title>회원 계정 · 정회원 신청 | 청계면상인회</title>
+  <link rel="stylesheet" href="/member.css?v=20260815" />
   <link rel="stylesheet" href="/member-auth.css?v=20260813" />
 </head>
 <body>
-  <header class="top"><a class="brand" href="/ai">← 청계상권 AI</a><span class="subtle">정회원 · 내 가게</span></header>
+  <header class="top"><a class="brand" href="/">← 청계면상인회</a><span class="subtle">무료회원 · 정회원 신청</span></header>
   <main class="wrap">
     <section class="hero compact-hero">
-      <div><span>MEMBER STORE</span><h1>한 계정으로<br>내 가게까지.</h1></div>
-      <p class="lead">EKODI 통합인증센터에서 Google 계정으로 본인을 확인합니다. 사전 등록된 이메일은 즉시 정회원 권한을 확인하고, 미등록 계정은 로그인 뒤 인증 신청으로 연결합니다.</p>
+      <div><span>MEMBER ACCOUNT</span><h1>먼저 가볍게,<br>필요할 때 정회원으로.</h1></div>
+      <p class="lead">처음에는 Google 계정만 확인해 무료회원으로 시작합니다. 상인회 정회원으로 신청할 때에만 상가·사업자 등 심사에 필요한 추가정보를 입력합니다.</p>
     </section>
 
-    <section class="progress-shell" aria-label="정회원 이용 단계">
-      <div class="progress-meta"><b>정회원 이용 단계</b><span id="progressCurrent" class="subtle">현재 1단계 · 통합 로그인</span></div>
+    <section class="progress-shell" aria-label="회원 이용 단계">
+      <div class="progress-meta"><b>회원 이용 단계</b><span id="progressCurrent" class="subtle">현재 1단계 · Google 무료 로그인</span></div>
       <div class="progress-track">
-        <div class="progress-item active" data-stage="1"><b>1</b><span>통합 로그인</span></div>
-        <div class="progress-item" data-stage="2"><b>2</b><span>권한·가게 확인</span></div>
+        <div class="progress-item active" data-stage="1"><b>1</b><span>무료 로그인</span></div>
+        <div class="progress-item" data-stage="2"><b>2</b><span>정회원 신청</span></div>
         <div class="progress-item" data-stage="3"><b>3</b><span>승인 확인</span></div>
-        <div class="progress-item" data-stage="4"><b>4</b><span>AI 연결</span></div>
+        <div class="progress-item" data-stage="4"><b>4</b><span>가게·AI 연결</span></div>
       </div>
     </section>
 
     <section class="card compact-card" id="loginCard">
-      <div class="step"><b>1</b><div><h2>EKODI 통합인증센터</h2><p class="subtle">모든 EKODI 서비스에서 같은 인증계정을 사용합니다.</p></div></div>
-      <button id="googleLogin" class="google-login" type="button"><span class="google-mark" aria-hidden="true">G</span><span id="googleLoginText">통합인증센터로 계속</span></button>
+      <div class="step"><b>1</b><div><h2>Google 무료 로그인</h2><p class="subtle">EKODI 통합인증센터에서 Google 계정만 확인합니다. 이 단계에서는 상가정보를 요구하지 않습니다.</p></div></div>
+      <button id="googleLogin" class="google-login" type="button"><span class="google-mark" aria-hidden="true">G</span><span id="googleLoginText">Google로 무료 로그인</span></button>
       <div id="loginStatus" class="status hide"></div>
       <details class="fallback-login" hidden aria-hidden="true">
         <summary>이메일 보조 인증</summary>
@@ -43,21 +43,40 @@
     </section>
 
     <section class="account-strip hide" id="accountCard">
-      <div><span class="kicker">EKODI IDENTITY VERIFIED</span><strong id="accountEmail">로그인됨</strong></div>
+      <div><span class="kicker">FREE MEMBER · GOOGLE VERIFIED</span><strong id="accountEmail">로그인됨</strong></div>
       <button id="logout" class="secondary small-btn">로그아웃</button>
     </section>
 
     <section class="card compact-card hide" id="accessCard">
-      <div class="step"><b>2</b><div><h2>정회원 권한 확인</h2><p class="subtle" id="accessCopy">이 인증 이메일은 아직 청계면상인회 정회원 계정에 연결되어 있지 않습니다.</p></div></div>
-      <div class="status warn"><b id="accessEmail">계정 확인 중</b><br>사전등록 여부가 확인되지 않으면 상인회 검수센터로 인증 신청을 보냅니다.</div>
-      <label for="accessNote">확인 메모 <span class="subtle">선택</span></label>
-      <textarea id="accessNote" placeholder="예: 자담치킨 목포대점 대표/담당자입니다."></textarea>
-      <div class="primary-action"><button id="requestAccess" type="button">정회원 인증 신청</button></div>
+      <div class="step"><b>2</b><div><h2>정회원 신청</h2><p class="subtle" id="accessCopy">무료 로그인은 완료되었습니다. 정회원 심사에 필요한 정보만 추가로 입력해 주세요.</p></div></div>
+      <div class="status"><b id="accessEmail">Google 계정 확인 중</b><br>Google 이메일은 자동으로 연결되므로 다시 입력할 필요가 없습니다.</div>
+
+      <div class="identity-grid">
+        <div><label for="applicantName">신청자 성명 *</label><input id="applicantName" autocomplete="name" placeholder="성명" /></div>
+        <div><label for="applicantPhone">연락처 *</label><input id="applicantPhone" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" /></div>
+      </div>
+      <div class="identity-grid">
+        <div><label for="storeNameApply">운영 상가명 *</label><input id="storeNameApply" placeholder="상호명" /></div>
+        <div><label for="businessType">업종 *</label><input id="businessType" placeholder="예: 음식점, 카페, 소매업" /></div>
+      </div>
+      <label for="storeAddressApply">상가 주소 *</label>
+      <input id="storeAddressApply" autocomplete="street-address" placeholder="무안군 청계면 이하 주소" />
+      <div class="identity-grid">
+        <div><label for="businessNumber">사업자등록번호 *</label><input id="businessNumber" inputmode="numeric" placeholder="000-00-00000" /><p class="microcopy">정회원 심사용이며 공개정보로 사용하지 않습니다.</p></div>
+        <div><label for="applicantRole">신청자 역할 *</label><select id="applicantRole"><option value="">선택</option><option value="대표자/점주">대표자/점주</option><option value="책임자">책임자</option><option value="마케팅담당자">마케팅담당자</option><option value="본사담당자">본사담당자</option><option value="회계담당자">회계담당자</option></select></div>
+      </div>
+      <div class="identity-grid">
+        <div><label for="openedAt">영업 시작일 <span class="subtle">선택</span></label><input id="openedAt" type="date" /></div>
+        <div><label for="accessNote">건의·확인 메모 <span class="subtle">선택</span></label><input id="accessNote" placeholder="상인회에 전달할 내용" /></div>
+      </div>
+      <p class="microcopy">기존 설문에 있던 보증금·월세, 대표자 성별, 점포 평수는 정회원 심사에 꼭 필요한 정보가 아니므로 기본 신청에서는 받지 않습니다.</p>
+      <label class="checkline"><input id="membershipConsent" type="checkbox" /> 정회원 가입 심사를 위한 위 정보의 수집·이용과 상인회 정관·회비 안내를 확인했습니다.</label>
+      <div class="primary-action"><button id="requestAccess" type="button">정회원 신청 제출</button></div>
       <div id="accessRequestStatus" class="status hide"></div>
     </section>
 
     <section class="card compact-card hide" id="storeCard">
-      <div class="step"><b>2</b><div><h2>내 가게 선택</h2><p class="subtle">기존 청계 상가에서 점포를 선택하고 최초 한 번만 운영자 확인을 신청합니다.</p></div></div>
+      <div class="step"><b>4</b><div><h2>내 가게 연결</h2><p class="subtle">정회원 승인이 확인되면 기존 청계 상가에서 내 점포를 연결합니다.</p></div></div>
       <div class="identity-grid"><div><label for="displayName">이름</label><input id="displayName" autocomplete="name" placeholder="성명" /></div><div><label for="phone">연락처</label><input id="phone" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" /></div></div>
       <label for="storeSearch">내 가게 찾기</label><input class="store-search" id="storeSearch" type="search" placeholder="상호 또는 주소 검색" />
       <div id="storeList" class="store-list"></div>
@@ -80,6 +99,6 @@
     </section>
   </main>
   <footer class="footer">청계면상인회 · Powered by EKODIBIZ</footer>
-  <script type="module" src="/member.js?v=20260813-central-auth"></script>
+  <script type="module" src="/member.js?v=20260815-free-member-apply"></script>
 </body>
 </html>
