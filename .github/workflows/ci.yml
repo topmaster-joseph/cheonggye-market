@@ -58,7 +58,7 @@ jobs:
           grep -Fq 'https://auth.ekodi.kr/?site=cgma' index.html
           grep -Fq 'central-auth-bridge.js' index.html
           grep -Fq "const site=button?.dataset.site||'cgma'" central-auth-bridge.js
-          grep -Fq 'hash.get('\''ekodi_token'\'')' central-auth-bridge.js
+          grep -Fq "hash.get('ekodi_token')" central-auth-bridge.js
           grep -Fq 'verifyOtp({token_hash:tokenHash' central-auth-bridge.js
           if grep -Fq 'data-provider="google"' index.html; then
             echo 'Legacy direct Google OAuth button detected on public homepage'
