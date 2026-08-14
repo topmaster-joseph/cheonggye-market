@@ -95,11 +95,23 @@ jobs:
           grep -Fq '/me?site=' member.js
           grep -Fq "site:SITE,tenant:TENANT,role:'member'" member.js
           grep -Fq '/store">내 가게 관리' member/index.html
+          grep -Fq '정회원 Marketing AI' member/index.html
+          grep -Fq 'BASIC · 정회원 혜택 · 추가 월 구독료 0원' member/index.html
+          grep -Fq 'Marketing AI Basic 열기' member/index.html
+          grep -Fq '점포 전용 <b>*.ai.ekodi.kr</b>' member/index.html
+          grep -Fq "target.searchParams.set('workspace',`store:${id.toLowerCase()}`)" member.js
+          grep -Fq "target.searchParams.set('site','marketing')" member.js
+          grep -Fq "target.searchParams.set('return_to',MARKETING_RETURN)" member.js
+          grep -Fq "activeApprovedStoreName" member.js
           if grep -Fq 'signInWithOtp' member.js || grep -Fq 'signInWithOAuth' member.js; then
             echo 'Direct Supabase authentication detected in CGMA member flow'
             exit 1
           fi
           if grep -Fq '/store-admin">내 가게' member/index.html; then
             echo 'Legacy long store-admin link detected'
+            exit 1
+          fi
+          if grep -Fq "ONBOARDING" member.js || grep -Fq "target_tenant:'ekodibiz'" member.js || grep -Fq 'id="copyMenu"' member/index.html; then
+            echo 'Legacy one-off AI onboarding remains in CGMA member flow'
             exit 1
           fi
