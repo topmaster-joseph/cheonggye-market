@@ -58,6 +58,9 @@ jobs:
           grep -Fq 'https://auth.ekodi.kr/?site=cgma' index.html
           grep -Fq 'central-auth-bridge.js' index.html
           grep -Fq "const site=button?.dataset.site||'cgma'" central-auth-bridge.js
+          grep -Fq "const MEMBER_APPLY='https://cgma.ekodi.kr/member?apply=1'" central-auth-bridge.js
+          grep -Fq 'Google 로그인만으로 무료회원' central-auth-bridge.js
+          grep -Fq 'embedded.hidden=true' central-auth-bridge.js
           grep -Fq "hash.get('ekodi_token')" central-auth-bridge.js
           grep -Fq 'verifyOtp({token_hash:tokenHash' central-auth-bridge.js
           if grep -Fq 'data-provider="google"' index.html; then
@@ -68,13 +71,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq 'EKODI 통합인증센터' member/index.html
+          grep -Fq 'Google 무료 로그인' member/index.html
           grep -Fq 'id="googleLogin"' member/index.html
           grep -Fq 'id="accessCard"' member/index.html
+          grep -Fq 'id="businessNumber"' member/index.html
+          grep -Fq 'id="membershipConsent"' member/index.html
+          grep -Fq '정회원 신청 제출' member/index.html
           grep -Fq '/member-auth.css' member/index.html
           grep -Fq "const SITE='cgma'" member.js
           grep -Fq 'https://auth.ekodi.kr/?site=' member.js
           grep -Fq 'functions/v1/access-api' member.js
+          grep -Fq 'buildApplicationNote' member.js
+          grep -Fq 'businessNumber' member.js
           grep -Fq "hash.get('ekodi_token')" member.js
           grep -Fq 'verifyOtp({token_hash:tokenHash' member.js
           grep -Fq 'history.replaceState' member.js
