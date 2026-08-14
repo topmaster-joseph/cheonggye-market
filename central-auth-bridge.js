@@ -111,13 +111,6 @@ function updateJoinArea(s){
   }
 }
 
-if(button){
-  button.addEventListener('click',event=>{
-    event.preventDefault();
-    routeToAuth(authUrl,'EKODI 통합인증센터로 이동합니다.');
-  });
-}
-
 await consumeHandoff();
 const {data:{session}}=await sb.auth.getSession();
 updateJoinArea(session);
