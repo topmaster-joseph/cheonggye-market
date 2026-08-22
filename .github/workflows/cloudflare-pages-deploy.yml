@@ -21,6 +21,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Validate mobile fixed-header contract
+        run: |
+          set -euo pipefail
+          grep -Fq 'position:fixed!important' responsive.css
+          grep -Fq 'safe-area-inset-top' responsive.css
+          grep -Fq 'body:has(>.topbar),body:has(>.top)' responsive.css
+          grep -Fq 'data-ekodi-fixed-header' admin.html
+          grep -Fq 'position:fixed' admin.html
+          grep -Fq 'safe-area-inset-top' admin.html
+
       - name: Check Cloudflare deployment credentials
         id: credentials
         env:
@@ -49,7 +59,7 @@ jobs:
           command: pages deploy . --project-name=cheonggye-market --branch=main --commit-hash=${{ github.sha }} --commit-dirty=true
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Verify deployed routes
+      - name: Verify deployed routes and mobile fixed headers
         if: steps.credentials.outputs.configured == 'true'
         env:
           BASE_URL: https://cheonggye-market.pages.dev
@@ -61,7 +71,7 @@ jobs:
             local path="$2"
             local expected="$3"
             for attempt in $(seq 1 20); do
-              body="$(curl -fsSL --max-time 15 "${base}${path}" 2>/dev/null || true)"
+              body="$(curl -fsSL --max-time 15 "${base}${path}?release=${GITHUB_SHA}" 2>/dev/null || true)"
               if printf '%s' "$body" | grep -Fq "$expected"; then
                 echo "OK ${base}${path}"
                 return 0
@@ -71,8 +81,29 @@ jobs:
             echo "Deployment verification failed: ${base}${path}"
             return 1
           }
+          check_css() {
+            local base="$1"
+            for attempt in $(seq 1 20); do
+              body="$(curl -fsSL --max-time 15 "${base}/responsive.css?release=${GITHUB_SHA}" 2>/dev/null || true)"
+              if printf '%s' "$body" | grep -Fq 'position:fixed!important' \
+                && printf '%s' "$body" | grep -Fq 'body:has(>.topbar),body:has(>.top)' \
+                && printf '%s' "$body" | grep -Fq 'safe-area-inset-top'; then
+                echo "OK ${base}/responsive.css fixed-header contract"
+                return 0
+              fi
+              sleep 5
+            done
+            echo "Fixed-header CSS verification failed: ${base}/responsive.css"
+            return 1
+          }
           check_route "$BASE_URL" "/" "청계면상인회 | 오늘도 청계에서 만나요"
           check_route "$BASE_URL" "/ai" "청계상권 AI | 청계면상인회"
           check_route "$BASE_URL" "/member" "EKODI 통합인증센터"
           check_route "$BASE_URL" "/store" "내 가게 운영 | 청계상권 AI"
+          check_route "$BASE_URL" "/admin.html" "data-ekodi-fixed-header"
+          check_css "$BASE_URL"
           check_route "$CUSTOM_URL" "/member" "EKODI 통합인증센터"
+          check_route "$CUSTOM_URL" "/ai" "청계상권 AI | 청계면상인회"
+          check_route "$CUSTOM_URL" "/admin.html" "data-ekodi-fixed-header"
+          check_css "$CUSTOM_URL"
+          echo 'Cheonggye public, AI, member, store and admin surfaces verified with fixed mobile header contract.'
