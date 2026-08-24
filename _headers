@@ -1,11 +1,13 @@
 /*
   X-Content-Type-Options: nosniff
-  Referrer-Policy: strict-origin-when-cross-origin
+  Referrer-Policy: no-referrer
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   X-Frame-Options: SAMEORIGIN
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+  Cache-Control: private, no-store, max-age=0
 
 /styles.css
-  Cache-Control: public, max-age=86400
+  Cache-Control: private, no-store, max-age=0
 
 /script.js
-  Cache-Control: public, max-age=86400
+  Cache-Control: private, no-store, max-age=0
