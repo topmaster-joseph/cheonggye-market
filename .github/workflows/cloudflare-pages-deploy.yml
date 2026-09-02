@@ -105,7 +105,7 @@ jobs:
           check_route "$BASE_URL" "/store" "내 가게 운영 | 청계상권 AI"
           check_route "$BASE_URL" "/admin.html" "data-ekodi-fixed-header"
           check_route "$BASE_URL" "/api/resources" "items"
-          check_route "$BASE_URL" "/resource" "resource-detail.js"
+          check_route "$BASE_URL" "/resource/" "resource-detail.js"
           check_route "$BASE_URL" "/api/resources?id=support-plan" "총사업비는 1억원"
           check_route "$BASE_URL" "/api/resources?id=urban-brief-2024" "312억원"
           check_route "$BASE_URL" "/api/parking-petition" "count"

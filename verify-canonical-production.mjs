@@ -44,7 +44,7 @@ await fetchText('/cgma/member',{marker:'EKODI 통합인증센터',finalPath:'/cg
 await fetchText('/cgma/store',{marker:'내 가게 운영 | 청계상권 AI',finalPath:'/cgma/store-admin'});
 await fetchText('/cgma/admin',{marker:'ADMIN CONSOLE',finalPath:'/cgma/admin/'});
 await fetchText('/cgma/member-admin',{marker:'MEMBERSHIP REVIEW',finalPath:'/cgma/member-admin/'});
-await fetchText('/cgma/resource?id=bylaws',{marker:'resource-detail.js',finalPath:'/cgma/resource'});
+await fetchText('/cgma/resource?id=bylaws',{marker:'resource-detail.js',finalPath:'/cgma/resource/'});
 
 try{
   const resources=await fetch(`${BASE}/cgma/api/resources?proof=${Date.now()}`,{cache:'no-store'}),data=await resources.json();
