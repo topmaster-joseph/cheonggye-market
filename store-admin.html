@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex,nofollow"/><title>내 가게 운영 | 청계상권 AI</title><link rel="stylesheet" href="/store-admin.css?v=20260811-2"/></head>
+<html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex,nofollow"/><title>내 가게 운영 | 청계상권 AI</title><link rel="stylesheet" href="store-admin.css?v=20260811-2"/></head>
 <body>
-<header class="top"><a href="/member">← 정회원 · 내 가게</a><div class="row"><select id="storeSelect" class="store-select hide" aria-label="관리할 점포"></select><button id="refresh" class="ghost hide">새로고침</button><button id="logout" class="secondary hide">로그아웃</button></div></header>
+<header class="top"><a href="member">← 정회원 · 내 가게</a><div class="row"><select id="storeSelect" class="store-select hide" aria-label="관리할 점포"></select><button id="refresh" class="ghost hide">새로고침</button><button id="logout" class="secondary hide">로그아웃</button></div></header>
 <main class="wrap">
   <section class="hero"><span class="kicker">MY STORE</span><h1>내 가게 운영</h1><p class="muted">점포별 주문·메뉴·QR을 한 화면에서 관리합니다. 이 화면의 주문·결제정보는 상인회 전체 관리자가 아니라 점포 권한이 있는 사용자에게만 열립니다.</p></section>
-  <section id="loginCard" class="card login"><h2>EKODI 통합인증</h2><p class="muted">정회원 승인에 사용한 같은 Google 계정으로 통합인증센터에서 로그인하세요.</p><div class="row" style="margin-top:10px"><button id="centralLogin" data-central-auth data-site="cgma" data-return-to="https://cgma.ekodi.kr/store" type="button">통합인증센터로 계속</button></div><div id="loginStatus" data-central-auth-status class="status hide"></div><div hidden aria-hidden="true"><label for="email">이메일</label><input id="email" type="email"/><button id="sendLink" type="button">보조 인증</button></div></section>
+  <section id="loginCard" class="card login"><h2>EKODI 통합인증</h2><p class="muted">정회원 승인에 사용한 같은 Google 계정으로 통합인증센터에서 로그인하세요.</p><div class="row" style="margin-top:10px"><button id="centralLogin" data-central-auth data-site="cgma" type="button">통합인증센터로 계속</button></div><div id="loginStatus" data-central-auth-status class="status hide"></div><div hidden aria-hidden="true"><label for="email">이메일</label><input id="email" type="email"/><button id="sendLink" type="button">보조 인증</button></div></section>
   <div id="app" class="hide">
     <section class="card"><div class="section-title"><div><span class="kicker">STORE STATUS</span><h2 id="storeName">점포</h2></div><span id="orderBadge" class="badge">주문 OFF</span></div><p id="storeAddress" class="muted"></p><div class="stats"><div class="stat"><small>오늘 주문</small><strong id="todayOrders">0</strong></div><div class="stat"><small>결제완료</small><strong id="paidOrders">0</strong></div><div class="stat"><small>준비중</small><strong id="activeOrders">0</strong></div><div class="stat"><small>판매메뉴</small><strong id="menuCount">0</strong></div></div><div id="storeStatus" class="status" style="margin-top:12px"></div><div class="row" style="margin-top:12px"><button id="toggleOrdering">주문 켜기</button><a id="openOrder" class="button secondary hide" target="_blank" rel="noopener">주문 화면 열기</a></div><div id="qrBox" class="qrbox hide" style="margin-top:10px"></div></section>
 
@@ -18,4 +18,4 @@
   </div>
 </main>
 <footer class="footer">점포 운영자 전용 · Powered by Marketing AI Core</footer>
-<script type="module" src="/central-auth-bridge.js?v=20260813"></script><script type="module" src="/store-admin.js?v=20260813-central-auth"></script></body></html>
+<script type="module" src="central-auth-bridge.js?v=20260813"></script><script type="module" src="store-admin.js?v=20260813-central-auth"></script></body></html>

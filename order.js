@@ -1,6 +1,8 @@
 const CORE='https://renzehysxirjilvdxacv.supabase.co/functions/v1/core-api';
 const PAYMENT='https://renzehysxirjilvdxacv.supabase.co/functions/v1/payment-api';
 const TENANT='cheonggye';
+const route=value=>window.CGMA_ROUTE?.route(value)||value;
+const absolute=value=>window.CGMA_ROUTE?.absolute(value)||new URL(route(value),location.origin).toString();
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const won=n=>`${Number(n||0).toLocaleString('ko-KR')}원`;
@@ -55,8 +57,8 @@ $('payButton').onclick=async()=>{
 
     const tossPayments=TossPayments(prepared.client_key);
     const payment=tossPayments.payment({customerKey:TossPayments.ANONYMOUS});
-    const success=new URL('/payment-success',location.origin);success.searchParams.set('store',store.slug);
-    const fail=new URL('/payment-fail',location.origin);fail.searchParams.set('store',store.slug);
+    const success=new URL(absolute('/payment-success'));success.searchParams.set('store',store.slug);
+    const fail=new URL(absolute('/payment-fail'));fail.searchParams.set('store',store.slug);
     const items=selected();const orderName=items.length===1?items[0].name:`${items[0].name} 외 ${items.length-1}건`;
     await payment.requestPayment({
       method:'CARD',

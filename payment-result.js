@@ -1,8 +1,9 @@
 const PAYMENT='https://renzehysxirjilvdxacv.supabase.co/functions/v1/payment-api';
+const route=value=>window.CGMA_ROUTE?.route(value)||value;
 const params=new URLSearchParams(location.search);
 const store=params.get('store');
 const back=document.getElementById('backStore');
-if(store)back.href=`/order/${encodeURIComponent(store)}`;
+if(store)back.href=route(`/order/${encodeURIComponent(store)}`);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
 async function success(){

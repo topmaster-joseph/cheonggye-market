@@ -5,6 +5,8 @@ const PUBLISHABLE_KEY='sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_';
 const MEMBERSHIP=`${SUPABASE_URL}/functions/v1/membership-api`;
 const TENANT='cheonggye';
 const sb=createClient(SUPABASE_URL,PUBLISHABLE_KEY,{auth:{flowType:'pkce',detectSessionInUrl:true,persistSession:true}});
+const route=value=>window.CGMA_ROUTE?.route(value)||value;
+const absolute=value=>window.CGMA_ROUTE?.absolute(value)||new URL(route(value),location.origin).toString();
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function show(id,on=true){$(id).classList.toggle('hide',!on)}
@@ -28,7 +30,7 @@ async function loadPending(){
 
 async function signedInUI(s){show('loginCard',false);show('accountCard',true);$('accountEmail').textContent=s.user.email||'관리자 계정';await loadPending()}
 async function signedOutUI(){show('loginCard',true);show('accountCard',false);show('pendingCard',false)}
-$('sendLink').onclick=async()=>{const email=$('email').value.trim();if(!email)return;try{const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:`${location.origin}/member-admin`,shouldCreateUser:true}});if(error)throw error;const el=$('loginStatus');el.textContent='로그인 링크를 보냈습니다.';el.className='status'}catch{const el=$('loginStatus');el.textContent='로그인 링크를 보내지 못했습니다. 운영 도메인/Auth 설정을 확인해 주세요.';el.className='status error'}};
+$('sendLink').onclick=async()=>{const email=$('email').value.trim();if(!email)return;try{const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:absolute('/member-admin'),shouldCreateUser:true}});if(error)throw error;const el=$('loginStatus');el.textContent='로그인 링크를 보냈습니다.';el.className='status'}catch{const el=$('loginStatus');el.textContent='로그인 링크를 보내지 못했습니다. 운영 도메인/Auth 설정을 확인해 주세요.';el.className='status error'}};
 $('logout').onclick=async()=>{await sb.auth.signOut();await signedOutUI()};$('refresh').onclick=loadPending;
 const {data:{session:initial}}=await sb.auth.getSession();if(initial)await signedInUI(initial);else await signedOutUI();
 sb.auth.onAuthStateChange(async(event,s)=>{if(event==='SIGNED_IN'&&s)await signedInUI(s);if(event==='SIGNED_OUT')await signedOutUI()});

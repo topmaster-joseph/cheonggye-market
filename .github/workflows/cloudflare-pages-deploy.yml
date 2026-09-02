@@ -21,6 +21,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Validate canonical CGMA root contract
+        run: node verify-canonical.mjs
+
       - name: Validate mobile fixed-header contract
         run: |
           set -euo pipefail
@@ -63,7 +66,6 @@ jobs:
         if: steps.credentials.outputs.configured == 'true'
         env:
           BASE_URL: https://cheonggye-market.pages.dev
-          CUSTOM_URL: https://cgma.ekodi.kr
         run: |
           set -euo pipefail
           check_route() {
@@ -101,9 +103,6 @@ jobs:
           check_route "$BASE_URL" "/member" "EKODI 통합인증센터"
           check_route "$BASE_URL" "/store" "내 가게 운영 | 청계상권 AI"
           check_route "$BASE_URL" "/admin.html" "data-ekodi-fixed-header"
+          check_route "$BASE_URL" "/api/resources" "items"
           check_css "$BASE_URL"
-          check_route "$CUSTOM_URL" "/member" "EKODI 통합인증센터"
-          check_route "$CUSTOM_URL" "/ai" "청계상권 AI | 청계면상인회"
-          check_route "$CUSTOM_URL" "/admin.html" "data-ekodi-fixed-header"
-          check_css "$CUSTOM_URL"
           echo 'Cheonggye public, AI, member, store and admin surfaces verified with fixed mobile header contract.'
