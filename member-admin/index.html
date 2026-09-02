@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <base href="/">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>정회원 승인 | 청계면상인회</title>
+  <link rel="stylesheet" href="member.css?v=20260813" />
+</head>
+<body>
+  <header class="top"><a class="brand" href="ai">← 청계상권 AI</a><span class="subtle">회원 승인 관리</span></header>
+  <main class="wrap">
+    <section class="hero"><span>MEMBERSHIP REVIEW</span><h1>점포 확인 신청</h1><p class="lead">상인회 관리자 권한이 있는 계정만 신청 목록을 볼 수 있습니다. 고객·매출·점포 내부 AI 자료는 이 화면에 표시되지 않습니다.</p></section>
+    <section class="card" id="loginCard">
+      <h2>EKODI 통합인증</h2><p class="subtle">청계면상인회 관리자도 별도 비밀번호 없이 같은 Google 통합인증을 사용합니다.</p>
+      <div class="row" style="margin-top:10px"><button id="centralLogin" data-central-auth data-site="cgma" type="button">통합인증센터로 관리자 로그인</button></div><div id="loginStatus" data-central-auth-status class="status hide"></div>
+      <div hidden aria-hidden="true"><label for="email">이메일</label><input id="email" type="email"/><button id="sendLink" type="button">보조 인증</button></div>
+    </section>
+    <section class="card hide" id="accountCard"><div class="row" style="justify-content:space-between"><div><span class="kicker">TENANT ADMIN</span><h2 id="accountEmail">로그인됨</h2></div><div class="row"><button id="refresh" class="ghost">새로고침</button><button id="logout" class="secondary">로그아웃</button></div></div></section>
+    <section class="card hide" id="pendingCard"><div class="row" style="justify-content:space-between"><h2>승인 대기</h2><span id="count" class="badge">0건</span></div><div id="status" class="status">신청 목록을 확인합니다.</div><div id="pending" class="admin-grid"></div></section>
+  </main>
+  <footer class="footer">관리자 전용 · 권한은 Marketing AI Core에서 검증됩니다.</footer>
+  <script type="module" src="central-auth-bridge.js?v=20260813"></script>
+  <script type="module" src="member-admin.js?v=20260813-central-auth"></script>
+</body>
+</html>
