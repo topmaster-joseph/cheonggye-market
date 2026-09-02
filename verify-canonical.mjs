@@ -1,0 +1,22 @@
+import {readFile,readdir} from 'node:fs/promises';
+import {join} from 'node:path';
+import assert from 'node:assert/strict';
+const canonical='https://ekodi.kr/cgma';
+const pages=[['index.html','/cgma/'],['market-ai.html','/cgma/ai'],['member/index.html','/cgma/member/'],['store-admin.html','/cgma/store'],['admin.html','/cgma/admin'],['member-admin.html','/cgma/member-admin'],['order.html','/cgma/order/demo'],['payment-success.html','/cgma/payment-success'],['payment-fail.html','/cgma/payment-fail']];
+const external=/^(?:https?:|mailto:|tel:|data:|javascript:|#)/i;
+function rewritten(value,base){
+ if(external.test(value)||value.startsWith('//'))return null;
+ if(value.startsWith('/'))return value==='/cgma'||value.startsWith('/cgma/')?value:`/cgma${value}`;
+ return new URL(value,`https://ekodi.kr${base}`).pathname;
+}
+for(const[file,base]of pages){
+ const html=await readFile(file,'utf8');
+ for(const match of html.matchAll(/(?:href|src|action)="([^"]+)"/g)){
+  const path=rewritten(match[1],base);if(path)assert.ok(path==='/cgma'||path.startsWith('/cgma/'),`${file}: ${match[1]} escapes CGMA root as ${path}`);
+ }
+}
+const redirects=await readFile('_redirects','utf8');
+for(const route of ['/ai ','/member ','/store ','/admin ','/member-admin ','/order/* ','/payment-success ','/payment-fail '])assert.ok(redirects.includes(route),`missing route ${route.trim()}`);
+const adminGuard=await readFile('functions/_shared/cgma-admin.js','utf8');assert.match(adminGuard,/tenant=cheonggye/);assert.match(adminGuard,/tenant_admin_required/);
+const sitePath=await readFile('site-path.js','utf8');assert.match(sitePath,/prefix='\/cgma'/);
+console.log(`CGMA canonical contract OK: ${canonical}, ${pages.length} surfaces checked`);

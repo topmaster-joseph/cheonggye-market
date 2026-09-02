@@ -1,0 +1,20 @@
+.cgma-resources{background:#f7f2e8;border-top:1px solid rgba(20,63,53,.12);border-bottom:1px solid rgba(20,63,53,.12)}
+.cgma-resources .resource-head{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:2rem;align-items:end;margin-bottom:2.2rem}
+.cgma-resources .resource-head h2{font-family:"Gowun Batang",serif;font-size:clamp(2.2rem,5vw,4.4rem);line-height:1.05;margin:.4rem 0;color:#143f35}
+.cgma-resources .resource-head p{margin:0;color:#55645f;line-height:1.75;max-width:680px}
+.resource-featured{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;margin:0 0 1.6rem}
+.resource-featured a{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.15rem 1.25rem;background:#143f35;color:#fff;border-radius:18px;font-weight:800;box-shadow:0 10px 26px rgba(20,63,53,.12)}
+.resource-featured a span:last-child{font-size:1.35rem}
+.resource-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.resource-group{background:rgba(255,255,255,.78);border:1px solid rgba(20,63,53,.12);border-radius:22px;padding:1.2rem}
+.resource-group h3{margin:.1rem 0 1rem;font-size:1.05rem;color:#143f35;display:flex;align-items:center;justify-content:space-between}
+.resource-group h3 small{font-size:.7rem;letter-spacing:.08em;color:#84908b;font-weight:700}
+.resource-list{display:grid;gap:.55rem}
+.resource-link{display:grid;grid-template-columns:1fr auto;gap:.8rem;align-items:center;padding:.85rem .9rem;border-radius:14px;background:#fff;border:1px solid rgba(20,63,53,.08);transition:transform .18s ease,border-color .18s ease}
+.resource-link:hover{transform:translateY(-2px);border-color:rgba(20,63,53,.28)}
+.resource-link b{display:block;font-size:.95rem;color:#162b26}
+.resource-link small{display:block;margin-top:.3rem;color:#77827e;line-height:1.45}
+.resource-link .resource-arrow{font-weight:900;color:#ff6038}
+.resource-loading{grid-column:1/-1;padding:2.2rem;text-align:center;color:#71807a;background:rgba(255,255,255,.65);border-radius:20px}
+.resource-contact{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem}.resource-contact a{padding:.62rem .82rem;border-radius:999px;border:1px solid rgba(20,63,53,.18);background:#fff;color:#143f35;font-size:.86rem;font-weight:700}
+@media(max-width:760px){.cgma-resources .resource-head{grid-template-columns:1fr;gap:.7rem}.resource-featured,.resource-groups{grid-template-columns:1fr}.resource-featured a{border-radius:15px}.resource-group{border-radius:18px}}

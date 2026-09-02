@@ -6,32 +6,55 @@
   <title>관리자 | 청계면상인회</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="admin-resources.css?v=20260902-tenant-admin">
   <style>
-    body{background:#f5f0e5}.admin-shell{min-height:100vh;display:grid;grid-template-columns:250px 1fr}.admin-side{background:#143f35;color:#fff;padding:2rem}.admin-side a{display:block;margin-bottom:2.5rem}.admin-side nav button{display:block;width:100%;padding:.85rem 0;border:0;border-bottom:1px solid #416b61;background:transparent;color:#fff;text-align:left;font:inherit}.admin-main{padding:3rem 5vw}.admin-main h1{font-size:clamp(2.4rem,5vw,4rem);margin:.5rem 0}.admin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}.admin-card{background:#fff;padding:1.5rem;min-height:170px;border-top:4px solid #ff6038}.admin-card b{font-size:2rem}.access-state{padding:1rem;background:#fff;border-left:4px solid #d7f04a}.denied{max-width:640px;margin:12vh auto;background:#fff;padding:3rem;text-align:center}.denied a{display:inline-block;margin-top:1rem;padding:.8rem 1.3rem;border-radius:99px;background:#143f35;color:#fff}@media(max-width:800px){.admin-shell{display:block;padding-top:calc(70px + env(safe-area-inset-top,0px))}.admin-side{position:fixed;top:0;left:0;right:0;width:100%;height:calc(70px + env(safe-area-inset-top,0px));z-index:1200;padding:calc(14px + env(safe-area-inset-top,0px)) 1.2rem 10px;box-sizing:border-box;display:flex;align-items:center}.admin-side a{margin:0}.admin-side nav{display:none}.admin-grid{grid-template-columns:1fr}.admin-main{padding:2rem 1.2rem}}
+    body{background:#f5f0e5}.admin-shell{min-height:100vh;display:grid;grid-template-columns:250px 1fr}.admin-side{background:#143f35;color:#fff;padding:2rem}.admin-side>a{display:block;margin-bottom:2.5rem}.admin-side nav a{display:block;width:100%;padding:.85rem 0;border-bottom:1px solid #416b61;color:#fff;text-align:left}.admin-main{padding:3rem 5vw;min-width:0}.admin-main>h1{font-size:clamp(2.4rem,5vw,4rem);margin:.5rem 0}.admin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}.admin-card{background:#fff;padding:1.5rem;min-height:170px;border-top:4px solid #ff6038}.admin-card b{font-size:2rem}.access-state{padding:1rem;background:#fff;border-left:4px solid #d7f04a}.denied{max-width:640px;margin:12vh auto;background:#fff;padding:3rem;text-align:center}.denied a{display:inline-block;margin-top:1rem;padding:.8rem 1.3rem;border-radius:99px;background:#143f35;color:#fff}@media(max-width:800px){.admin-shell{display:block;padding-top:calc(70px + env(safe-area-inset-top,0px))}.admin-side{position:fixed;top:0;left:0;right:0;width:100%;height:calc(70px + env(safe-area-inset-top,0px));z-index:1200;padding:calc(14px + env(safe-area-inset-top,0px)) 1.2rem 10px;box-sizing:border-box;display:flex;align-items:center}.admin-side>a{margin:0}.admin-side nav{display:none}.admin-grid{grid-template-columns:1fr}.admin-main{padding:2rem 1.2rem}}
   </style>
 </head>
 <body>
-  <div id="adminLoading" class="denied"><h1>권한 확인 중</h1><p>로그인 정보와 관리자 등급을 안전하게 확인하고 있습니다.</p></div>
-  <div id="adminDenied" class="denied" hidden><h1>관리자 전용 페이지입니다</h1><p id="deniedMessage">관리자 또는 운영진 등급으로 로그인해야 볼 수 있습니다.</p><a href="index.html#login">로그인 화면으로</a></div>
+  <div id="adminLoading" class="denied"><h1>권한 확인 중</h1><p>EKODI 로그인과 청계면상인회 관리자 권한을 확인하고 있습니다.</p></div>
+  <div id="adminDenied" class="denied" hidden><h1>관리자 전용 페이지입니다</h1><p id="deniedMessage">로그인한 사용자 중 청계면상인회 관리자로 지정된 계정만 사용할 수 있습니다.</p><a href="/#login">로그인 화면으로</a></div>
   <div id="adminApp" class="admin-shell" hidden>
-    <aside class="admin-side" data-ekodi-fixed-header><a href="index.html"><b>청계면상인회</b><br><small>ADMIN CONSOLE</small></a><nav><button>대시보드</button><button>회원 등급 관리</button><button>상권소식 검토</button><button>행사·회의 관리</button></nav></aside>
-    <main class="admin-main"><span>MANAGEMENT</span><h1>관리자 대시보드</h1><p class="access-state" id="accessState"></p><section class="admin-grid"><article class="admin-card"><span>정회원</span><br><b>51</b><p>Google Drive 최신 명단 기준</p></article><article class="admin-card"><span>소식 수집</span><br><b>자동</b><p>상권·지역·대학 소식 30분 캐시</p></article><article class="admin-card"><span>온라인 회의</span><br><b>Jitsi</b><p>상인회 실시간 회의실 연결</p></article></section></main>
+    <aside class="admin-side" data-ekodi-fixed-header>
+      <a href="/"><b>청계면상인회</b><br><small>ADMIN CONSOLE</small></a>
+      <nav aria-label="관리 메뉴"><a href="#dashboard">대시보드</a><a href="#resourceManager">공식 자료실 관리</a><a href="/member-admin">회원 신청 관리</a><a href="/#news">공지·상권소식</a></nav>
+    </aside>
+    <main class="admin-main" id="dashboard">
+      <span>MANAGEMENT</span><h1>관리자 대시보드</h1><p class="access-state" id="accessState"></p>
+      <section class="admin-grid"><article class="admin-card"><span>정회원</span><br><b>51</b><p>공개 홈페이지 기준</p></article><article class="admin-card"><span>공식 자료</span><br><b id="resourceCount">연결</b><p>Littly 자료를 EKODI에서 직접 관리</p></article><article class="admin-card"><span>관리 권한</span><br><b>Tenant</b><p>청계면상인회 공간 관리자만 수정 가능</p></article></section>
+      <section class="admin-resource-panel" id="resourceManager" hidden>
+        <header class="admin-resource-head"><div><small>CGMA CONTENT</small><h2>공식 자료실 관리</h2><p>회원등록, 규약, 축제, 지원사업, 도시재생과 소통채널을 여기서 추가·수정·숨김·삭제합니다.</p></div><button class="admin-action" id="addResourceBtn" type="button">+ 새 자료</button></header>
+        <form class="admin-resource-form" id="resourceAdminForm" hidden>
+          <input type="hidden" name="id"><div class="wide"><b id="resourceFormTitle">새 자료 등록</b></div>
+          <label>분류<select name="section"><option value="essential">바로가기</option><option value="festival">골목축제</option><option value="support">상권 관련 지원사업</option><option value="revitalization">상권활성화 지원사업</option><option value="urban">도시재생 특화사업</option><option value="communication">소통채널</option></select></label>
+          <label>형식<select name="kind"><option value="link">링크</option><option value="video">영상</option></select></label>
+          <label class="wide">제목<input name="title" maxlength="160" required placeholder="예: 온라인 회원등록"></label>
+          <label class="wide">URL<input name="url" type="url" maxlength="1600" required placeholder="https://..."></label>
+          <label class="wide">설명<textarea name="note" maxlength="500" placeholder="짧은 설명"></textarea></label>
+          <label>정렬순서<input name="sort_order" type="number" value="100" min="0" max="9999"></label>
+          <div class="admin-resource-options"><label><input name="visible" type="checkbox" checked> 공개</label><label><input name="featured" type="checkbox"> 상단 추천</label></div>
+          <div class="admin-resource-actions wide"><button id="resourceCancel" type="button">취소</button><button type="submit">저장</button></div>
+        </form>
+        <p class="admin-resource-status" id="resourceAdminStatus" role="status"></p><div class="admin-resource-list" id="resourceAdminList"></div>
+      </section>
+    </main>
   </div>
+  <script src="site-path.js?v=20260902-root-path"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="admin-resources.js?v=20260902-tenant-admin"></script>
   <script>
     const client=window.supabase.createClient('https://renzehysxirjilvdxacv.supabase.co','sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_');
+    const route=value=>window.CGMA_ROUTE?.route(value)||value;
     (async()=>{
-      const {data}=await client.auth.getSession();
-      const token=data.session?.access_token;
-      if(!token)return deny('로그인 후 다시 시도해 주세요.');
+      const {data}=await client.auth.getSession(),session=data.session,token=session?.access_token;
+      if(!token)return deny('먼저 EKODI에 로그인해 주세요.');
       try{
-        const response=await fetch('/api/admin-session',{headers:{Authorization:`Bearer ${token}`}});
-        const result=await response.json();
-        if(!response.ok||!result.allowed)return deny('현재 회원 등급에는 관리자 페이지 열람 권한이 없습니다.');
-        document.querySelector('#adminLoading').hidden=true;
-        document.querySelector('#adminApp').hidden=false;
-        document.querySelector('#accessState').textContent=result.mode==='edit'?'최고관리자 · 조회 및 수정 가능':'운영진 · 조회 가능';
-      }catch{return deny('권한 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')}
+        const response=await fetch(route('/api/admin-session'),{headers:{Authorization:`Bearer ${token}`}}),result=await response.json();
+        if(!response.ok||!result.allowed)return deny('이 계정은 청계면상인회 관리자로 지정되어 있지 않습니다.');
+        document.querySelector('#adminLoading').hidden=true;document.querySelector('#adminApp').hidden=false;
+        document.querySelector('#accessState').textContent=`${result.email||'로그인 계정'} · 청계면상인회 관리자 · 조회 및 수정 가능`;
+        window.CGMA_RESOURCE_ADMIN?.start(session);
+      }catch(error){console.error(error);return deny('권한 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')}
     })();
     function deny(message){document.querySelector('#adminLoading').hidden=true;document.querySelector('#adminDenied').hidden=false;document.querySelector('#deniedMessage').textContent=message}
   </script>

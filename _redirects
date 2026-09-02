@@ -2,3 +2,9 @@
 /ai  /market-ai.html  200
 /store  /store-admin.html  200
 /order/*  /order.html  200
+
+/member  /member/index.html  200
+/admin  /admin.html  200
+/member-admin  /member-admin.html  200
+/payment-success  /payment-success.html  200
+/payment-fail  /payment-fail.html  200

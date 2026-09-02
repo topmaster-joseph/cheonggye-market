@@ -7,8 +7,10 @@ const sb=createClient(SUPABASE_URL,PUBLISHABLE_KEY,{auth:{detectSessionInUrl:tru
 const button=document.querySelector('[data-central-auth]');
 const statusEl=document.querySelector('[data-central-auth-status]');
 const site=button?.dataset.site||'cgma';
-const returnTo=button?.dataset.returnTo||location.href.split('#')[0];
-const MEMBER_APPLY='https://cgma.ekodi.kr/member?apply=1';
+const cgmaRoute=value=>window.CGMA_ROUTE?.route(value)||value;
+const cgmaAbsolute=value=>window.CGMA_ROUTE?.absolute(value)||new URL(cgmaRoute(value),location.origin).toString();
+const returnTo=cgmaAbsolute('/');
+const MEMBER_APPLY=cgmaAbsolute('/member?apply=1');
 const authUrl=`https://auth.ekodi.kr/?site=${encodeURIComponent(site)}&return_to=${encodeURIComponent(returnTo)}`;
 const memberAuthUrl=`https://auth.ekodi.kr/?site=${encodeURIComponent(site)}&return_to=${encodeURIComponent(MEMBER_APPLY)}`;
 
@@ -52,31 +54,31 @@ function updateJoinArea(s){
 
   if(loginButton){
     loginButton.textContent=signedIn?'내 계정':'Google 무료 로그인';
-    loginButton.href=signedIn?'/member':'#login';
+    loginButton.href=signedIn?cgmaRoute('/member'):'#login';
     loginButton.onclick=event=>{
       event.preventDefault();
-      if(signedIn)location.assign('/member');
+      if(signedIn)location.assign(cgmaRoute('/member'));
       else routeToAuth(authUrl,'Google 무료 로그인을 위해 EKODI 통합인증센터로 이동합니다.');
     };
   }
 
   if(loginPanel){
-    loginPanel.href=signedIn?'/member':authUrl;
+    loginPanel.href=signedIn?cgmaRoute('/member'):authUrl;
     loginPanel.innerHTML=`<span>G</span> ${signedIn?'내 계정으로 계속':'Google로 무료 로그인'}`;
     loginPanel.onclick=event=>{
       event.preventDefault();
-      if(signedIn)location.assign('/member');
+      if(signedIn)location.assign(cgmaRoute('/member'));
       else routeToAuth(authUrl,'Google 무료 로그인을 위해 EKODI 통합인증센터로 이동합니다.');
     };
   }
 
   joinLinks.forEach(link=>{
     link.textContent=signedIn?'정회원 신청':'가입하기';
-    link.href=signedIn?'/member?apply=1':'#login';
+    link.href=signedIn?cgmaRoute('/member?apply=1'):'#login';
     link.removeAttribute('target');
     link.onclick=event=>{
       event.preventDefault();
-      if(signedIn)location.assign('/member?apply=1');
+      if(signedIn)location.assign(cgmaRoute('/member?apply=1'));
       else routeToAuth(memberAuthUrl,'먼저 Google 무료 로그인을 진행합니다. 로그인 후 정회원 추가정보 입력 화면으로 이어집니다.');
     };
   });
@@ -97,7 +99,7 @@ function updateJoinArea(s){
     if(description)description.textContent='무료 로그인 단계에서는 Google 계정만 확인합니다. 정회원 신청 단계에서 필요한 추가정보를 입력해 주세요.';
     if(action){
       action.textContent=signedIn?'정회원 신청 화면 →':'Google 로그인 후 신청 →';
-      action.href=signedIn?'/member?apply=1':memberAuthUrl;
+      action.href=signedIn?cgmaRoute('/member?apply=1'):memberAuthUrl;
       action.removeAttribute('target');
     }
     if(embedded)embedded.hidden=true;

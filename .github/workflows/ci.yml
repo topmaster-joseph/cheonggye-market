@@ -23,6 +23,8 @@ jobs:
           node --check member.js
           node --check central-auth-bridge.js
           node --check functions/_middleware.js
+      - name: Verify canonical CGMA root contract
+        run: node verify-canonical.mjs
       - name: Verify isolated customer authorization with central identity
         shell: bash
         run: |
@@ -64,7 +66,7 @@ jobs:
           grep -Fq 'https://auth.ekodi.kr/?site=cgma' index.html
           grep -Fq 'central-auth-bridge.js' index.html
           grep -Fq "const site=button?.dataset.site||'cgma'" central-auth-bridge.js
-          grep -Fq "const MEMBER_APPLY='https://cgma.ekodi.kr/member?apply=1'" central-auth-bridge.js
+          grep -Fq "const MEMBER_APPLY=cgmaAbsolute('/member?apply=1')" central-auth-bridge.js
           grep -Fq 'Google 로그인만으로 무료회원' central-auth-bridge.js
           grep -Fq 'embedded.hidden=true' central-auth-bridge.js
           grep -Fq "hash.get('ekodi_token')" central-auth-bridge.js

@@ -21,19 +21,19 @@ jobs:
           set -euo pipefail
           fake='0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
           for attempt in $(seq 1 15); do
-            portal_code=$(curl -sS -L -o /tmp/client.html -w '%{http_code}' --connect-timeout 5 --max-time 15 'https://cgma.ekodi.kr/client/' || true)
-            script_code=$(curl -sS -L -o /tmp/client.js -w '%{http_code}' --connect-timeout 5 --max-time 15 'https://cgma.ekodi.kr/client.js' || true)
-            redirect_code=$(curl -sS --max-redirs 0 -D /tmp/invite-headers -o /dev/null -w '%{http_code}' --connect-timeout 5 --max-time 15 "https://cgma.ekodi.kr/?ekodi_invite=$fake" || true)
+            portal_code=$(curl -sS -L -o /tmp/client.html -w '%{http_code}' --connect-timeout 5 --max-time 15 'https://cheonggye-market.pages.dev/client/' || true)
+            script_code=$(curl -sS -L -o /tmp/client.js -w '%{http_code}' --connect-timeout 5 --max-time 15 'https://cheonggye-market.pages.dev/client.js' || true)
+            redirect_code=$(curl -sS --max-redirs 0 -D /tmp/invite-headers -o /dev/null -w '%{http_code}' --connect-timeout 5 --max-time 15 "https://cheonggye-market.pages.dev/?ekodi_invite=$fake" || true)
             echo "client=$portal_code script=$script_code invite_redirect=$redirect_code"
             if [ "$portal_code" = '200' ] \
               && [ "$script_code" = '200' ] \
               && grep -Fq 'EKODI 고객관리 | 청계면상인회' /tmp/client.html \
               && grep -Fq '/client.js' /tmp/client.html \
-              && grep -Fq '/api/customer/login' /tmp/client.js \
-              && grep -Fq '/api/customer/accept-invite' /tmp/client.js \
-              && grep -Fq "const TENANT = 'cgma'" /tmp/client.js \
+              && grep -Fq '/api/customer/federated-login' /tmp/client.js \
+              && grep -Fq '/api/customer/accept-central-invite' /tmp/client.js \
+              && grep -Fq "const TENANT='cgma'" /tmp/client.js \
               && { [ "$redirect_code" = '302' ] || [ "$redirect_code" = '307' ]; } \
-              && grep -Fiq "location: https://cgma.ekodi.kr/client/?ekodi_invite=$fake" /tmp/invite-headers; then
+              && grep -Fiq "location: https://cheonggye-market.pages.dev/client/?ekodi_invite=$fake" /tmp/invite-headers; then
               echo 'CGMA isolated customer portal verified in production.'
               exit 0
             fi
