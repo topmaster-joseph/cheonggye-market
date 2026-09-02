@@ -17,31 +17,38 @@
   <div id="adminApp" class="admin-shell" hidden>
     <aside class="admin-side" data-ekodi-fixed-header>
       <a href="/"><b>청계면상인회</b><br><small>ADMIN CONSOLE</small></a>
-      <nav aria-label="관리 메뉴"><a href="#dashboard">대시보드</a><a href="#resourceManager">공식 자료실 관리</a><a href="/member-admin">회원 신청 관리</a><a href="/#news">공지·상권소식</a></nav>
+      <nav aria-label="관리 메뉴"><a href="#dashboard">대시보드</a><a href="#resourceManager">공식 자료실 관리</a><a href="#petitionManager">주차장 동의접수</a><a href="/member-admin">회원 신청 관리</a><a href="/#news">공지·상권소식</a></nav>
     </aside>
     <main class="admin-main" id="dashboard">
       <span>MANAGEMENT</span><h1>관리자 대시보드</h1><p class="access-state" id="accessState"></p>
-      <section class="admin-grid"><article class="admin-card"><span>정회원</span><br><b>51</b><p>공개 홈페이지 기준</p></article><article class="admin-card"><span>공식 자료</span><br><b id="resourceCount">연결</b><p>Littly 자료를 EKODI에서 직접 관리</p></article><article class="admin-card"><span>관리 권한</span><br><b>Tenant</b><p>청계면상인회 공간 관리자만 수정 가능</p></article></section>
+      <section class="admin-grid"><article class="admin-card"><span>정회원</span><br><b>51</b><p>공개 홈페이지 기준</p></article><article class="admin-card"><span>공식 자료</span><br><b id="resourceCount">연결</b><p>홈페이지 안에서 직접 관리</p></article><article class="admin-card"><span>관리 권한</span><br><b>Tenant</b><p>청계면상인회 공간 관리자만 수정 가능</p></article></section>
       <section class="admin-resource-panel" id="resourceManager" hidden>
-        <header class="admin-resource-head"><div><small>CGMA CONTENT</small><h2>공식 자료실 관리</h2><p>회원등록, 규약, 축제, 지원사업, 도시재생과 소통채널을 여기서 추가·수정·숨김·삭제합니다.</p></div><button class="admin-action" id="addResourceBtn" type="button">+ 새 자료</button></header>
+        <header class="admin-resource-head"><div><small>CGMA CONTENT</small><h2>공식 자료실 관리</h2><p>홈페이지 자료실의 제목, 설명, 본문과 연결 원본을 여기서 관리합니다.</p></div><button class="admin-action" id="addResourceBtn" type="button">+ 새 자료</button></header>
         <form class="admin-resource-form" id="resourceAdminForm" hidden>
           <input type="hidden" name="id"><div class="wide"><b id="resourceFormTitle">새 자료 등록</b></div>
           <label>분류<select name="section"><option value="essential">바로가기</option><option value="festival">골목축제</option><option value="support">상권 관련 지원사업</option><option value="revitalization">상권활성화 지원사업</option><option value="urban">도시재생 특화사업</option><option value="communication">소통채널</option></select></label>
           <label>형식<select name="kind"><option value="link">링크</option><option value="video">영상</option></select></label>
           <label class="wide">제목<input name="title" maxlength="160" required placeholder="예: 온라인 회원등록"></label>
-          <label class="wide">URL<input name="url" type="url" maxlength="1600" required placeholder="https://..."></label>
+          <label class="wide">외부 공식 링크<input name="url" type="url" maxlength="1600" placeholder="공식 외부 페이지가 있을 때만 입력"><small>홈페이지 내부 자료는 비워 두고, 공식 기관·영상 등 외부 공개 링크가 필요한 경우에만 입력합니다.</small></label>
           <label class="wide">설명<textarea name="note" maxlength="500" placeholder="짧은 설명"></textarea></label>
+          <label class="wide">홈페이지 본문<textarea name="body" maxlength="20000" rows="14" placeholder="방문자에게 보여줄 내용을 입력하세요. #, ##, - 표기를 사용할 수 있습니다."></textarea></label>
           <label>정렬순서<input name="sort_order" type="number" value="100" min="0" max="9999"></label>
           <div class="admin-resource-options"><label><input name="visible" type="checkbox" checked> 공개</label><label><input name="featured" type="checkbox"> 상단 추천</label></div>
           <div class="admin-resource-actions wide"><button id="resourceCancel" type="button">취소</button><button type="submit">저장</button></div>
         </form>
         <p class="admin-resource-status" id="resourceAdminStatus" role="status"></p><div class="admin-resource-list" id="resourceAdminList"></div>
       </section>
+      <section class="admin-resource-panel" id="petitionManager" hidden>
+        <header class="admin-resource-head"><div><small>PUBLIC AGREEMENT</small><h2>공영주차장 동의 접수</h2><p>홈페이지에서 새로 접수된 동의 내역입니다. 공개 화면에는 개인정보를 표시하지 않습니다.</p></div><button class="admin-action" id="petitionRefresh" type="button">새로고침</button></header>
+        <div class="admin-grid"><article class="admin-card"><span>홈페이지 접수</span><br><b id="petitionCount">0</b><p>현재 저장된 동의 건수</p></article></div>
+        <p class="admin-resource-status" id="petitionAdminStatus" role="status"></p><div class="admin-resource-list" id="petitionAdminList"></div>
+      </section>
     </main>
   </div>
   <script src="site-path.js?v=20260902-root-path"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="admin-resources.js?v=20260902-tenant-admin"></script>
+  <script src="admin-petition.js?v=20260903-native"></script>
   <script>
     const client=window.supabase.createClient('https://renzehysxirjilvdxacv.supabase.co','sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_');
     const route=value=>window.CGMA_ROUTE?.route(value)||value;
@@ -54,6 +61,7 @@
         document.querySelector('#adminLoading').hidden=true;document.querySelector('#adminApp').hidden=false;
         document.querySelector('#accessState').textContent=`${result.email||'로그인 계정'} · 청계면상인회 관리자 · 조회 및 수정 가능`;
         window.CGMA_RESOURCE_ADMIN?.start(session);
+        window.CGMA_PETITION_ADMIN?.start(session);
       }catch(error){console.error(error);return deny('권한 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')}
     })();
     function deny(message){document.querySelector('#adminLoading').hidden=true;document.querySelector('#adminDenied').hidden=false;document.querySelector('#deniedMessage').textContent=message}

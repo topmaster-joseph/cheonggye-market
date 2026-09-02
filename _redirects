@@ -1,6 +1,7 @@
 /index.html  /  301
 /ai  /market-ai.html  200
 /store  /store-admin.html  200
+/resource  /resource.html  200
 /order/*  /order.html  200
 
 /member  /member/index.html  200
