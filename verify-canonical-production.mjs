@@ -40,7 +40,8 @@ if(root.response&&scriptSrc){
   const body=await js.text();
   report(js.status===200&&js.headers.get('x-ekodi-route')===EVIDENCE_ROUTE&&body.includes("prefix='/cgma'"),'root site-path resolution',`url=${jsUrl.pathname} status=${js.status}`);
 }else report(false,'root site-path resolution','missing src');
-await fetchText('/cgma/ai',{marker:'청계상권 Marketing AI | 청계면상인회',finalPath:'/cgma/market-ai'});
+report(root.text.includes('ai-menu-disabled')&&root.text.includes('현재 비활성화'),'Marketing AI menu paused');
+await fetchText('/cgma/ai',{marker:'청계상권 Marketing AI | 현재 비활성화',finalPath:'/cgma/market-ai'});
 await fetchText('/cgma/member',{marker:'EKODI 통합인증센터',finalPath:'/cgma/member/'});
 await fetchText('/cgma/store',{marker:'내 가게 운영 | 청계상권 AI',finalPath:'/cgma/store-admin'});
 await fetchText('/cgma/admin',{marker:'ADMIN CONSOLE',finalPath:'/cgma/admin/'});
