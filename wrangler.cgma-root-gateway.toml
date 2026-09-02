@@ -1,0 +1,8 @@
+name = "cgma-root-gateway"
+main = "cgma-root-gateway.js"
+compatibility_date = "2026-08-15"
+workers_dev = false
+
+routes = [
+  { pattern = "ekodi.kr/cgma*", zone_name = "ekodi.kr" }
+]
