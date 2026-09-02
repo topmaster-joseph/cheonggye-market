@@ -12,6 +12,11 @@ assert.match(rewritten, /src="\/cgma\/app\.js"/);
 assert.match(rewritten, /href="https:\/\/example\.com"/);
 assert.match(rewritten, /rel="canonical" href="https:\/\/ekodi\.kr\/cgma"/);
 
+const rootRedirect = await gateway.fetch(new Request('https://ekodi.kr/cgma?x=1'));
+assert.equal(rootRedirect.status, 308);
+assert.equal(rootRedirect.headers.get('location'), 'https://ekodi.kr/cgma/?x=1');
+assert.equal(rootRedirect.headers.get('x-ekodi-route'), 'cgma-root-gateway');
+
 const originalFetch = globalThis.fetch;
 let fetchedUrl = '';
 globalThis.fetch = async request => {

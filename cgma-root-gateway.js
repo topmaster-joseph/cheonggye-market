@@ -67,6 +67,11 @@ export default {
   async fetch(request) {
     const url = new URL(request.url);
     if (!isCgmaPath(url.pathname)) return new Response('Not Found', { status: 404 });
+    if (url.pathname === PREFIX) {
+      const canonical = new URL(`${PREFIX}/`, CANONICAL_ORIGIN);
+      canonical.search = url.search;
+      return new Response(null, { status: 308, headers: { Location: canonical.toString(), 'X-EKODI-Route': 'cgma-root-gateway', 'X-EKODI-CGMA-Upstream': 'cheonggye-market-pages' } });
+    }
 
     const response = await fetch(upstreamRequest(request));
     const headers = gatewayHeaders(response);
