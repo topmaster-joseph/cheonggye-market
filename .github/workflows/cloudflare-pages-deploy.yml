@@ -73,7 +73,8 @@ jobs:
             local path="$2"
             local expected="$3"
             for attempt in $(seq 1 20); do
-              body="$(curl -fsSL --max-time 15 "${base}${path}?release=${GITHUB_SHA}" 2>/dev/null || true)"
+              sep="?"; [[ "$path" == *"?"* ]] && sep="&"
+              body="$(curl -fsSL --max-time 15 "${base}${path}${sep}release=${GITHUB_SHA}" 2>/dev/null || true)"
               if printf '%s' "$body" | grep -Fq "$expected"; then
                 echo "OK ${base}${path}"
                 return 0
@@ -104,5 +105,11 @@ jobs:
           check_route "$BASE_URL" "/store" "내 가게 운영 | 청계상권 AI"
           check_route "$BASE_URL" "/admin.html" "data-ekodi-fixed-header"
           check_route "$BASE_URL" "/api/resources" "items"
+          check_route "$BASE_URL" "/resource" "resource-detail.js"
+          check_route "$BASE_URL" "/api/resources?id=support-plan" "총사업비는 1억원"
+          check_route "$BASE_URL" "/api/resources?id=urban-brief-2024" "312억원"
+          check_route "$BASE_URL" "/api/parking-petition" "count"
+          public_resources="$(curl -fsSL --max-time 15 "${BASE_URL}/api/resources?release=${GITHUB_SHA}")"
+          if printf '%s' "$public_resources" | grep -Eq 'drive\.google\.com|docs\.google\.com'; then echo 'Public Google source URL leaked'; exit 1; fi
           check_css "$BASE_URL"
           echo 'Cheonggye public, AI, member, store and admin surfaces verified with fixed mobile header contract.'
