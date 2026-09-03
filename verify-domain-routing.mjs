@@ -9,7 +9,7 @@ async function invoke(url) {
 
 let result = await invoke('https://cgma.ekodi.kr/member?apply=1');
 assert.equal(result.response.status, 308);
-assert.equal(result.response.headers.get('location'), 'https://ekodi.kr/cgma/member?apply=1');
+assert.equal(result.response.headers.get('location'), 'https://cgma.or.kr/member?apply=1');
 result = await invoke('https://www.cgma.or.kr/admin?view=1');
 assert.equal(result.response.status, 308);
 assert.equal(result.response.headers.get('location'), 'https://cgma.or.kr/admin?view=1');

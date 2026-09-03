@@ -1,7 +1,7 @@
 const LEGACY_PUBLIC_HOST = 'cgma.ekodi.kr';
 const PUBLIC_HOST = 'cgma.or.kr';
 const PUBLIC_WWW_HOST = 'www.cgma.or.kr';
-const PLATFORM_BASE = 'https://ekodi.kr/cgma';
+const PLATFORM_BASE = 'https://cgma.or.kr';
 
 function platformRedirect(url) {
   const suffix = url.pathname === '/' || url.pathname === '/index.html' ? '/' : url.pathname;
