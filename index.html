@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260729-news-live" />
-  <link rel="stylesheet" href="live.css?v=20260729-embedded" />
+  <link rel="stylesheet" href="live.css?v=20260903-two-column" />
   <link rel="stylesheet" href="resources.css?v=20260902-root-hub" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3ynVZVpFJUC7BZJ6q16ZK8CksNnM=" crossorigin="" />
   <link rel="stylesheet" href="cgma-sections.css?v=20260903-readability" />
@@ -23,7 +23,7 @@
     </a>
     <button class="menu-btn" aria-expanded="false" aria-controls="nav" aria-label="메뉴 열기"><span></span><span></span></button>
     <nav id="nav" aria-label="주요 메뉴">
-      <a href="#about">상인회 소개</a><a href="#market-map">상권지도</a><a href="#resources">자료실</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a><span class="ai-menu-disabled" aria-disabled="true" title="현재 비활성화">청계상권 AI <small>준비중</small></span><a id="adminNav" href="admin" hidden>관리자</a><a class="nav-cta" data-central-auth data-site="cgma" href="#login">Google 로그인</a><a class="nav-cta" href="#join">가입하기</a>
+      <a href="#about">상인회 소개</a><a href="#market-map">상권지도</a><a href="#resources">자료실</a><a href="#news">상권소식</a><a href="#live">온라인</a><label class="language-picker" aria-label="언어 선택"><span aria-hidden="true">🌐</span><select id="siteLanguage"><option value="ko">한국어</option><option value="en">English</option><option value="zh-CN">中文</option><option value="ja">日本語</option><option value="vi">Tiếng Việt</option><option value="ne">नेपाली</option></select></label><a class="nav-cta" data-central-auth data-site="cgma" href="#login">Google 로그인</a><a class="nav-cta" href="#join">가입하기</a>
     </nav>
   </header>
 
@@ -134,8 +134,8 @@
       <div class="section-kicker light">ONLINE LIVE <span>06</span></div>
       <div class="live-head"><div><span class="live-dot" aria-hidden="true"></span><span>실시간 소통 공간</span><h2>어디서든 함께하는<br>청계면상인회</h2></div><p>정기회의와 온라인 설명회는 Jitsi에서,<br>현장 행사와 상권 소식은 유튜브 라이브에서 만나보세요.</p></div>
       <div class="live-grid embedded-live-grid">
-        <article class="live-card meeting-room embedded-live-card"><div class="live-card-copy"><span class="live-label">JITSI MEET</span><h3>온라인 실시간 회의실</h3><p>홈페이지 안에서 이름을 입력하고 회의에 참여할 수 있습니다. 카메라와 마이크는 참여자가 직접 허용할 때만 사용됩니다.</p></div><div class="live-frame-wrap jitsi-frame"><iframe src="https://meet.jit.si/CheonggyeMerchantsAssociation4989#config.prejoinPageEnabled=true" title="청계면상인회 Jitsi 온라인 회의실" allow="camera; microphone; fullscreen; display-capture; autoplay" loading="lazy"></iframe></div><a class="live-fallback" href="https://meet.jit.si/CheonggyeMerchantsAssociation4989" target="_blank" rel="noopener noreferrer">회의실을 새 창에서 열기 ↗</a></article>
-        <article class="live-card youtube-live embedded-live-card"><div class="live-card-copy"><span class="live-label">YOUTUBE LIVE</span><h3>실시간 라이브 방송</h3><p>청계면상인회 공식 유튜브 채널의 현재 라이브 방송을 홈페이지에서 바로 시청하세요. 방송이 없을 때는 대기 화면이 표시됩니다.</p></div><div class="live-frame-wrap youtube-frame"><iframe src="https://www.youtube-nocookie.com/embed/live_stream?channel=UC001JT9opxVBt9z_h-tsx8A&amp;autoplay=0" title="청계면상인회 유튜브 실시간 라이브" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe></div><a class="live-fallback" href="https://www.youtube.com/@cgma4989/live" target="_blank" rel="noopener noreferrer">유튜브에서 보기 ↗</a></article>
+        <article class="live-card meeting-room embedded-live-card"><div class="live-card-copy"><span class="live-label">JITSI MEET</span><h3>실시간 화상</h3><p>홈페이지 안에서 이름을 입력하고 회의에 참여할 수 있습니다. 카메라와 마이크는 참여자가 직접 허용할 때만 사용됩니다.</p></div><div class="live-frame-wrap jitsi-frame"><iframe src="https://meet.jit.si/CheonggyeMerchantsAssociation4989#config.prejoinPageEnabled=true" title="청계면상인회 Jitsi 온라인 회의실" allow="camera; microphone; fullscreen; display-capture; autoplay" loading="lazy"></iframe></div><a class="live-fallback" href="https://meet.jit.si/CheonggyeMerchantsAssociation4989" target="_blank" rel="noopener noreferrer">회의실을 새 창에서 열기 ↗</a></article>
+        <article class="live-card youtube-live embedded-live-card"><div class="live-card-copy"><span class="live-label">YOUTUBE LIVE</span><h3>유튜브 방송</h3><p>청계면상인회 공식 유튜브 채널의 현재 라이브 방송을 홈페이지에서 바로 시청하세요. 방송이 없을 때는 대기 화면이 표시됩니다.</p></div><div class="live-frame-wrap youtube-frame"><iframe src="https://www.youtube-nocookie.com/embed/live_stream?channel=UC001JT9opxVBt9z_h-tsx8A&amp;autoplay=0" title="청계면상인회 유튜브 실시간 라이브" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe></div><a class="live-fallback" href="https://www.youtube.com/@cgma4989/live" target="_blank" rel="noopener noreferrer">유튜브에서 보기 ↗</a></article>
       </div>    </section>
 
     <section class="section member-login" id="login">
@@ -174,7 +174,8 @@
       <p class="form-privacy-note">제출된 개인정보는 회원가입 심사와 연락 목적으로만 사용됩니다.</p>
     </section>
   </main>
-  <footer><a class="brand footer-brand" href="#top"><span class="brand-mark">청</span><span><b>청계면상인회</b><small>CHEONGGYE MERCHANTS</small></span></a><div><p>전라남도 무안군 청계면 · 목포대 후문 상권</p><p><a href="mailto:cgma4989@gmail.com">cgma4989@gmail.com</a><br><a href="tel:01035018542">010-3501-8542</a></p></div><div class="footer-links"><a href="#about">상인회 소개</a><a href="#market-map">상권지도</a><a href="#registered-market">골목형상점가</a><a href="#news">상권소식</a><a href="#live">온라인 LIVE</a></div><p class="copyright">© 2026 청계면상인회. All rights reserved.</p></footer>
+  <footer data-ekodi-footer></footer>
+  <script src="site-shell.js?v=20260903-common-shell"></script>
   <script src="site-path.js?v=20260902-root-path"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
