@@ -31,7 +31,9 @@ jobs:
           node --check functions/api/parking-petition.js
           node --check functions/_shared/resource-default-content.js
       - name: Verify canonical CGMA root contract
-        run: node verify-canonical.mjs
+        run: |
+          node verify-canonical.mjs
+          node verify-domain-routing.mjs
       - name: Verify native official resource hub
         shell: bash
         run: |
