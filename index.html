@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="live.css?v=20260729-embedded" />
   <link rel="stylesheet" href="resources.css?v=20260902-root-hub" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3ynVZVpFJUC7BZJ6q16ZK8CksNnM=" crossorigin="" />
+  <link rel="stylesheet" href="cgma-sections.css?v=20260903-readability" />
 </head>
 <body>
   <a class="skip" href="#main">본문 바로가기</a>
@@ -45,31 +46,19 @@
     </section>
 
     <section class="ticker" aria-label="청계면상인회 주요 가치"><div>같이 사는 골목 <i>✦</i> 대학과 동네의 만남 <i>✦</i> 매일 발견하는 로컬 <i>✦</i> 같이 사는 골목 <i>✦</i> 대학과 동네의 만남 <i>✦</i></div></section>
-    <section class="section cgma-resources" id="resources">
-      <div class="section-kicker">QUICK ACCESS & ARCHIVE <span>+</span></div>
-      <div class="resource-head">
-        <div><h2>필요한 자료를<br><em>한곳에서</em></h2></div>
-        <p>회원등록, 정관·규약, 지원사업, 도시재생, 공청회와 지역 소통창구를 청계면상인회 홈페이지 안에서 편하게 확인할 수 있습니다.</p>
-      </div>
-      <div class="resource-featured" id="resourceFeatured" hidden></div>
-      <div class="resource-groups" id="resourceGroups"><div class="resource-loading">청계면상인회 자료를 불러오는 중입니다.</div></div>
-      <div class="resource-contact" aria-label="청계면상인회 연락 채널">
-        <a href="tel:01035018542">☎ 010-3501-8542</a><a href="https://open.kakao.com/o/giaTjc0g" target="_blank" rel="noopener">Kakao</a><a href="https://www.instagram.com/chunggye_stores" target="_blank" rel="noopener">Instagram</a><a href="https://blog.naver.com/chunggye_stores" target="_blank" rel="noopener">Naver Blog</a><a href="mailto:cgma4989@gmail.com">Email</a>
-      </div>
-    </section>
-
     <section class="section about" id="about">
       <div class="section-kicker">ABOUT US <span>01</span></div>
       <div class="about-grid">
         <h2>혼자보다 함께,<br>가게를 넘어 <em>동네로</em></h2>
         <div><p class="big-copy">청계면상인회는 상인의 목소리를 모으고, 지역과 대학을 잇고, 다시 찾고 싶은 골목을 만듭니다.</p><p>정기 모임과 골목축제, 상생스탬프, 콘텐츠 공모전까지. 작은 가게들이 서로의 이웃이 되어 청계만의 내일을 차근차근 만들고 있습니다.</p><a class="text-link" href="#join">상인회와 함께하기 <span>→</span></a></div>
       </div>
-      <div class="officer-board" aria-label="청계면상인회 임원진">
-        <div class="officer-board-head"><span>ASSOCIATION LEADERS</span><h3>청계면상인회 임원진</h3></div>
+      <div class="officer-board" aria-label="청계면상인회 임원 및 운영진">
+        <div class="officer-board-head"><span>ASSOCIATION LEADERS</span><h3>청계면상인회 임원·운영진</h3></div>
         <div class="officer-grid">
           <article><span class="officer-role">회장</span><h4>정찬균</h4><p>자담치킨&피자마루</p></article>
           <article><span class="officer-role">국장</span><h4>정미진</h4><p>평화자기</p></article>
           <article><span class="officer-role">총무</span><h4>김정윤</h4><p>하늘애한의원</p></article>
+          <article><span class="officer-role">기획팀장</span><h4>정경탁</h4><p>양파창고</p></article>
         </div>
       </div>      <div class="value-cards"><article><span>01</span><div class="value-icon">⌂</div><h3>상권을 잇다</h3><p>상인과 주민, 대학이 서로의 이웃이 되는 연결을 만듭니다.</p></article><article><span>02</span><div class="value-icon">✦</div><h3>매력을 알리다</h3><p>청계의 가게와 사람, 골목의 이야기를 더 넓게 전합니다.</p></article><article><span>03</span><div class="value-icon">↗</div><h3>함께 성장하다</h3><p>교육과 공동 프로젝트로 지속 가능한 상권을 가꿉니다.</p></article></div>
       <div class="about-program" id="program">
@@ -83,26 +72,17 @@
     </section>
 
     <section class="section market-map-section" id="market-map">
-      <div class="section-kicker">MARKET MAP & DIRECTORY <span>02</span></div>
-      <div class="map-heading"><div><h2>한눈에 만나는<br><em>상권지도</em></h2><p>왼쪽 지도에서 상가를 선택하면 오른쪽에서 회원 구분과 정보를 확인할 수 있습니다.</p></div><div class="map-legend"><span><i class="regular-dot"></i>정회원</span><span><i class="associate-dot"></i>준회원</span></div></div>
-      <div class="market-map-summary" aria-label="청계면 상권 현황"><div><small>표시 상가</small><strong id="summaryAll">-</strong></div><div><small>정회원</small><strong id="summaryRegular">-</strong></div><div><small>준회원</small><strong id="summaryAssociate">-</strong></div><div class="summary-area"><small>상권 중심</small><strong>목포대 후문 · 청계면</strong></div></div><div class="map-toolbar">
-        <label class="map-search"><span>⌕</span><input id="mapSearch" type="search" placeholder="상가명·업종 검색" aria-label="상가명 또는 업종 검색"></label>
-        <div class="member-filters" role="group" aria-label="회원 구분"><button class="active" data-member-filter="all">전체</button><button data-member-filter="regular">정회원</button><button data-member-filter="associate">준회원</button></div>
-        <div class="category-filters" role="group" aria-label="업종 선택"><button class="active" data-category-filter="all">전체업종</button><button data-category-filter="food">음식</button><button data-category-filter="cafe">카페</button><button data-category-filter="life">생활</button><button data-category-filter="culture">문화·서비스</button></div><span id="mapCount" class="map-count"></span>
-      </div>
-      <div class="map-layout">
-        <aside class="map-side-panel" aria-label="상가 검색 결과">
-          <div class="map-panel-head"><span>STORE DIRECTORY</span><h3>상가 찾기</h3><p>목록을 선택하면 지도와 상세정보가 함께 이동합니다.</p></div>
-          <div class="map-directory" id="mapDirectory" aria-label="지도에 표시된 상가 목록"></div>
-        </aside>
-        <div class="leaflet-map" id="marketMap" aria-label="OpenStreetMap 기반 청계면 실제 상권지도"></div>        <aside class="map-detail" id="mapDetail" aria-live="polite">
-          <span class="map-detail-tag">상가를 선택하세요</span><h3>청계 상권 둘러보기</h3><p>지도 위 표시를 누르면 정회원·준회원 구분과 상가 정보를 확인할 수 있습니다.</p>
-          <dl><div><dt>정회원</dt><dd>상호, 업종, 주소 등 자세한 정보</dd></div><div><dt>준회원</dt><dd>상호와 업종 중심의 간단한 정보</dd></div></dl>
-        </aside>
-      </div>
-      <p class="map-source-note">※ 정회원은 2026년 정회원 현황을 기준으로 표시합니다. 준회원은 공개 가능한 등록자료 기준입니다. 지도 마커는 상권 구조를 이해하기 위한 안내 위치이며, 정확한 방문 위치는 각 상가의 공식 등록주소 길찾기로 확인해 주세요.</p>
+      <div class="map-title-row"><div class="map-title-copy"><div class="section-kicker">MARKET MAP <span>02</span></div><h2>한눈에 보는 <em>상권지도</em></h2><p>지도와 목록에서 회원 구분과 업종 정보를 빠르게 확인하세요.</p></div><div class="market-map-summary" aria-label="청계면 상권 현황"><div><small>표시 상가</small><strong id="summaryAll">-</strong></div><div><small>정회원</small><strong id="summaryRegular">-</strong></div><div><small>준회원</small><strong id="summaryAssociate">-</strong></div><div class="summary-area"><small>상권 중심</small><strong>목포대 후문 · 청계면</strong></div></div></div>
+      <div class="map-workspace"><div class="map-toolbar"><label class="map-search"><span aria-hidden="true">⌕</span><input id="mapSearch" type="search" placeholder="상가명 또는 업종 검색" aria-label="상가명 또는 업종 검색"></label><div class="member-filters" role="group" aria-label="회원 구분"><button class="active" data-member-filter="all">전체</button><button data-member-filter="regular">정회원</button><button data-member-filter="associate">준회원</button></div><div class="category-filters" role="group" aria-label="업종 선택"><button class="active" data-category-filter="all">전체업종</button><button data-category-filter="food">음식</button><button data-category-filter="cafe">카페</button><button data-category-filter="life">생활</button><button data-category-filter="culture">문화·서비스</button></div><button class="map-list-toggle" id="mapListToggle" type="button" aria-pressed="false">목록 숨기기</button><span id="mapCount" class="map-count"></span></div>
+        <div class="map-layout" id="mapLayout"><aside class="map-side-panel" aria-label="상가 검색 결과"><div class="map-panel-head"><div><h3>상가 목록</h3><p>목록을 선택하면 지도와 상세정보가 함께 이동합니다.</p></div><strong id="mapDirectoryCount">-</strong></div><div class="map-directory" id="mapDirectory" aria-label="지도에 표시된 상가 목록"></div></aside><div class="leaflet-map" id="marketMap" aria-label="OpenStreetMap 기반 청계면 실제 상권지도"></div><aside class="map-detail" id="mapDetail" aria-live="polite"><span class="map-detail-tag">선택 상가 정보</span><h3>청계 상권 둘러보기</h3><p>목록이나 지도에서 상가를 선택하면 회원 구분과 기본 정보를 확인할 수 있습니다.</p></aside></div></div>
+      <details class="map-source-note"><summary>지도 표시 기준</summary><p>정회원은 2026년 정회원 현황, 준회원은 공개 가능한 등록자료를 기준으로 표시합니다. 마커는 상권 안내용이며 정확한 방문 위치는 등록주소 길찾기로 확인해 주세요.</p></details>
     </section>
 
+    <section class="section cgma-resources" id="resources">
+      <div class="resource-head"><div><div class="section-kicker">OFFICIAL ARCHIVE</div><h2>공식 자료실</h2><p>회원·운영, 지원사업, 도시재생, 축제·공청회, 소통채널을 필요한 만큼만 빠르게 찾아보세요.</p></div><label class="resource-search"><span aria-hidden="true">⌕</span><input id="resourceSearch" type="search" placeholder="자료명 검색" aria-label="자료명 검색"></label></div>
+      <div class="resource-filterbar" role="group" aria-label="자료 분류"><button class="active" data-resource-filter="all">전체</button><button data-resource-filter="member">회원·운영</button><button data-resource-filter="support">지원사업</button><button data-resource-filter="urban">도시재생</button><button data-resource-filter="media">축제·공청회</button><button data-resource-filter="communication">소통채널</button></div>
+      <div class="resource-featured" id="resourceFeatured" hidden></div><div class="resource-groups" id="resourceGroups"><div class="resource-loading">공식 자료를 불러오는 중입니다.</div></div><p class="resource-result" id="resourceResult" aria-live="polite"></p>
+    </section>
 
     <section class="section registered-market" id="registered-market">
       <div class="section-kicker">REGISTERED ALLEY MARKET <span>03</span></div>
@@ -198,8 +178,8 @@
   <script src="site-path.js?v=20260902-root-path"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="script.js?v=20260902-root-hub"></script>
-  <script src="resources.js?v=20260902-root-hub"></script>
+  <script src="script.js?v=20260903-readability"></script>
+  <script src="resources.js?v=20260903-readability"></script>
   <script type="module" src="central-auth-bridge.js?v=20260815-google-login"></script>
 </body>
 </html>

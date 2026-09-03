@@ -36,7 +36,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq '회원등록, 정관·규약, 지원사업, 도시재생, 공청회와 지역 소통창구' index.html
+          grep -Fq 'OFFICIAL ARCHIVE' index.html
+          grep -Fq 'id="resourceSearch"' index.html
+          grep -Fq 'id="mapListToggle"' index.html
+          grep -Fq 'cgma-sections.css?v=20260903-readability' index.html
           ! grep -Fq 'Littly' index.html
           grep -Fq 'resource-detail.js' resource/index.html
           grep -Fq 'resource?id=' resources.js

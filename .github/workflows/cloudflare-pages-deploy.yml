@@ -111,5 +111,7 @@ jobs:
           check_route "$BASE_URL" "/api/parking-petition" "count"
           public_resources="$(curl -fsSL --max-time 15 "${BASE_URL}/api/resources?release=${GITHUB_SHA}")"
           if printf '%s' "$public_resources" | grep -Eq 'drive\.google\.com|docs\.google\.com'; then echo 'Public Google source URL leaked'; exit 1; fi
+          check_route "$BASE_URL" "/" "OFFICIAL ARCHIVE"
+          check_route "$BASE_URL" "/cgma-sections.css" "CGMA map + archive readability redesign"
           check_css "$BASE_URL"
           echo 'Cheonggye public, AI, member, store and admin surfaces verified with fixed mobile header contract.'

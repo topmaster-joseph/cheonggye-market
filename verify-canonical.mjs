@@ -15,10 +15,12 @@ for(const[file,base]of pages){
   const path=rewritten(match[1],base);if(path)assert.ok(path==='/cgma'||path.startsWith('/cgma/'),`${file}: ${match[1]} escapes CGMA root as ${path}`);
  }
 }
-const home=await readFile('index.html','utf8');assert.match(home,/class="ai-menu-disabled"/);assert.match(home,/aria-disabled="true"/);assert.doesNotMatch(home,/href="ai">청계상권 AI/);
+const home=await readFile('index.html','utf8');assert.match(home,/class="ai-menu-disabled"/);assert.match(home,/aria-disabled="true"/);assert.doesNotMatch(home,/href="ai">청계상권 AI/);assert.match(home,/기획팀장/);assert.match(home,/정경탁/);assert.match(home,/양파창고/);
+assert.equal([...home.matchAll(/id="resources"/g)].length,1);assert.match(home,/id="mapListToggle"/);assert.match(home,/id="resourceSearch"/);assert.ok(home.includes('cgma-sections.css?v=20260903-readability'));
 const pausedAi=await readFile('market-ai.html','utf8');assert.match(pausedAi,/현재 비활성화/);assert.doesNotMatch(pausedAi,/market-ai.js/);
 const redirects=await readFile('_redirects','utf8');
 for(const route of ['/ai ','/member ','/store ','/admin ','/member-admin ','/order/* ','/payment-success ','/payment-fail '])assert.ok(redirects.includes(route),`missing route ${route.trim()}`);
 const adminGuard=await readFile('functions/_shared/cgma-admin.js','utf8');assert.match(adminGuard,/tenant=cheonggye/);assert.match(adminGuard,/tenant_admin_required/);
 const sitePath=await readFile('site-path.js','utf8');assert.match(sitePath,/prefix='\/cgma'/);
+const redesign=await readFile('cgma-sections.css','utf8');assert.match(redesign,/map-workspace\.list-hidden/);assert.match(redesign,/resource-filterbar/);const mapScript=await readFile('script.js','utf8');assert.match(mapScript,/mapDirectoryCount/);const archiveScript=await readFile('resources.js','utf8');assert.match(archiveScript,/data-resource-filter/);assert.match(archiveScript,/resourceSearch/);
 console.log(`CGMA canonical contract OK: ${canonical}, ${pages.length} surfaces checked`);
