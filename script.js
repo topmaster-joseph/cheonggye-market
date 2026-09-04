@@ -5,10 +5,10 @@ const shops=[
 const labels={food:'음식·외식',cafe:'카페·디저트',life:'생활·편의',culture:'문화·서비스'};
 const memberLabels={regular:'정회원',associate:'준회원'};
 const esc=(v='')=>String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-const marketMapElement=document.querySelector('#marketMap'),mapDetail=document.querySelector('#mapDetail'),mapDirectory=document.querySelector('#mapDirectory'),mapSearch=document.querySelector('#mapSearch'),mapCount=document.querySelector('#mapCount'),mapDirectoryCount=document.querySelector('#mapDirectoryCount'),mapListToggle=document.querySelector('#mapListToggle'),mapWorkspace=document.querySelector('.map-workspace');
+const marketMapElement=document.querySelector('#marketMap'),mapDetail=document.querySelector('#mapDetail'),mapDirectory=document.querySelector('#mapDirectory'),mapSearch=document.querySelector('#mapSearch'),mapCount=document.querySelector('#mapCount'),mapDirectoryCount=document.querySelector('#mapDirectoryCount');
 let memberFilter='all',categoryFilter='all',leafletMap,markerLayer;
 const markerByIndex=new Map();
-const categoryColors={food:'#ff6038',cafe:'#8a5cff',life:'#e2a719',culture:'#1f8065'};
+const FIXED_MAP_CENTER=[34.9127,126.4345],FIXED_MAP_ZOOM=15;
 function latLngFor(shop,index){
  const number=Number(shop.a.match(/(\d+)/)?.[1]||0),jitter=((index%7)-3)*0.000035;
  if(shop.a.includes('승달산길'))return [34.91325+Math.sin(number)*0.00034+jitter,126.4338+Math.min(number,55)*0.00015];
@@ -23,39 +23,38 @@ function selectedShops(){
  const q=(mapSearch?.value||'').trim().toLowerCase();
  return shops.map((s,i)=>({...s,i})).filter(s=>(memberFilter==='all'||s.m===memberFilter)&&(categoryFilter==='all'||s.c===categoryFilter)&&(!q||[s.n,s.t,s.a,labels[s.c]].join(' ').toLowerCase().includes(q)));
 }
-function markerStyle(shop,active=false){
- return {radius:active?11:shop.m==='regular'?8:6,color:shop.m==='regular'?'#ff6038':'#66747d',weight:active?5:3,fillColor:categoryColors[shop.c],fillOpacity:shop.m==='regular'?.96:.72,opacity:1};
+function markerIcon(shop,index,active=false){
+ if(!window.L)return null;
+ const state=shop.m==='regular'?'regular':'associate';
+ return L.divIcon({className:'market-pin-shell',html:`<span class="market-pin ${state}${active?' active':''}">${index+1}</span>`,iconSize:[30,38],iconAnchor:[15,35],tooltipAnchor:[0,-28]});
 }
-function selectShop(index,move=true){
+function selectShop(index){
  const s=shops[index];if(!s||!mapDetail)return;
- markerByIndex.forEach((marker,i)=>marker.setStyle(markerStyle(shops[i],i===index)).setRadius(i===index?11:shops[i].m==='regular'?8:6));
- document.querySelectorAll('.directory-item').forEach(p=>p.classList.toggle('active',Number(p.dataset.index)===index));
- const fullAddress=`전남 무안군 청계면 ${s.a}`,destination=encodeURIComponent(fullAddress),shopPhone='';
- const directions=`<div class="map-directions"><a href="https://map.naver.com/p/search/${destination}" target="_blank" rel="noopener noreferrer">네이버지도 ↗</a><a href="https://map.kakao.com/link/search/${destination}" target="_blank" rel="noopener noreferrer">카카오맵 길찾기 ↗</a></div>`;
- const detail=s.m==='regular'
- ?`<span class="member-status regular">정회원</span><span class="map-detail-tag">${labels[s.c]}</span><h3>${esc(s.n)}</h3><p>청계면상인회 정회원 상가입니다. 지역 안에서 소비가 순환할 수 있도록 방문과 추천으로 함께해 주세요.</p><dl><div><dt>업종</dt><dd>${esc(s.t)}</dd></div><div><dt>주소</dt><dd>${esc(fullAddress)}</dd></div>${shopPhone?`<div><dt>대표전화</dt><dd><a href="tel:0614538295">${shopPhone}</a></dd></div>`:``}<div><dt>회원 안내</dt><dd>공동사업과 상권 활성화 활동에 참여하는 정회원입니다.</dd></div></dl><div class="location-caution">지도 마커는 상권 안내용입니다. 정확한 위치는 등록주소 길찾기를 이용해 주세요.</div>${directions}`
- :`<span class="member-status associate">준회원</span><span class="map-detail-tag">${labels[s.c]}</span><h3>${esc(s.n)}</h3><p>준회원 상가로 등록된 기본 안내입니다.</p><dl><div><dt>업종</dt><dd>${esc(s.t)}</dd></div><div><dt>위치</dt><dd>${esc(fullAddress)}</dd></div>${shopPhone?`<div><dt>대표전화</dt><dd><a href="tel:0614538295">${shopPhone}</a></dd></div>`:``}</dl><small>준회원 정보는 상호와 업종 중심으로 간단히 제공합니다.</small><div class="location-caution">지도 마커는 상권 안내용입니다. 정확한 위치는 등록주소 길찾기를 이용해 주세요.</div>${directions}`;
- mapDetail.innerHTML=detail;
- if(move&&leafletMap){leafletMap.panTo(latLngFor(s,index),{animate:true});markerByIndex.get(index)?.openTooltip();}
+ markerByIndex.forEach((marker,i)=>marker.setIcon(markerIcon(shops[i],i,i===index)));
+ document.querySelectorAll('.directory-item').forEach(p=>p.classList.toggle('active',Number(p.dataset.index)===index)); const fullAddress=s.a==='청계면 상권'?'전남 무안군 청계면 상권':`전남 무안군 청계면 ${s.a}`,destination=encodeURIComponent(fullAddress);
+ const directions=`<div class="map-directions"><a href="https://map.naver.com/p/search/${destination}" target="_blank" rel="noopener noreferrer">네이버지도 ↗</a><a href="https://map.kakao.com/link/search/${destination}" target="_blank" rel="noopener noreferrer">길찾기 ↗</a></div>`;
+ const memberClass=s.m==='regular'?'regular':'associate',memberLabel=memberLabels[s.m];
+ mapDetail.innerHTML=`<div class="map-detail-heading"><span class="map-detail-number">${index+1}</span><div><h3>${esc(s.n)}</h3><div class="map-detail-badges"><span class="member-status ${memberClass}">${memberLabel}</span><span class="map-detail-tag">${labels[s.c]}</span></div></div></div><p>${s.m==='regular'?'청계면상인회 정회원 상가입니다. 지역 안에서 소비가 순환할 수 있도록 방문과 관심으로 함께해 주세요.':'준회원 상가로 등록된 기본 안내입니다.'}</p><dl><div><dt>업종</dt><dd>${esc(s.t)}</dd></div><div><dt>주소</dt><dd>${esc(fullAddress)}</dd></div><div><dt>회원 구분</dt><dd>${memberLabel}</dd></div></dl><div class="location-caution">지도는 상권 안내용 고정 화면입니다. 정확한 방문 위치는 등록주소 길찾기를 이용해 주세요.</div>${directions}`;
 }
 function renderMap(){
- const list=selectedShops();const allCount=shops.length,regularCount=shops.filter(s=>s.m==='regular').length,associateCount=shops.filter(s=>s.m==='associate').length;document.querySelector('#summaryAll')&&(document.querySelector('#summaryAll').textContent=allCount+'개');document.querySelector('#summaryRegular')&&(document.querySelector('#summaryRegular').textContent=regularCount+'개');document.querySelector('#summaryAssociate')&&(document.querySelector('#summaryAssociate').textContent=associateCount+'개');if(mapCount)mapCount.textContent=`표시 상가 ${list.length}곳`;if(mapDirectoryCount)mapDirectoryCount.textContent=`${list.length}곳`;
+ const list=selectedShops(),allCount=shops.length,regularCount=shops.filter(s=>s.m==='regular').length,associateCount=shops.filter(s=>s.m==='associate').length;
+ document.querySelector('#summaryAll')&&(document.querySelector('#summaryAll').textContent=allCount+'개');document.querySelector('#summaryRegular')&&(document.querySelector('#summaryRegular').textContent=regularCount+'개');document.querySelector('#summaryAssociate')&&(document.querySelector('#summaryAssociate').textContent=associateCount+'개');if(mapCount)mapCount.textContent=`표시 상가 ${list.length}곳`;if(mapDirectoryCount)mapDirectoryCount.textContent=`총 ${list.length}개`;
  markerLayer?.clearLayers();markerByIndex.clear();
- const bounds=[];
- list.forEach(s=>{const pos=latLngFor(s,s.i),marker=L.circleMarker(pos,markerStyle(s)).bindTooltip(`<b>${esc(s.n)}</b><br>${memberLabels[s.m]}`,{direction:'top',offset:[0,-8]});marker.on('click',()=>selectShop(s.i,false));marker.addTo(markerLayer);markerByIndex.set(s.i,marker);bounds.push(pos);});
+ if(window.L&&markerLayer)list.forEach(s=>{const pos=latLngFor(s,s.i),marker=L.marker(pos,{icon:markerIcon(s,s.i,false),keyboard:true,title:s.n}).bindTooltip(`<b>${esc(s.n)}</b><br>${memberLabels[s.m]}`,{direction:'top',offset:[0,-8]});marker.on('click',()=>selectShop(s.i));marker.addTo(markerLayer);markerByIndex.set(s.i,marker);});
  if(mapDirectory)mapDirectory.innerHTML=list.map(s=>`<button class="directory-item ${s.m}" data-index="${s.i}" type="button"><span class="directory-number">${s.i+1}</span><span><b>${esc(s.n)}</b><small>${esc(s.t)} · ${memberLabels[s.m]}</small></span></button>`).join('');
  document.querySelectorAll('.directory-item[data-index]').forEach(el=>el.addEventListener('click',()=>selectShop(Number(el.dataset.index))));
- if(bounds.length&&leafletMap)leafletMap.fitBounds(bounds,{padding:[28,28],maxZoom:16});
- if(list.length)selectShop(list[0].i,false);else if(mapDetail)mapDetail.innerHTML='<span class="map-detail-tag">검색 결과 없음</span><h3>조건을 바꿔보세요</h3><p>상가명이나 업종을 다시 입력해 주세요.</p>';
+ if(list.length)selectShop(list[0].i);else if(mapDetail)mapDetail.innerHTML='<span class="map-detail-tag">검색 결과 없음</span><h3>조건을 바꿔보세요</h3><p>상가명이나 업종을 다시 입력해 주세요.</p>';
 }
 if(marketMapElement&&window.L){
- leafletMap=L.map(marketMapElement,{scrollWheelZoom:false,zoomControl:true}).setView([34.9127,126.4345],15);
- L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(leafletMap);
- L.polygon([[34.90925,126.42865],[34.91035,126.42735],[34.9138,126.42815],[34.91685,126.43155],[34.9164,126.4389],[34.91315,126.44255],[34.91035,126.4399]],{color:'#f15a32',weight:3,dashArray:'9 7',fillColor:'#ff8a4c',fillOpacity:.13,interactive:false}).addTo(leafletMap);L.control.scale({imperial:false,position:'bottomleft'}).addTo(leafletMap);const zoneLabel=L.control({position:'topleft'});zoneLabel.onAdd=()=>{const el=L.DomUtil.create('div','market-zone-label');el.innerHTML='<b>청계면 골목형상점가</b><small>상권 안내 영역</small>';return el};zoneLabel.addTo(leafletMap);markerLayer=L.layerGroup().addTo(leafletMap);
- leafletMap.on('focus',()=>leafletMap.scrollWheelZoom.enable());leafletMap.on('blur',()=>leafletMap.scrollWheelZoom.disable());
+ marketMapElement.dataset.fixedMap='true';
+ leafletMap=L.map(marketMapElement,{zoomControl:false,dragging:false,scrollWheelZoom:false,doubleClickZoom:false,touchZoom:false,boxZoom:false,keyboard:false,minZoom:FIXED_MAP_ZOOM,maxZoom:FIXED_MAP_ZOOM}).setView(FIXED_MAP_CENTER,FIXED_MAP_ZOOM);
+ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{minZoom:FIXED_MAP_ZOOM,maxZoom:FIXED_MAP_ZOOM,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(leafletMap);
+ markerLayer=L.layerGroup().addTo(leafletMap);
 }
-document.querySelectorAll('[data-member-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-member-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');memberFilter=btn.dataset.memberFilter;renderMap()}));document.querySelectorAll('[data-category-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-category-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');categoryFilter=btn.dataset.categoryFilter;renderMap()}));
-mapSearch?.addEventListener('input',renderMap);mapListToggle?.addEventListener('click',()=>{if(!mapWorkspace)return;const hidden=mapWorkspace.classList.toggle('list-hidden');mapListToggle.setAttribute('aria-pressed',String(hidden));mapListToggle.textContent=hidden?'목록 보기':'목록 숨기기';setTimeout(()=>leafletMap?.invalidateSize(),180)});renderMap();
+document.querySelectorAll('[data-member-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-member-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');memberFilter=btn.dataset.memberFilter;renderMap()}));
+document.querySelectorAll('[data-category-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-category-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');categoryFilter=btn.dataset.categoryFilter;renderMap()}));
+mapSearch?.addEventListener('input',renderMap);
+renderMap();
 
 const menu=document.querySelector('.menu-btn'),nav=document.querySelector('#nav');
 menu?.addEventListener('click',()=>{const open=nav.classList.toggle('open');menu.setAttribute('aria-expanded',open)});
