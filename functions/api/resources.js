@@ -63,20 +63,18 @@ function publicItem(row,{detail=false}={}){
   return item;
 }
 
+function fallbackRows(){return DEFAULTS.map(([id,section,kind,title,url,note,sort_order,visible,featured])=>({id,section,kind,title,url,note,sort_order,visible,featured,body:RESOURCE_BODY_DEFAULTS[id]||''}))}
+function fallbackResponse(id=''){const rows=fallbackRows().filter(row=>row.visible===1);if(id){const row=rows.find(item=>item.id===id);return row?Response.json({item:publicItem(row,{detail:true})},{headers:{'Cache-Control':'public, max-age=30, s-maxage=60'}}):noStore({error:'resource_not_found'},404)}return Response.json({items:rows.map(row=>publicItem(row))},{headers:{'Cache-Control':'public, max-age=30, s-maxage=60'}})}
+
 export async function onRequestGet({request,env}){
-  const db=env.cheonggye_market_notices;await ensure(db);
   const url=new URL(request.url),includeHidden=url.searchParams.get('include_hidden')==='1',id=cleanText(url.searchParams.get('id'),80);
   if(includeHidden){const admin=await cgmaAdmin(request);if(!admin.allowed)return noStore({error:admin.reason},admin.status)}
-  if(id){
-    const query=includeHidden?'SELECT * FROM cgma_resources WHERE id=?':'SELECT * FROM cgma_resources WHERE id=? AND visible=1';
-    const row=await db.prepare(query).bind(id).first();
-    if(!row)return noStore({error:'resource_not_found'},404);
-    return includeHidden?noStore({item:row}):Response.json({item:publicItem(row,{detail:true})},{headers:{'Cache-Control':'public, max-age=30, s-maxage=60'}});
-  }
-  const query=includeHidden?'SELECT * FROM cgma_resources ORDER BY section,sort_order,title':'SELECT * FROM cgma_resources WHERE visible=1 ORDER BY section,sort_order,title';
-  const result=await db.prepare(query).all();
-  const items=includeHidden?result.results:(result.results||[]).map(row=>publicItem(row));
-  return Response.json({items},{headers:{'Cache-Control':includeHidden?'no-store':'public, max-age=30, s-maxage=60'}});
+  const db=env.cheonggye_market_notices;
+  try{
+    if(!db)throw new Error('resource_store_unavailable');await ensure(db);
+    if(id){const query=includeHidden?'SELECT * FROM cgma_resources WHERE id=?':'SELECT * FROM cgma_resources WHERE id=? AND visible=1';const row=await db.prepare(query).bind(id).first();if(!row)return noStore({error:'resource_not_found'},404);return includeHidden?noStore({item:row}):Response.json({item:publicItem(row,{detail:true})},{headers:{'Cache-Control':'public, max-age=30, s-maxage=60'}})}
+    const query=includeHidden?'SELECT * FROM cgma_resources ORDER BY section,sort_order,title':'SELECT * FROM cgma_resources WHERE visible=1 ORDER BY section,sort_order,title';const result=await db.prepare(query).all();const items=includeHidden?result.results:(result.results||[]).map(row=>publicItem(row));return Response.json({items},{headers:{'Cache-Control':includeHidden?'no-store':'public, max-age=30, s-maxage=60'}});
+  }catch(error){if(includeHidden)return noStore({error:'resource_store_unavailable'},503);console.warn('CGMA resources fallback active',error?.message||error);return fallbackResponse(id)}
 }
 
 export async function onRequestPost({request,env}){
