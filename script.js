@@ -8,35 +8,81 @@ const esc=(v='')=>String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':
 const marketMapElement=document.querySelector('#marketMap'),mapDetail=document.querySelector('#mapDetail'),mapDirectory=document.querySelector('#mapDirectory'),mapSearch=document.querySelector('#mapSearch'),mapCount=document.querySelector('#mapCount'),mapDirectoryCount=document.querySelector('#mapDirectoryCount');
 let memberFilter='all',categoryFilter='all';
 const markerByIndex=new Map();
-function illustrationPoint(shop,index){
- const number=Number(shop.a.match(/(\d+)/)?.[1]||0),jitter=((index%7)-3)*.34;
- if(shop.a.includes('승달산길'))return {x:46+Math.min(number,55)*.48,y:47+Math.sin(number*.6)*5+jitter};
- if(shop.a.includes('도림길'))return {x:26+Math.min(number,100)*.25,y:61+Math.sin(number*.45)*4+jitter};
- if(shop.a.includes('영산로'))return {x:76+Math.min(Math.max(number-1686,0),12)*.45,y:45+jitter};
- if(shop.a.includes('청계중앙길'))return {x:28+Math.min(number,15)*.7,y:39+jitter};
- if(shop.a.includes('복길로'))return {x:23,y:27};
- if(shop.a.includes('대학교'))return {x:57+(index%3)*1.4,y:36+(index%2)*1.6};
- return {x:36+(index%10)*3.7,y:48+Math.floor(index/10)*2.9+jitter};
+const clusterConfigDesktop={
+ seungdal:{label:'승달산길 상점군',x:55,y:48,cols:8,dx:4.15,dy:5.8},
+ dorim:{label:'도림길 상점군',x:25,y:61,cols:5,dx:4.3,dy:6},
+ generic:{label:'청계면 생활상권',x:29,y:32,cols:5,dx:4.05,dy:5.8},
+ dorimri:{label:'도림리',x:22,y:53,cols:2,dx:4.4,dy:6},
+ campus:{label:'목포대 캠퍼스',x:54,y:31,cols:2,dx:4.5,dy:6},
+ yeongsan:{label:'영산로',x:77,y:39,cols:3,dx:4.2,dy:6},
+ central:{label:'청계중앙길',x:19,y:40,cols:2,dx:4.2,dy:6},
+ bokgil:{label:'복길로',x:18,y:27,cols:1,dx:4,dy:6}
+};
+const clusterConfigCompact={
+ seungdal:{...clusterConfigDesktop.seungdal,x:54,y:45,cols:6,dx:6.2,dy:5.6},
+ dorim:{...clusterConfigDesktop.dorim,x:20,y:59,cols:4,dx:7.4,dy:5.7},
+ generic:{...clusterConfigDesktop.generic,x:20,y:29,cols:4,dx:7.3,dy:5.7},
+ dorimri:{...clusterConfigDesktop.dorimri,x:9,y:54,cols:2,dx:5,dy:6},
+ campus:{...clusterConfigDesktop.campus,x:50,y:29,cols:2,dx:6.5,dy:6},
+ yeongsan:{...clusterConfigDesktop.yeongsan,x:76,y:37,cols:3,dx:5.7,dy:6},
+ central:{...clusterConfigDesktop.central,x:9,y:42,cols:2,dx:5,dy:6},
+ bokgil:{...clusterConfigDesktop.bokgil,x:14,y:26,cols:1,dx:4,dy:6}
+};
+function streetCluster(shop){
+ if(shop.a.includes('승달산길'))return 'seungdal';
+ if(shop.a.includes('도림길'))return 'dorim';
+ if(shop.a.includes('대학교'))return 'campus';
+ if(shop.a.includes('영산로'))return 'yeongsan';
+ if(shop.a.includes('청계중앙길'))return 'central';
+ if(shop.a.includes('복길로'))return 'bokgil';
+ if(shop.a.includes('도림리'))return 'dorimri';
+ return 'generic';
 }
+const clusterSlotCounters={};
+const shopClusterSlots=shops.map(shop=>{const key=streetCluster(shop),slot=clusterSlotCounters[key]||0;clusterSlotCounters[key]=slot+1;return {key,slot};});
+const clusterCounts=shops.reduce((acc,shop)=>{const key=streetCluster(shop);acc[key]=(acc[key]||0)+1;return acc;},{});
+function illustrationPoint(shop,index){
+ const meta=shopClusterSlots[index]||{key:'generic',slot:0};
+ const compact=window.matchMedia?.('(max-width:720px)').matches;
+ const cfg=(compact?clusterConfigCompact:clusterConfigDesktop)[meta.key]||clusterConfigDesktop.generic;
+ const row=Math.floor(meta.slot/cfg.cols),rawCol=meta.slot%cfg.cols,col=row%2?cfg.cols-1-rawCol:rawCol;
+ return {x:cfg.x+col*cfg.dx,y:cfg.y+row*cfg.dy,key:meta.key};
+}
+function clusterName(shop){return clusterConfigDesktop[streetCluster(shop)]?.label||'청계면 상권';}
 function mapIllustration(){
  if(!marketMapElement)return;
- marketMapElement.innerHTML=`<div class="muan-map-art" role="img" aria-label="무안군 안에서 청계면과 목포대 후문 상권을 중심으로 그린 만화형 상권지도">
-   <svg class="muan-map-svg" viewBox="0 0 1000 620" aria-hidden="true">
-    <path class="muan-boundary" d="M110 150 Q190 70 310 88 Q390 28 485 84 Q590 46 660 128 Q790 112 858 218 Q922 292 858 380 Q882 478 775 522 Q680 592 565 548 Q475 608 386 542 Q268 574 214 480 Q105 462 132 350 Q55 276 110 150Z"/>
-    <path class="hill hill-a" d="M140 198 Q205 122 268 194 Q327 110 387 198"/>
-    <path class="hill hill-b" d="M676 165 Q730 102 784 166 Q830 118 872 174"/>
-    <path class="road-main" d="M158 402 C278 382 360 315 446 332 S622 408 840 332"/>
-    <path class="road-side" d="M274 492 C316 424 346 354 420 272 S535 170 594 122"/>
-    <path class="road-side" d="M390 498 C430 446 480 410 534 392 S650 338 728 252"/>
-    <path class="stream" d="M160 285 C264 250 326 268 408 244 S574 224 690 268 S802 310 858 280"/>
-    <g class="buildings"><rect x="450" y="280" width="84" height="50" rx="8"/><rect x="548" y="318" width="58" height="42" rx="7"/><rect x="340" y="348" width="62" height="44" rx="7"/><rect x="620" y="272" width="64" height="42" rx="7"/><rect x="276" y="304" width="54" height="38" rx="7"/></g>
-    <g class="stick-person person-a"><circle cx="470" cy="218" r="12"/><path d="M470 230v45m0-28l-24 20m24-20l24 18m-24 10l-20 32m20-32l22 31"/></g>
-    <g class="stick-person person-b"><circle cx="700" cy="388" r="11"/><path d="M700 399v40m0-23l-22 16m22-16l22 17m-22 6l-18 27m18-27l20 27"/></g>
-    <g class="stick-person person-c"><circle cx="322" cy="226" r="10"/><path d="M322 237v36m0-20l-19 14m19-14l19 14m-19 6l-17 25m17-25l18 25"/></g>
-   </svg>
-   <div class="map-art-label county">무안군 안에서만 표시</div><div class="map-art-label cheonggye">청계면</div><div class="map-art-label campus">국립목포대학교</div><div class="map-art-label dorim">도림리</div><div class="map-art-label seungdal">승달산길</div><div class="map-art-label center">목포대 후문 상권</div>
-   <div class="map-art-caption"><b>청계면 중심 만화지도</b><span>실제 축척보다 골목의 관계와 상가 찾기에 초점을 둔 안내 그림입니다.</span></div>
-   <div class="illustration-markers" id="illustrationMarkers"></div>
+ marketMapElement.innerHTML=`<div class="muan-map-art map-story-v2" role="img" aria-label="승달산, 청계면사무소, 국립목포대학교와 목포대 후문 골목을 그린 청계면 만화형 상권지도">
+  <svg class="muan-map-svg" viewBox="0 0 1000 620" aria-hidden="true">
+   <path class="muan-boundary" d="M110 150 Q190 70 310 88 Q390 28 485 84 Q590 46 660 128 Q790 112 858 218 Q922 292 858 380 Q882 478 775 522 Q680 592 565 548 Q475 608 386 542 Q268 574 214 480 Q105 462 132 350 Q55 276 110 150Z"/>
+   <path class="cluster-wash wash-central" d="M240 155 Q360 118 470 188 Q500 260 430 316 Q300 325 225 250Z"/>
+   <path class="cluster-wash wash-dorim" d="M150 360 Q285 330 440 370 Q475 470 390 525 Q220 550 145 465Z"/>
+   <path class="cluster-wash wash-seungdal" d="M500 280 Q690 250 845 310 Q875 420 790 500 Q615 512 500 430Z"/>
+   <path class="hill hill-a" d="M132 205 Q188 118 245 195 Q302 105 360 198 Q402 135 446 202"/>
+   <path class="hill hill-b" d="M690 160 Q742 96 794 164 Q835 112 878 174"/>
+   <path class="mountain-ridge" d="M115 222 L178 130 L219 181 L270 108 L333 216Z"/>
+   <path class="road-main" d="M158 402 C278 382 360 315 446 332 S622 408 840 332"/>
+   <path class="road-side" d="M274 492 C316 424 346 354 420 272 S535 170 594 122"/>
+   <path class="road-side" d="M390 498 C430 446 480 410 534 392 S650 338 728 252"/>
+   <path class="stream" d="M160 285 C264 250 326 268 408 244 S574 224 690 268 S802 310 858 280"/>
+   <g class="landmark campus-building"><path d="M470 177h116v66H470z"/><path d="M458 178l70-43 71 43z"/><path d="M492 200h20v43h32v-43h20"/></g>
+   <g class="landmark office-building"><path d="M208 270h86v58h-86z"/><path d="M199 270h104l-52-36z"/><path d="M244 291h18v37"/><path class="flag" d="M251 236v-34m1 2h38l-12 12 12 12h-38"/></g>
+   <g class="landmark rear-gate"><path d="M560 266v-48h68v48m-56 0v-30h44v30"/><path d="M548 267h92"/></g>
+   <g class="tiny-shop-icons"><text x="635" y="346">☕</text><text x="696" y="386">🍜</text><text x="755" y="420">🛍</text><text x="330" y="410">✿</text><text x="274" y="452">🥐</text><text x="382" y="470">📚</text></g>
+   <g class="stick-person person-student"><circle cx="542" cy="249" r="10"/><path d="M542 260v36m0-20l-18 13m18-13l19 12m-19 8l-16 25m16-25l18 25"/><path class="person-prop" d="M525 270h12v17h-12z"/></g>
+   <g class="stick-person person-friend"><circle cx="660" cy="300" r="10"/><path d="M660 311v34m0-19l-18 14m18-14l17 13m-17 6l-15 23m15-23l17 23"/></g>
+   <g class="stick-person person-merchant"><circle cx="785" cy="300" r="11"/><path d="M785 311v39m0-22l-21 16m21-16l21 15m-21 7l-16 25m16-25l18 25"/><path class="person-prop" d="M800 329h20v18h-20z"/></g>
+   <g class="stick-person person-shopper"><circle cx="315" cy="350" r="10"/><path d="M315 361v36m0-20l-18 13m18-13l20 14m-20 6l-15 24m15-24l17 24"/><path class="person-prop" d="M293 383h17v17h-17z"/></g>
+   <g class="stick-person person-walker"><circle cx="180" cy="338" r="9"/><path d="M180 348v33m0-18l-16 12m16-12l16 11m-16 7l-14 22m14-22l15 22"/></g>
+  </svg>
+  <div class="map-landmark mountain"><span>⛰</span><b>승달산</b></div>
+  <div class="map-landmark office"><span>🏛</span><b>청계면사무소</b></div>
+  <div class="map-landmark campus"><span>🎓</span><b>국립목포대학교</b></div>
+  <div class="map-landmark gate"><span>🚶</span><b>목포대 후문</b></div>
+  <div class="map-cluster-label cluster-generic"><span>청계면 생활상권</span><b>${clusterCounts.generic||0}</b></div>
+  <div class="map-cluster-label cluster-dorim"><span>도림길 상점군</span><b>${(clusterCounts.dorim||0)+(clusterCounts.dorimri||0)}</b></div>
+  <div class="map-cluster-label cluster-seungdal"><span>승달산길 상점군</span><b>${clusterCounts.seungdal||0}</b></div>
+  <div class="map-art-caption"><b>청계 골목 그림지도</b><span>84개 상가를 골목별 상점군으로 나누어 겹치지 않게 배치했습니다. 위치는 안내용이며 실제 방문은 주소 길찾기를 이용해 주세요.</span></div>
+  <div class="illustration-markers" id="illustrationMarkers"></div>
  </div>`;
 }
 function selectedShops(){
@@ -56,7 +102,7 @@ function renderMap(){
  const list=selectedShops(),allCount=shops.length,regularCount=shops.filter(s=>s.m==='regular').length,associateCount=shops.filter(s=>s.m==='associate').length;
  document.querySelector('#summaryAll')&&(document.querySelector('#summaryAll').textContent=allCount+'개');document.querySelector('#summaryRegular')&&(document.querySelector('#summaryRegular').textContent=regularCount+'개');document.querySelector('#summaryAssociate')&&(document.querySelector('#summaryAssociate').textContent=associateCount+'개');if(mapCount)mapCount.textContent=`표시 상가 ${list.length}곳`;if(mapDirectoryCount)mapDirectoryCount.textContent=`총 ${list.length}개`;
  const markerHost=document.querySelector('#illustrationMarkers');markerByIndex.clear();
- if(markerHost){markerHost.innerHTML='';list.forEach(s=>{const p=illustrationPoint(s,s.i),button=document.createElement('button');button.type='button';button.className=`market-pin cartoon-pin ${s.m}`;button.style.left=`${Math.max(9,Math.min(91,p.x))}%`;button.style.top=`${Math.max(12,Math.min(88,p.y))}%`;button.textContent=s.i+1;button.title=`${s.n} · ${memberLabels[s.m]}`;button.setAttribute('aria-label',button.title);button.addEventListener('click',()=>selectShop(s.i));markerHost.appendChild(button);markerByIndex.set(s.i,button);});}
+ if(markerHost){markerHost.innerHTML='';list.forEach(s=>{const p=illustrationPoint(s,s.i),button=document.createElement('button');button.type='button';button.className=`market-pin cartoon-pin ${s.m}`;button.style.left=`${Math.max(9,Math.min(91,p.x))}%`;button.style.top=`${Math.max(12,Math.min(88,p.y))}%`;button.textContent=s.i+1;button.dataset.cluster=streetCluster(s);button.title=`${s.n} · ${memberLabels[s.m]} · ${clusterName(s)}`;button.setAttribute('aria-label',button.title);button.addEventListener('click',()=>selectShop(s.i));markerHost.appendChild(button);markerByIndex.set(s.i,button);});}
  if(mapDirectory)mapDirectory.innerHTML=list.map(s=>`<button class="directory-item ${s.m}" data-index="${s.i}" type="button"><span class="directory-number">${s.i+1}</span><span><b>${esc(s.n)}</b><small>${esc(s.t)} · ${memberLabels[s.m]}</small></span></button>`).join('');
  document.querySelectorAll('.directory-item[data-index]').forEach(el=>el.addEventListener('click',()=>selectShop(Number(el.dataset.index))));
  if(list.length)selectShop(list[0].i);else if(mapDetail)mapDetail.innerHTML='<span class="map-detail-tag">검색 결과 없음</span><h3>조건을 바꿔보세요</h3><p>상가명이나 업종을 다시 입력해 주세요.</p>';
@@ -65,6 +111,7 @@ mapIllustration();
 document.querySelectorAll('[data-member-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-member-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');memberFilter=btn.dataset.memberFilter;renderMap()}));
 document.querySelectorAll('[data-category-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-category-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');categoryFilter=btn.dataset.categoryFilter;renderMap()}));
 mapSearch?.addEventListener('input',renderMap);
+let mapResizeTimer;window.addEventListener('resize',()=>{clearTimeout(mapResizeTimer);mapResizeTimer=setTimeout(renderMap,120)},{passive:true});
 renderMap();
 
 const menu=document.querySelector('.menu-btn'),nav=document.querySelector('#nav');
