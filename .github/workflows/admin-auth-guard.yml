@@ -1,0 +1,35 @@
+name: CGMA Admin Auth Guard
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-admin-auth-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v7
+      - name: Verify admin pages stay closed before authentication
+        shell: bash
+        run: |
+          set -euo pipefail
+          for page in admin/index.html admin.html; do
+            echo "Checking $page"
+            grep -Fq '[hidden]{display:none!important}' "$page"
+            grep -Fq 'id="adminApp" class="admin-shell" hidden' "$page"
+            grep -Fq 'id="adminLoginLink"' "$page"
+            grep -Fq 'https://auth.ekodi.kr/?site=cgma&direct=1' "$page"
+            grep -Fq "hash.get('ekodi_token')" "$page"
+            grep -Fq 'verifyOtp({token_hash:tokenHash' "$page"
+            grep -Fq "document.querySelector('#adminApp').hidden=true" "$page"
+            if grep -Fq '>로그인 화면으로<' "$page"; then
+              echo "Legacy local login link detected in $page"
+              exit 1
+            fi
+          done
+          echo 'CGMA admin auth gate contract verified.'
