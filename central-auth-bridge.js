@@ -11,8 +11,8 @@ const cgmaRoute=value=>window.CGMA_ROUTE?.route(value)||value;
 const cgmaAbsolute=value=>window.CGMA_ROUTE?.absolute(value)||new URL(cgmaRoute(value),location.origin).toString();
 const returnTo=cgmaAbsolute('/');
 const MEMBER_APPLY=cgmaAbsolute('/member?apply=1');
-const authUrl=`https://auth.ekodi.kr/?site=${encodeURIComponent(site)}&return_to=${encodeURIComponent(returnTo)}`;
-const memberAuthUrl=`https://auth.ekodi.kr/?site=${encodeURIComponent(site)}&return_to=${encodeURIComponent(MEMBER_APPLY)}`;
+const authUrl=`https://auth.ekodi.kr/?site=${encodeURIComponent(site)}&direct=1&return_to=${encodeURIComponent(returnTo)}`;
+const memberAuthUrl=`https://auth.ekodi.kr/?site=${encodeURIComponent(site)}&direct=1&return_to=${encodeURIComponent(MEMBER_APPLY)}`;
 
 function status(text,type=''){
   if(!statusEl)return;
@@ -48,7 +48,7 @@ function updateJoinArea(s){
   const signedIn=Boolean(s);
   const loginButton=document.querySelector('[data-central-auth]');
   const loginPanel=document.querySelector('.login-provider.google');
-  const joinLinks=[...document.querySelectorAll('a.nav-cta[href="#join"], a[href="#join-form"]')];
+  const joinLinks=[...document.querySelectorAll('[data-member-apply], a[href="#join-form"]')];
   const joinCopy=document.querySelector('#join > div:nth-child(2) > p');
   const joinForm=document.getElementById('join-form');
 

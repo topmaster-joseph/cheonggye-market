@@ -11,8 +11,7 @@
   <link rel="stylesheet" href="styles.css?v=20260729-news-live" />
   <link rel="stylesheet" href="live.css?v=20260904-dashboard" />
   <link rel="stylesheet" href="resources.css?v=20260902-root-hub" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3ynVZVpFJUC7BZJ6q16ZK8CksNnM=" crossorigin="" />
-  <link rel="stylesheet" href="cgma-sections.css?v=20260904-fixed-map" />
+  <link rel="stylesheet" href="cgma-sections.css?v=20260904-cartoon-map" />
 </head>
 <body>
   <a class="skip" href="#main">본문 바로가기</a>
@@ -23,7 +22,7 @@
     </a>
     <button class="menu-btn" aria-expanded="false" aria-controls="nav" aria-label="메뉴 열기"><span></span><span></span></button>
     <nav id="nav" aria-label="주요 메뉴">
-      <a href="#about">상인회 소개</a><a href="#market-map">상권지도</a><a href="#resources">자료실</a><a href="#news">상권소식</a><a href="#live">온라인</a><label class="language-picker" aria-label="언어 선택"><span aria-hidden="true">🌐</span><select id="siteLanguage"><option value="ko">한국어</option><option value="en">English</option><option value="zh-CN">中文</option><option value="ja">日本語</option><option value="vi">Tiếng Việt</option><option value="ne">नेपाली</option></select></label><a class="nav-cta" data-central-auth data-site="cgma" href="#login">Google 로그인</a><a class="nav-cta" href="#join">가입하기</a>
+      <a href="#about">상인회 소개</a><a href="#market-map">상권지도</a><a href="#resources">자료실</a><a href="#news">상권소식</a><a href="#live">온라인</a><label class="language-picker" aria-label="언어 선택"><span aria-hidden="true">🌐</span><select id="siteLanguage"><option value="ko">한국어</option><option value="en">English</option><option value="zh-CN">中文</option><option value="ja">日本語</option><option value="vi">Tiếng Việt</option><option value="ne">नेपाली</option></select></label><a class="nav-cta" data-central-auth data-site="cgma" href="https://auth.ekodi.kr/?site=cgma&amp;direct=1&amp;return_to=https%3A%2F%2Fekodi.kr%2Fcgma%2F">Google 로그인</a><a class="nav-cta" data-member-apply href="https://auth.ekodi.kr/?site=cgma&amp;direct=1&amp;return_to=https%3A%2F%2Fekodi.kr%2Fcgma%2Fmember%3Fapply%3D1">가입하기</a>
     </nav>
   </header>
 
@@ -72,10 +71,10 @@
     </section>
 
     <section class="section market-map-section" id="market-map">
-      <div class="map-title-row"><div class="map-title-copy"><div class="section-kicker">MARKET MAP <span>02</span></div><h2>한눈에 보는 <em>상권지도</em></h2><p>지도와 목록에서 회원 구분과 업종 정보를 빠르게 확인하세요.</p></div><div class="market-map-summary" aria-label="청계면 상권 현황"><div><small>표시 상가</small><strong id="summaryAll">-</strong></div><div><small>정회원</small><strong id="summaryRegular">-</strong></div><div><small>준회원</small><strong id="summaryAssociate">-</strong></div><div class="summary-area"><small>상권 중심</small><strong>목포대 후문 · 청계면</strong></div></div></div>
+      <div class="map-title-row"><div class="map-title-copy"><div class="section-kicker">MARKET MAP <span>02</span></div><h2>한눈에 보는 <em>상권지도</em></h2><p>지도와 목록에서 회원 구분과 업종 정보를 빠르게 확인하세요.</p></div><div class="market-map-summary" aria-label="청계면 상권 현황"><div><small>표시 상가</small><strong id="summaryAll">-</strong></div><div><small>정회원</small><strong id="summaryRegular">-</strong></div><div><small>준회원</small><strong id="summaryAssociate">-</strong></div><div class="summary-area"><small>상권 중심</small><strong>무안군 · 청계면 중심</strong></div></div></div>
       <div class="map-workspace"><div class="map-toolbar"><label class="map-search"><span aria-hidden="true">⌕</span><input id="mapSearch" type="search" placeholder="상가명 또는 업종 검색" aria-label="상가명 또는 업종 검색"></label><div class="member-filters" role="group" aria-label="회원 구분"><button class="active" data-member-filter="all">전체</button><button data-member-filter="regular">정회원</button><button data-member-filter="associate">준회원</button></div><div class="category-filters" role="group" aria-label="업종 선택"><button class="active" data-category-filter="all">전체업종</button><button data-category-filter="food">음식</button><button data-category-filter="cafe">카페</button><button data-category-filter="life">생활</button><button data-category-filter="culture">문화·서비스</button></div><span id="mapCount" class="map-count"></span></div>
-        <div class="map-layout" id="mapLayout"><aside class="map-side-panel" aria-label="상가 검색 결과"><div class="map-panel-head"><div><h3>상가 목록</h3><p>목록을 선택하면 상세정보가 함께 바뀝니다.</p></div><strong id="mapDirectoryCount">-</strong></div><div class="map-directory" id="mapDirectory" aria-label="지도에 표시된 상가 목록"></div></aside><div class="map-center"><div class="leaflet-map" id="marketMap" aria-label="OpenStreetMap 기반 청계면 고정 상권지도"></div><div class="map-legend-row" aria-label="회원 구분"><span><i class="map-legend-dot regular"></i>정회원</span><span><i class="map-legend-dot associate"></i>준회원</span></div></div><aside class="map-detail" id="mapDetail" aria-live="polite"><span class="map-detail-tag">선택 상가 정보</span><h3>청계 상권 둘러보기</h3><p>목록이나 지도에서 상가를 선택하면 회원 구분과 기본 정보를 확인할 수 있습니다.</p></aside></div></div>
-      <details class="map-source-note"><summary>지도 표시 기준</summary><p>정회원은 2026년 정회원 현황, 준회원은 공개 가능한 등록자료를 기준으로 표시합니다. 지도는 고정 축척으로 표시하며 확대·축소 기능을 제공하지 않습니다. 정확한 방문 위치는 등록주소 길찾기로 확인해 주세요.</p></details>
+        <div class="map-layout" id="mapLayout"><aside class="map-side-panel" aria-label="상가 검색 결과"><div class="map-panel-head"><div><h3>상가 목록</h3><p>목록을 선택하면 상세정보가 함께 바뀝니다.</p></div><strong id="mapDirectoryCount">-</strong></div><div class="map-directory" id="mapDirectory" aria-label="지도에 표시된 상가 목록"></div></aside><div class="map-center"><div class="leaflet-map" id="marketMap" aria-label="무안군 안에서 청계면을 중심으로 그린 만화형 상권지도"></div><div class="map-legend-row" aria-label="회원 구분"><span><i class="map-legend-dot regular"></i>정회원</span><span><i class="map-legend-dot associate"></i>준회원</span></div></div><aside class="map-detail" id="mapDetail" aria-live="polite"><span class="map-detail-tag">선택 상가 정보</span><h3>청계 상권 둘러보기</h3><p>목록이나 지도에서 상가를 선택하면 회원 구분과 기본 정보를 확인할 수 있습니다.</p></aside></div></div>
+      <details class="map-source-note"><summary>지도 표시 기준</summary><p>정회원은 2026년 정회원 현황, 준회원은 공개 가능한 등록자료를 기준으로 표시합니다. 그림지도는 무안군 경계를 넘지 않고 청계면과 목포대 후문 상권을 중심으로 단순화해 표시합니다. 실제 축척과 다를 수 있으며 정확한 방문 위치는 등록주소 길찾기로 확인해 주세요.</p></details>
     </section>
 
     <section class="section cgma-resources" id="resources">
@@ -141,7 +140,7 @@
     <section class="section member-login" id="login">
       <div class="section-kicker">MEMBER LOGIN <span>07</span></div>
       <div class="login-layout"><div><h2>회원 전용 소통을<br>Google로 시작하세요.</h2><p>Google 계정으로 EKODI 통합인증센터에 로그인한 뒤 청계면상인회 회원 기능을 이용할 수 있습니다.</p></div><div class="login-panel">
-        <a class="login-provider google" href="https://auth.ekodi.kr/?site=cgma&amp;return_to=https%3A%2F%2Fekodi.kr/cgma%2F"><span>G</span> Google로 계속하기</a>
+        <a class="login-provider google" href="https://auth.ekodi.kr/?site=cgma&amp;direct=1&amp;return_to=https%3A%2F%2Fekodi.kr/cgma%2F"><span>G</span> Google로 계속하기</a>
         <p id="authMessage" data-central-auth-status class="auth-message">처음 로그인하면 준회원으로 접수되며, 상인회 확인 후 정회원 권한이 부여됩니다.</p>
       </div></div>
     </section>
@@ -175,12 +174,11 @@
     </section>
   </main>
   <footer data-ekodi-footer></footer>
-  <script src="site-shell.js?v=20260903-common-shell"></script>
+  <script src="site-shell.js?v=20260904-language-inline"></script>
   <script src="site-path.js?v=20260902-root-path"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="script.js?v=20260904-fixed-map"></script>
+  <script src="script.js?v=20260904-cartoon-map"></script>
   <script src="resources.js?v=20260903-readability"></script>
-  <script type="module" src="central-auth-bridge.js?v=20260815-google-login"></script>
+  <script type="module" src="central-auth-bridge.js?v=20260904-direct-login"></script>
 </body>
 </html>
