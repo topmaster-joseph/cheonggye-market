@@ -40,8 +40,11 @@ jobs:
           set -euo pipefail
           grep -Fq 'OFFICIAL ARCHIVE' index.html
           grep -Fq 'id="resourceSearch"' index.html
-          grep -Fq 'id="mapListToggle"' index.html
-          grep -Fq 'cgma-sections.css?v=20260903-readability' index.html
+          ! grep -Fq 'id="mapListToggle"' index.html
+          grep -Fq 'class="map-center"' index.html
+          grep -Fq 'cgma-sections.css?v=20260904-fixed-map' index.html
+          grep -Fq 'zoomControl:false' script.js
+          grep -Fq 'dragging:false' script.js
           ! grep -Fq 'Littly' index.html
           grep -Fq 'resource-detail.js' resource/index.html
           grep -Fq 'resource?id=' resources.js
