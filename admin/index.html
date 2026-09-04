@@ -9,12 +9,12 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="admin-resources.css?v=20260902-tenant-admin">
   <style>
-    body{background:#f5f0e5}.admin-shell{min-height:100vh;display:grid;grid-template-columns:250px 1fr}.admin-side{background:#143f35;color:#fff;padding:2rem}.admin-side>a{display:block;margin-bottom:2.5rem}.admin-side nav a{display:block;width:100%;padding:.85rem 0;border-bottom:1px solid #416b61;color:#fff;text-align:left}.admin-main{padding:3rem 5vw;min-width:0}.admin-main>h1{font-size:clamp(2.4rem,5vw,4rem);margin:.5rem 0}.admin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}.admin-card{background:#fff;padding:1.5rem;min-height:170px;border-top:4px solid #ff6038}.admin-card b{font-size:2rem}.access-state{padding:1rem;background:#fff;border-left:4px solid #d7f04a}.denied{max-width:640px;margin:12vh auto;background:#fff;padding:3rem;text-align:center}.denied a{display:inline-block;margin-top:1rem;padding:.8rem 1.3rem;border-radius:99px;background:#143f35;color:#fff}@media(max-width:800px){.admin-shell{display:block;padding-top:calc(70px + env(safe-area-inset-top,0px))}.admin-side{position:fixed;top:0;left:0;right:0;width:100%;height:calc(70px + env(safe-area-inset-top,0px));z-index:1200;padding:calc(14px + env(safe-area-inset-top,0px)) 1.2rem 10px;box-sizing:border-box;display:flex;align-items:center}.admin-side>a{margin:0}.admin-side nav{display:none}.admin-grid{grid-template-columns:1fr}.admin-main{padding:2rem 1.2rem}}
+    [hidden]{display:none!important}body{background:#f5f0e5}.admin-shell{min-height:100vh;display:grid;grid-template-columns:250px 1fr}.admin-side{background:#143f35;color:#fff;padding:2rem}.admin-side>a{display:block;margin-bottom:2.5rem}.admin-side nav a{display:block;width:100%;padding:.85rem 0;border-bottom:1px solid #416b61;color:#fff;text-align:left}.admin-main{padding:3rem 5vw;min-width:0}.admin-main>h1{font-size:clamp(2.4rem,5vw,4rem);margin:.5rem 0}.admin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}.admin-card{background:#fff;padding:1.5rem;min-height:170px;border-top:4px solid #ff6038}.admin-card b{font-size:2rem}.access-state{padding:1rem;background:#fff;border-left:4px solid #d7f04a}.denied{max-width:640px;margin:12vh auto;background:#fff;padding:3rem;text-align:center}.denied a{display:inline-block;margin-top:1rem;padding:.8rem 1.3rem;border-radius:99px;background:#143f35;color:#fff}@media(max-width:800px){.admin-shell{display:block;padding-top:calc(70px + env(safe-area-inset-top,0px))}.admin-side{position:fixed;top:0;left:0;right:0;width:100%;height:calc(70px + env(safe-area-inset-top,0px));z-index:1200;padding:calc(14px + env(safe-area-inset-top,0px)) 1.2rem 10px;box-sizing:border-box;display:flex;align-items:center}.admin-side>a{margin:0}.admin-side nav{display:none}.admin-grid{grid-template-columns:1fr}.admin-main{padding:2rem 1.2rem}}
   </style>
 </head>
 <body>
   <div id="adminLoading" class="denied"><h1>권한 확인 중</h1><p>EKODI 로그인과 청계면상인회 관리자 권한을 확인하고 있습니다.</p></div>
-  <div id="adminDenied" class="denied" hidden><h1>관리자 전용 페이지입니다</h1><p id="deniedMessage">로그인한 사용자 중 청계면상인회 관리자로 지정된 계정만 사용할 수 있습니다.</p><a href="/#login">로그인 화면으로</a></div>
+  <div id="adminDenied" class="denied" hidden><h1>관리자 전용 페이지입니다</h1><p id="deniedMessage">로그인한 사용자 중 청계면상인회 관리자로 지정된 계정만 사용할 수 있습니다.</p><a id="adminLoginLink" href="https://auth.ekodi.kr/">EKODI 로그인</a></div>
   <div id="adminApp" class="admin-shell" hidden>
     <aside class="admin-side" data-ekodi-fixed-header>
       <a href="/"><b>청계면상인회</b><br><small>ADMIN CONSOLE</small></a>
@@ -53,19 +53,50 @@
   <script>
     const client=window.supabase.createClient('https://renzehysxirjilvdxacv.supabase.co','sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_');
     const route=value=>window.CGMA_ROUTE?.route(value)||value;
+    const returnUrl=()=>{const url=new URL(location.href);url.hash='';return url.toString()};
+    const authUrl=()=>`https://auth.ekodi.kr/?site=cgma&direct=1&return_to=${encodeURIComponent(returnUrl())}`;
+    const loginLink=document.querySelector('#adminLoginLink');
+    if(loginLink)loginLink.href=authUrl();
+
+    async function consumeHandoff(){
+      const hash=new URLSearchParams(location.hash.replace(/^#/,''));
+      const tokenHash=hash.get('ekodi_token');
+      if(!tokenHash)return {present:false,ok:true};
+      document.querySelector('#adminLoading h1').textContent='로그인 연결 중';
+      document.querySelector('#adminLoading p').textContent='EKODI 통합인증 정보를 이 관리자 공간에 연결하고 있습니다.';
+      history.replaceState({},document.title,location.pathname+location.search);
+      try{
+        const {error}=await client.auth.verifyOtp({token_hash:tokenHash,type:hash.get('ekodi_type')||'email'});
+        if(error)throw error;
+        return {present:true,ok:true};
+      }catch(error){
+        console.error('CGMA admin auth handoff',error);
+        return {present:true,ok:false};
+      }
+    }
+
     (async()=>{
+      const handoff=await consumeHandoff();
+      if(handoff.present&&!handoff.ok)return deny('통합인증 연결이 만료되었거나 이미 사용되었습니다. 다시 로그인해 주세요.');
       const {data}=await client.auth.getSession(),session=data.session,token=session?.access_token;
       if(!token)return deny('먼저 EKODI에 로그인해 주세요.');
       try{
         const response=await fetch(route('/api/admin-session'),{headers:{Authorization:`Bearer ${token}`}}),result=await response.json();
         if(!response.ok||!result.allowed)return deny('이 계정은 청계면상인회 관리자로 지정되어 있지 않습니다.');
-        document.querySelector('#adminLoading').hidden=true;document.querySelector('#adminApp').hidden=false;
+        document.querySelector('#adminDenied').hidden=true;
+        document.querySelector('#adminLoading').hidden=true;
+        document.querySelector('#adminApp').hidden=false;
         document.querySelector('#accessState').textContent=`${result.email||'로그인 계정'} · 청계면상인회 관리자 · 조회 및 수정 가능`;
         window.CGMA_RESOURCE_ADMIN?.start(session);
         window.CGMA_PETITION_ADMIN?.start(session);
       }catch(error){console.error(error);return deny('권한 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')}
     })();
-    function deny(message){document.querySelector('#adminLoading').hidden=true;document.querySelector('#adminDenied').hidden=false;document.querySelector('#deniedMessage').textContent=message}
+    function deny(message){
+      document.querySelector('#adminApp').hidden=true;
+      document.querySelector('#adminLoading').hidden=true;
+      document.querySelector('#adminDenied').hidden=false;
+      document.querySelector('#deniedMessage').textContent=message;
+    }
   </script>
 </body>
 </html>
