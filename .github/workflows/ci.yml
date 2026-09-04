@@ -42,9 +42,12 @@ jobs:
           grep -Fq 'id="resourceSearch"' index.html
           ! grep -Fq 'id="mapListToggle"' index.html
           grep -Fq 'class="map-center"' index.html
-          grep -Fq 'cgma-sections.css?v=20260905-story-map-v2' index.html
+          grep -Fq 'cgma-sections.css?v=20260905-store-story-v3' index.html
           grep -Fq 'muan-map-art' script.js
           grep -Fq 'stick-person' script.js
+          grep -Fq 'store-nearby' script.js
+          grep -Fq 'shopRegistryIndex' script.js
+          grep -Fq 'CGMA store story card v3' cgma-sections.css
           ! grep -Fq 'tile.openstreetmap.org' script.js
           ! grep -Fq 'Littly' index.html
           grep -Fq 'resource-detail.js' resource/index.html

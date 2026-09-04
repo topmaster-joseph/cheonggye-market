@@ -16,7 +16,7 @@ for(const[file,base]of pages){
  }
 }
 const home=await readFile('index.html','utf8');assert.doesNotMatch(home,/class="ai-menu-disabled"/);assert.doesNotMatch(home,/id="adminNav"/);assert.doesNotMatch(home,/온라인 LIVE/);assert.match(home,/href="#live">온라인<\/a>/);assert.match(home,/id="siteLanguage"/);assert.match(home,/기획팀장/);assert.match(home,/정경탁/);assert.match(home,/양파창고/);
-assert.equal([...home.matchAll(/id="resources"/g)].length,1);assert.doesNotMatch(home,/id="mapListToggle"/);assert.match(home,/class="map-center"/);assert.match(home,/id="resourceSearch"/);assert.ok(home.includes('cgma-sections.css?v=20260905-story-map-v2'));assert.doesNotMatch(home,/leaflet@|openstreetmap/i);
+assert.equal([...home.matchAll(/id="resources"/g)].length,1);assert.doesNotMatch(home,/id="mapListToggle"/);assert.match(home,/class="map-center"/);assert.match(home,/id="resourceSearch"/);assert.ok(home.includes('cgma-sections.css?v=20260905-store-story-v3'));assert.doesNotMatch(home,/leaflet@|openstreetmap/i);
 const pausedAi=await readFile('market-ai.html','utf8');assert.match(pausedAi,/현재 비활성화/);assert.doesNotMatch(pausedAi,/market-ai.js/);
 const redirects=await readFile('_redirects','utf8');
 for(const route of ['/ai ','/member ','/store ','/admin ','/member-admin ','/order/* ','/payment-success ','/payment-fail '])assert.ok(redirects.includes(route),`missing route ${route.trim()}`);
