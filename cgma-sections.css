@@ -91,3 +91,25 @@
 @media(min-width:1201px){.map-title-row{grid-template-columns:minmax(580px,.9fr) minmax(620px,1.1fr);gap:1.5rem}.map-title-copy h2{font-size:clamp(3rem,3.6vw,3.7rem);white-space:nowrap}}
 .market-map-section .leaflet-map .leaflet-tile-pane{filter:saturate(.86) contrast(.98) brightness(1.02)}
 .market-pin{width:20px;height:20px;font-size:.48rem;border-width:1.5px}.market-pin:after{bottom:-3px;width:7px;height:7px;border-right-width:1.5px;border-bottom-width:1.5px}.market-pin.active{transform:scale(1.3)}
+
+/* Cheonggye illustrated market map, 2026-09-04 */
+.market-map-section .leaflet-map{position:relative;min-height:522px;overflow:hidden;background:#f7f0db;border:0}
+.muan-map-art{position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#fff8df 0%,#f6edcf 100%);isolation:isolate}
+.muan-map-art:before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 18% 16%,rgba(255,255,255,.75) 0 2px,transparent 3px),radial-gradient(circle at 76% 24%,rgba(20,63,53,.08) 0 2px,transparent 3px);background-size:42px 42px,56px 56px;opacity:.5}
+.muan-map-svg{position:absolute;inset:3% 2% 5%;width:96%;height:92%;filter:drop-shadow(0 10px 18px rgba(74,73,44,.12))}
+.muan-boundary{fill:#dce9bd;stroke:#214b3e;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.hill{fill:none;stroke:#6d985f;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;opacity:.72}
+.road-main,.road-side{fill:none;stroke:#fff7ea;stroke-width:20;stroke-linecap:round;stroke-linejoin:round}
+.road-main{stroke:#ffe092;stroke-width:28}.road-side{stroke:#fff7ea;stroke-width:18}
+.stream{fill:none;stroke:#8bc9cf;stroke-width:12;stroke-linecap:round;stroke-dasharray:5 11;opacity:.9}
+.buildings rect{fill:#fffaf0;stroke:#285748;stroke-width:5;transform-box:fill-box;transform-origin:center;transform:rotate(-2deg)}
+.stick-person{fill:#fff7e7;stroke:#173f34;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}.stick-person circle{fill:#ffd864}
+.person-b{stroke:#ff6b43}.person-c{stroke:#537b49}
+.map-art-label{position:absolute;z-index:3;padding:.32rem .52rem;border-radius:999px;background:rgba(255,255,255,.88);border:2px solid rgba(26,65,53,.18);color:#21483d;font-size:.65rem;font-weight:900;box-shadow:0 4px 10px rgba(30,60,48,.08);pointer-events:none}
+.map-art-label.county{top:4%;left:4%;background:#173f34;color:#fff;border-color:#173f34}.map-art-label.cheonggye{top:19%;left:43%;font-size:.9rem;background:#ff7048;color:#fff;border-color:#ff7048}.map-art-label.campus{top:31%;left:52%}.map-art-label.dorim{top:60%;left:24%}.map-art-label.seungdal{top:50%;left:66%}.map-art-label.center{top:43%;left:45%;background:#fff2a9}
+.map-art-caption{position:absolute;z-index:3;left:4%;bottom:4%;max-width:330px;padding:.68rem .8rem;border-radius:12px;background:rgba(255,255,255,.9);border:2px solid rgba(23,63,52,.16);box-shadow:0 8px 18px rgba(24,58,48,.1);pointer-events:none}
+.map-art-caption b{display:block;color:#173f34;font-size:.78rem}.map-art-caption span{display:block;margin-top:.15rem;color:#61736b;font-size:.6rem;line-height:1.45}
+.illustration-markers{position:absolute;inset:0;z-index:5}
+.cartoon-pin{position:absolute;transform:translate(-50%,-50%);width:27px;height:27px;padding:0;border:2px solid #fff;border-radius:50%;display:grid;place-items:center;background:#173f34;color:#fff;font:900 .6rem/1 Pretendard,sans-serif;box-shadow:0 4px 8px rgba(25,58,48,.2);cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;z-index:5}
+.cartoon-pin.associate{background:#ff7048}.cartoon-pin:hover,.cartoon-pin.active{transform:translate(-50%,-50%) scale(1.28);box-shadow:0 7px 14px rgba(25,58,48,.28);z-index:8}
+.cartoon-pin.active{outline:3px solid #fff2a9;outline-offset:2px}

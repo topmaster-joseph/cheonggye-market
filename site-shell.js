@@ -25,17 +25,18 @@
     @media(max-width:760px){.ekodi-common-footer{grid-template-columns:1fr!important;gap:22px!important}.ekodi-footer-ekodi{text-align:left}.ekodi-footer-copy{grid-column:1!important}}
     .language-picker{display:inline-flex;align-items:center;gap:5px;border:1px solid rgba(20,63,53,.28);border-radius:999px;padding:5px 8px;background:rgba(255,255,255,.35)}
     .language-picker select{max-width:94px;border:0;background:transparent;color:#143f35;font:inherit;font-size:.78rem;font-weight:700;outline:0;cursor:pointer}`;
-  document.head.appendChild(style);  const language = document.getElementById('siteLanguage');
-  if (language) {
-    const saved = localStorage.getItem('ekodi-language') || 'ko';
-    language.value = saved;
-    language.addEventListener('change', () => {
-      const target = language.value;
-      localStorage.setItem('ekodi-language', target);
-      if (target === 'ko') return;
-      const current = location.href;
-      const translateUrl = `https://translate.google.com/translate?sl=ko&tl=${encodeURIComponent(target)}&u=${encodeURIComponent(current)}`;
-      location.assign(translateUrl);
-    });
+  document.head.appendChild(style);
+  const language=document.getElementById('siteLanguage');
+  if(language){
+    const key='ekodi-language',supported=['en','zh-CN','ja','vi','ne'];
+    const saved=localStorage.getItem(key)||'ko';language.value=saved;
+    const setCookie=(value,days=365)=>{const age=days*86400;document.cookie=`googtrans=${value};path=/;max-age=${age};SameSite=Lax`;document.cookie=`googtrans=${value};path=/;domain=.${location.hostname};max-age=${age};SameSite=Lax`;};
+    const clearCookie=()=>{document.cookie='googtrans=;path=/;max-age=0';document.cookie=`googtrans=;path=/;domain=.${location.hostname};max-age=0`;};
+    const apply=(target,tries=0)=>{const combo=document.querySelector('.goog-te-combo');if(!combo){if(tries<80)setTimeout(()=>apply(target,tries+1),100);return;}combo.value=target;combo.dispatchEvent(new Event('change',{bubbles:true}));};
+    window.ekodiGoogleTranslateInit=()=>{new google.translate.TranslateElement({pageLanguage:'ko',includedLanguages:supported.join(','),autoDisplay:false},'google_translate_element');if(saved!=='ko')apply(saved);};
+    const mount=document.createElement('div');mount.id='google_translate_element';mount.hidden=true;document.body.appendChild(mount);
+    if(saved!=='ko')setCookie(`/ko/${saved}`);
+    const gt=document.createElement('script');gt.src='https://translate.google.com/translate_a/element.js?cb=ekodiGoogleTranslateInit';gt.async=true;document.head.appendChild(gt);
+    language.addEventListener('change',()=>{const target=language.value;localStorage.setItem(key,target);if(target==='ko'){clearCookie();location.reload();return;}setCookie(`/ko/${target}`);apply(target);});
   }
 })();

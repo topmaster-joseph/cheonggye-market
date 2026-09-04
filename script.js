@@ -6,51 +6,62 @@ const labels={food:'음식·외식',cafe:'카페·디저트',life:'생활·편�
 const memberLabels={regular:'정회원',associate:'준회원'};
 const esc=(v='')=>String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const marketMapElement=document.querySelector('#marketMap'),mapDetail=document.querySelector('#mapDetail'),mapDirectory=document.querySelector('#mapDirectory'),mapSearch=document.querySelector('#mapSearch'),mapCount=document.querySelector('#mapCount'),mapDirectoryCount=document.querySelector('#mapDirectoryCount');
-let memberFilter='all',categoryFilter='all',leafletMap,markerLayer;
+let memberFilter='all',categoryFilter='all';
 const markerByIndex=new Map();
-const FIXED_MAP_CENTER=[34.9127,126.4345],FIXED_MAP_ZOOM=15;
-function latLngFor(shop,index){
- const number=Number(shop.a.match(/(\d+)/)?.[1]||0),jitter=((index%7)-3)*0.000035;
- if(shop.a.includes('승달산길'))return [34.91325+Math.sin(number)*0.00034+jitter,126.4338+Math.min(number,55)*0.00015];
- if(shop.a.includes('도림길'))return [34.9094+Math.min(number,100)*0.000046,126.42965+Math.sin(number*.7)*0.00038+jitter];
- if(shop.a.includes('영산로'))return [34.9118+jitter,126.4421+(number-1686)*0.00007];
- if(shop.a.includes('청계중앙길'))return [34.9107+number*0.000035,126.42765+jitter];
- if(shop.a.includes('복길로'))return [34.9162,126.4274];
- if(shop.a.includes('대학교'))return [34.9128+jitter,126.4352+jitter];
- return [34.9122+Math.floor(index/10)*0.00012+jitter,126.4322+(index%10)*0.00016];
+function illustrationPoint(shop,index){
+ const number=Number(shop.a.match(/(\d+)/)?.[1]||0),jitter=((index%7)-3)*.34;
+ if(shop.a.includes('승달산길'))return {x:46+Math.min(number,55)*.48,y:47+Math.sin(number*.6)*5+jitter};
+ if(shop.a.includes('도림길'))return {x:26+Math.min(number,100)*.25,y:61+Math.sin(number*.45)*4+jitter};
+ if(shop.a.includes('영산로'))return {x:76+Math.min(Math.max(number-1686,0),12)*.45,y:45+jitter};
+ if(shop.a.includes('청계중앙길'))return {x:28+Math.min(number,15)*.7,y:39+jitter};
+ if(shop.a.includes('복길로'))return {x:23,y:27};
+ if(shop.a.includes('대학교'))return {x:57+(index%3)*1.4,y:36+(index%2)*1.6};
+ return {x:36+(index%10)*3.7,y:48+Math.floor(index/10)*2.9+jitter};
+}
+function mapIllustration(){
+ if(!marketMapElement)return;
+ marketMapElement.innerHTML=`<div class="muan-map-art" role="img" aria-label="무안군 안에서 청계면과 목포대 후문 상권을 중심으로 그린 만화형 상권지도">
+   <svg class="muan-map-svg" viewBox="0 0 1000 620" aria-hidden="true">
+    <path class="muan-boundary" d="M110 150 Q190 70 310 88 Q390 28 485 84 Q590 46 660 128 Q790 112 858 218 Q922 292 858 380 Q882 478 775 522 Q680 592 565 548 Q475 608 386 542 Q268 574 214 480 Q105 462 132 350 Q55 276 110 150Z"/>
+    <path class="hill hill-a" d="M140 198 Q205 122 268 194 Q327 110 387 198"/>
+    <path class="hill hill-b" d="M676 165 Q730 102 784 166 Q830 118 872 174"/>
+    <path class="road-main" d="M158 402 C278 382 360 315 446 332 S622 408 840 332"/>
+    <path class="road-side" d="M274 492 C316 424 346 354 420 272 S535 170 594 122"/>
+    <path class="road-side" d="M390 498 C430 446 480 410 534 392 S650 338 728 252"/>
+    <path class="stream" d="M160 285 C264 250 326 268 408 244 S574 224 690 268 S802 310 858 280"/>
+    <g class="buildings"><rect x="450" y="280" width="84" height="50" rx="8"/><rect x="548" y="318" width="58" height="42" rx="7"/><rect x="340" y="348" width="62" height="44" rx="7"/><rect x="620" y="272" width="64" height="42" rx="7"/><rect x="276" y="304" width="54" height="38" rx="7"/></g>
+    <g class="stick-person person-a"><circle cx="470" cy="218" r="12"/><path d="M470 230v45m0-28l-24 20m24-20l24 18m-24 10l-20 32m20-32l22 31"/></g>
+    <g class="stick-person person-b"><circle cx="700" cy="388" r="11"/><path d="M700 399v40m0-23l-22 16m22-16l22 17m-22 6l-18 27m18-27l20 27"/></g>
+    <g class="stick-person person-c"><circle cx="322" cy="226" r="10"/><path d="M322 237v36m0-20l-19 14m19-14l19 14m-19 6l-17 25m17-25l18 25"/></g>
+   </svg>
+   <div class="map-art-label county">무안군 안에서만 표시</div><div class="map-art-label cheonggye">청계면</div><div class="map-art-label campus">국립목포대학교</div><div class="map-art-label dorim">도림리</div><div class="map-art-label seungdal">승달산길</div><div class="map-art-label center">목포대 후문 상권</div>
+   <div class="map-art-caption"><b>청계면 중심 만화지도</b><span>실제 축척보다 골목의 관계와 상가 찾기에 초점을 둔 안내 그림입니다.</span></div>
+   <div class="illustration-markers" id="illustrationMarkers"></div>
+ </div>`;
 }
 function selectedShops(){
  const q=(mapSearch?.value||'').trim().toLowerCase();
  return shops.map((s,i)=>({...s,i})).filter(s=>(memberFilter==='all'||s.m===memberFilter)&&(categoryFilter==='all'||s.c===categoryFilter)&&(!q||[s.n,s.t,s.a,labels[s.c]].join(' ').toLowerCase().includes(q)));
 }
-function markerIcon(shop,index,active=false){
- if(!window.L)return null;
- const state=shop.m==='regular'?'regular':'associate';
- return L.divIcon({className:'market-pin-shell',html:`<span class="market-pin ${state}${active?' active':''}">${index+1}</span>`,iconSize:[30,38],iconAnchor:[15,35],tooltipAnchor:[0,-28]});
-}
 function selectShop(index){
  const s=shops[index];if(!s||!mapDetail)return;
- markerByIndex.forEach((marker,i)=>marker.setIcon(markerIcon(shops[i],i,i===index)));
- document.querySelectorAll('.directory-item').forEach(p=>p.classList.toggle('active',Number(p.dataset.index)===index)); const fullAddress=s.a==='청계면 상권'?'전남 무안군 청계면 상권':`전남 무안군 청계면 ${s.a}`,destination=encodeURIComponent(fullAddress);
+ markerByIndex.forEach((marker,i)=>marker.classList.toggle('active',i===index));
+ document.querySelectorAll('.directory-item').forEach(p=>p.classList.toggle('active',Number(p.dataset.index)===index));
+ const fullAddress=s.a==='청계면 상권'?'전남 무안군 청계면 상권':`전남 무안군 청계면 ${s.a}`,destination=encodeURIComponent(fullAddress);
  const directions=`<div class="map-directions"><a href="https://map.naver.com/p/search/${destination}" target="_blank" rel="noopener noreferrer">네이버지도 ↗</a><a href="https://map.kakao.com/link/search/${destination}" target="_blank" rel="noopener noreferrer">길찾기 ↗</a></div>`;
  const memberClass=s.m==='regular'?'regular':'associate',memberLabel=memberLabels[s.m];
- mapDetail.innerHTML=`<div class="map-detail-heading"><span class="map-detail-number">${index+1}</span><div><h3>${esc(s.n)}</h3><div class="map-detail-badges"><span class="member-status ${memberClass}">${memberLabel}</span><span class="map-detail-tag">${labels[s.c]}</span></div></div></div><p>${s.m==='regular'?'청계면상인회 정회원 상가입니다. 지역 안에서 소비가 순환할 수 있도록 방문과 관심으로 함께해 주세요.':'준회원 상가로 등록된 기본 안내입니다.'}</p><dl><div><dt>업종</dt><dd>${esc(s.t)}</dd></div><div><dt>주소</dt><dd>${esc(fullAddress)}</dd></div><div><dt>회원 구분</dt><dd>${memberLabel}</dd></div></dl><div class="location-caution">지도는 상권 안내용 고정 화면입니다. 정확한 방문 위치는 등록주소 길찾기를 이용해 주세요.</div>${directions}`;
+ mapDetail.innerHTML=`<div class="map-detail-heading"><span class="map-detail-number">${index+1}</span><div><h3>${esc(s.n)}</h3><div class="map-detail-badges"><span class="member-status ${memberClass}">${memberLabel}</span><span class="map-detail-tag">${labels[s.c]}</span></div></div></div><p>${s.m==='regular'?'청계면상인회 정회원 상가입니다. 지역 안에서 소비가 순환할 수 있도록 방문과 관심으로 함께해 주세요.':'준회원 상가로 등록된 기본 안내입니다.'}</p><dl><div><dt>업종</dt><dd>${esc(s.t)}</dd></div><div><dt>주소</dt><dd>${esc(fullAddress)}</dd></div><div><dt>회원 구분</dt><dd>${memberLabel}</dd></div></dl><div class="location-caution">그림지도는 청계면 중심의 상권 안내용입니다. 정확한 방문 위치는 등록주소 길찾기를 이용해 주세요.</div>${directions}`;
 }
 function renderMap(){
  const list=selectedShops(),allCount=shops.length,regularCount=shops.filter(s=>s.m==='regular').length,associateCount=shops.filter(s=>s.m==='associate').length;
  document.querySelector('#summaryAll')&&(document.querySelector('#summaryAll').textContent=allCount+'개');document.querySelector('#summaryRegular')&&(document.querySelector('#summaryRegular').textContent=regularCount+'개');document.querySelector('#summaryAssociate')&&(document.querySelector('#summaryAssociate').textContent=associateCount+'개');if(mapCount)mapCount.textContent=`표시 상가 ${list.length}곳`;if(mapDirectoryCount)mapDirectoryCount.textContent=`총 ${list.length}개`;
- markerLayer?.clearLayers();markerByIndex.clear();
- if(window.L&&markerLayer)list.forEach(s=>{const pos=latLngFor(s,s.i),marker=L.marker(pos,{icon:markerIcon(s,s.i,false),keyboard:true,title:s.n}).bindTooltip(`<b>${esc(s.n)}</b><br>${memberLabels[s.m]}`,{direction:'top',offset:[0,-8]});marker.on('click',()=>selectShop(s.i));marker.addTo(markerLayer);markerByIndex.set(s.i,marker);});
+ const markerHost=document.querySelector('#illustrationMarkers');markerByIndex.clear();
+ if(markerHost){markerHost.innerHTML='';list.forEach(s=>{const p=illustrationPoint(s,s.i),button=document.createElement('button');button.type='button';button.className=`market-pin cartoon-pin ${s.m}`;button.style.left=`${Math.max(9,Math.min(91,p.x))}%`;button.style.top=`${Math.max(12,Math.min(88,p.y))}%`;button.textContent=s.i+1;button.title=`${s.n} · ${memberLabels[s.m]}`;button.setAttribute('aria-label',button.title);button.addEventListener('click',()=>selectShop(s.i));markerHost.appendChild(button);markerByIndex.set(s.i,button);});}
  if(mapDirectory)mapDirectory.innerHTML=list.map(s=>`<button class="directory-item ${s.m}" data-index="${s.i}" type="button"><span class="directory-number">${s.i+1}</span><span><b>${esc(s.n)}</b><small>${esc(s.t)} · ${memberLabels[s.m]}</small></span></button>`).join('');
  document.querySelectorAll('.directory-item[data-index]').forEach(el=>el.addEventListener('click',()=>selectShop(Number(el.dataset.index))));
  if(list.length)selectShop(list[0].i);else if(mapDetail)mapDetail.innerHTML='<span class="map-detail-tag">검색 결과 없음</span><h3>조건을 바꿔보세요</h3><p>상가명이나 업종을 다시 입력해 주세요.</p>';
 }
-if(marketMapElement&&window.L){
- marketMapElement.dataset.fixedMap='true';
- leafletMap=L.map(marketMapElement,{zoomControl:false,dragging:false,scrollWheelZoom:false,doubleClickZoom:false,touchZoom:false,boxZoom:false,keyboard:false,minZoom:FIXED_MAP_ZOOM,maxZoom:FIXED_MAP_ZOOM}).setView(FIXED_MAP_CENTER,FIXED_MAP_ZOOM);
- L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{minZoom:FIXED_MAP_ZOOM,maxZoom:FIXED_MAP_ZOOM,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(leafletMap);
- markerLayer=L.layerGroup().addTo(leafletMap);
-}
+mapIllustration();
 document.querySelectorAll('[data-member-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-member-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');memberFilter=btn.dataset.memberFilter;renderMap()}));
 document.querySelectorAll('[data-category-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-category-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');categoryFilter=btn.dataset.categoryFilter;renderMap()}));
 mapSearch?.addEventListener('input',renderMap);
