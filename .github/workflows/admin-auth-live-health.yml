@@ -1,0 +1,38 @@
+name: CGMA Admin Auth Live Health
+
+on:
+  workflow_run:
+    workflows: ["Deploy Cloudflare Pages"]
+    types: [completed]
+  schedule:
+    - cron: '17 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-live-admin-auth-gate:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Verify live CGMA admin gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          check_gate() {
+            local url="$1"
+            local body
+            body="$(curl -fsSL --max-time 20 "${url}?health=${GITHUB_RUN_ID}")"
+            printf '%s' "$body" | grep -Fq '[hidden]{display:none!important}'
+            printf '%s' "$body" | grep -Fq 'id="adminApp" class="admin-shell" hidden'
+            printf '%s' "$body" | grep -Fq 'id="adminLoginLink"'
+            printf '%s' "$body" | grep -Fq 'https://auth.ekodi.kr/'
+            printf '%s' "$body" | grep -Fq "hash.get('ekodi_token')"
+            printf '%s' "$body" | grep -Fq 'verifyOtp({token_hash:tokenHash'
+            echo "OK $url"
+          }
+          check_gate 'https://cheonggye-market.pages.dev/admin/'
+          check_gate 'https://ekodi.kr/cgma/admin/'
+          echo 'Live CGMA admin authentication gate is closed before sign-in on upstream and canonical routes.'
