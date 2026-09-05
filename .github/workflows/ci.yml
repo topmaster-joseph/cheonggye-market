@@ -42,7 +42,7 @@ jobs:
           grep -Fq 'id="resourceSearch"' index.html
           ! grep -Fq 'id="mapListToggle"' index.html
           grep -Fq 'class="map-center"' index.html
-          grep -Fq 'cgma-sections.css?v=20260905-today-discovery-v5' index.html
+          grep -Fq 'cgma-sections.css?v=20260905-benefit-map-v6' index.html
           grep -Fq 'muan-map-art' script.js
           grep -Fq 'stick-person' script.js
           grep -Fq 'store-nearby' script.js
@@ -53,6 +53,11 @@ jobs:
           grep -Fq 'renderTodayDiscovery' script.js
           grep -Fq 'revealRecommendedShop' script.js
           grep -Fq 'CGMA today discovery v5' cgma-sections.css
+          grep -Fq 'id="benefitOnlyToggle"' index.html
+          grep -Fq 'benefitOnlyToggle' script.js
+          grep -Fq 'benefit-pin-badge' script.js
+          grep -Fq 'activeBenefitEntries' script.js
+          grep -Fq 'CGMA benefit map v6' cgma-sections.css
           grep -Fq 'store_public_profiles' script.js
           grep -Fq 'profileHero' store-admin.html
           grep -Fq "PROFILE_TABLE='store_public_profiles'" store-admin.js
