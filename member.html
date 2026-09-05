@@ -2,19 +2,20 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="description" content="청계면상인회 정회원 EKODI 통합인증 및 점포 연결" />
   <meta name="robots" content="noindex,nofollow" />
   <title>정회원 내 가게 | 청계면상인회</title>
   <link rel="stylesheet" href="member.css?v=20260813" />
   <link rel="stylesheet" href="member-auth.css?v=20260813" />
+  <link rel="stylesheet" href="cgma-user-ui.css?v=20260906-common-ui-v1" />
 </head>
-<body>
-  <header class="top"><a class="brand" href="ai">← 청계상권 AI</a><span class="subtle">정회원 · 내 가게</span></header>
+<body class="member-user-page">
+  <header class="top"><a class="brand" href="./">← 청계면상인회</a><span class="subtle">정회원 · 내 가게</span></header>
   <main class="wrap">
     <section class="hero compact-hero">
       <div><span>MEMBER STORE</span><h1>한 계정으로<br>내 가게까지.</h1></div>
-      <p class="lead">EKODI 통합인증센터에서 Google 계정으로 본인을 확인합니다. 사전 등록된 이메일은 즉시 정회원 권한을 확인하고, 미등록 계정은 로그인 뒤 인증 신청으로 연결합니다.</p>
+      <div><p class="lead">EKODI 통합인증센터에서 Google 계정으로 본인을 확인합니다. 사전 등록된 이메일은 즉시 정회원 권한을 확인하고, 미등록 계정은 로그인 뒤 인증 신청으로 연결합니다.</p><div class="member-shortcuts"><a href="./#market-map">상권지도 보기</a><a href="./#resources">공식자료</a><a href="./#news">상인회 공지</a></div></div>
     </section>
 
     <section class="progress-shell" aria-label="정회원 이용 단계">
@@ -79,6 +80,7 @@
       <div id="serviceStatus" class="status hide"></div>
     </section>
   </main>
+  <nav class="cgma-mobile-dock" aria-label="모바일 빠른 메뉴"><a href="./"><span>⌂</span>홈</a><a href="./#market-map"><span>⌖</span>가게찾기</a><a href="./#news"><span>◫</span>소식</a><a class="primary-dock" href="member"><span>●</span>회원</a></nav>
   <footer data-ekodi-footer></footer>
   <script type="module" src="member.js?v=20260813-central-auth"></script>
 <script src="site-shell.js?v=20260903-common-shell"></script>

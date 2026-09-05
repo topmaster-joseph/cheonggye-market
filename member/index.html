@@ -2,19 +2,20 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="description" content="청계면상인회 Google 무료 로그인 및 정회원 신청" />
   <meta name="robots" content="noindex,nofollow" />
   <title>회원 계정 · 정회원 신청 | 청계면상인회</title>
   <link rel="stylesheet" href="/member.css?v=20260906-new-store-admin-v1" />
   <link rel="stylesheet" href="/member-auth.css?v=20260813" />
+  <link rel="stylesheet" href="/cgma-user-ui.css?v=20260906-common-ui-v1" />
 </head>
-<body>
+<body class="member-user-page">
   <header class="top"><a class="brand" href="/">← 청계면상인회</a><span class="subtle">무료회원 · 정회원 신청</span></header>
   <main class="wrap">
     <section class="hero compact-hero">
       <div><span>MEMBER ACCOUNT</span><h1>먼저 가볍게,<br>필요할 때 정회원으로.</h1></div>
-      <p class="lead">처음에는 Google 계정만 확인해 무료회원으로 시작합니다. 상인회 정회원으로 신청할 때에만 상가·사업자 등 심사에 필요한 추가정보를 입력합니다.</p>
+      <div><p class="lead">처음에는 Google 계정만 확인해 무료회원으로 시작합니다. 상인회 정회원으로 신청할 때에만 상가·사업자 등 심사에 필요한 추가정보를 입력합니다.</p><div class="member-shortcuts"><a href="/#market-map">상권지도 보기</a><a href="/#resources">공식자료</a><a href="/#news">상인회 공지</a></div></div>
     </section>
 
     <section class="progress-shell" aria-label="회원 이용 단계">
@@ -105,6 +106,7 @@
       <div id="serviceStatus" class="status hide"></div>
     </section>
   </main>
+  <nav class="cgma-mobile-dock" aria-label="모바일 빠른 메뉴"><a href="/"><span>⌂</span>홈</a><a href="/#market-map"><span>⌖</span>가게찾기</a><a href="/#news"><span>◫</span>소식</a><a class="primary-dock" href="/member"><span>●</span>회원</a></nav>
   <footer data-ekodi-footer></footer>
   <script type="module" src="/member.js?v=20260906-new-store-admin-v1"></script>
 <script src="../site-shell.js?v=20260903-common-shell"></script>
