@@ -22,6 +22,8 @@ jobs:
           node --check client.js
           node --check member.js
           node --check central-auth-bridge.js
+          node --check site-shell.js
+          node --check cgma-i18n.js
           node --check functions/_middleware.js
           node --check resources.js
           node --check resource-detail.js
@@ -114,6 +116,21 @@ jobs:
             echo 'Legacy direct Google OAuth button detected on public homepage'
             exit 1
           fi
+      - name: Verify native language and media adapter contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'name="google" content="notranslate"' index.html
+          grep -Fq 'data-ekodi-header-home="cgma"' index.html
+          grep -Fq 'data-ekodi-meeting-provider="jitsi"' index.html
+          grep -Fq 'data-ekodi-media-provider="youtube"' index.html
+          grep -Fq 'media-meeting-adapter.js' index.html
+          grep -Fq 'cgma-i18n.js' index.html
+          if grep -Fq 'translate.google.com' site-shell.js || grep -Fq 'googtrans=' site-shell.js; then
+            echo 'Browser translation injection detected'
+            exit 1
+          fi
+
       - name: Verify EKODI central member access contract
         shell: bash
         run: |
