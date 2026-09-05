@@ -6,6 +6,8 @@ const labels={food:'음식·외식',cafe:'카페·디저트',life:'생활·편�
 const memberLabels={regular:'정회원',associate:'준회원'};
 const esc=(v='')=>String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const marketMapElement=document.querySelector('#marketMap'),mapDetail=document.querySelector('#mapDetail'),mapDirectory=document.querySelector('#mapDirectory'),mapSearch=document.querySelector('#mapSearch'),mapCount=document.querySelector('#mapCount'),mapDirectoryCount=document.querySelector('#mapDirectoryCount');
+const todayPickCard=document.querySelector('#todayPickCard'),todayPickName=document.querySelector('#todayPickName'),todayPickMeta=document.querySelector('#todayPickMeta'),todayPickRefresh=document.querySelector('#todayPickRefresh'),todayBenefitList=document.querySelector('#todayBenefitList'),todayBenefitCount=document.querySelector('#todayBenefitCount'),todayDiscoveryStatus=document.querySelector('#todayDiscoveryStatus');
+let todayPickOffset=0;
 let memberFilter='all',categoryFilter='all';
 const markerByIndex=new Map();
 const clusterConfigDesktop={
@@ -98,7 +100,11 @@ const PUBLIC_PROFILE_KEY='sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_';
 let publicStoreProfiles=[];
 const normalizeAddress=value=>String(value||'').toLowerCase().replace(/전라남도|전남|무안군|청계면/g,'').replace(/\s+/g,'').replace(/번지/g,'');
 function findPublicProfile(shop){const nameKey=normalizeShopName(shop.n),addressKey=normalizeAddress(shop.a);return publicStoreProfiles.find(p=>normalizeShopName(p.store_name)===nameKey)||publicStoreProfiles.find(p=>addressKey&&addressKey!=='상권'&&normalizeAddress(p.store_address)===addressKey)||publicStoreProfiles.find(p=>{const pKey=normalizeShopName(p.store_name);return nameKey.length>=4&&pKey.length>=4&&(pKey.includes(nameKey)||nameKey.includes(pKey));});}
-async function loadPublicStoreProfiles(){try{const r=await fetch(PUBLIC_PROFILE_URL,{headers:{apikey:PUBLIC_PROFILE_KEY,Authorization:`Bearer ${PUBLIC_PROFILE_KEY}`}});if(!r.ok)throw new Error('profile_http');publicStoreProfiles=await r.json();if(activeShopIndex!==null)selectShop(activeShopIndex);}catch{publicStoreProfiles=[];}}
+async function loadPublicStoreProfiles(){try{const r=await fetch(PUBLIC_PROFILE_URL,{headers:{apikey:PUBLIC_PROFILE_KEY,Authorization:`Bearer ${PUBLIC_PROFILE_KEY}`}});if(!r.ok)throw new Error('profile_http');publicStoreProfiles=await r.json();renderTodayDiscovery();if(activeShopIndex!==null)selectShop(activeShopIndex);}catch{publicStoreProfiles=[];renderTodayDiscovery();}}
+function koreaToday(){const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()),o=Object.fromEntries(parts.map(x=>[x.type,x.value]));return `${o.year}-${o.month}-${o.day}`;}
+function shopIndexForProfile(profile){const nameKey=normalizeShopName(profile?.store_name),addressKey=normalizeAddress(profile?.store_address);let i=shops.findIndex(shop=>normalizeShopName(shop.n)===nameKey);if(i<0&&addressKey)i=shops.findIndex(shop=>normalizeAddress(shop.a)===addressKey);if(i<0&&nameKey.length>=4)i=shops.findIndex(shop=>{const key=normalizeShopName(shop.n);return key.length>=4&&(key.includes(nameKey)||nameKey.includes(key));});return i;}
+function revealRecommendedShop(index){if(index<0||!shops[index])return;if(mapSearch)mapSearch.value='';memberFilter='all';categoryFilter='all';document.querySelectorAll('[data-member-filter],[data-category-filter]').forEach(button=>button.classList.toggle('active',button.dataset.memberFilter==='all'||button.dataset.categoryFilter==='all'));renderMap();selectShop(index);mapDetail?.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function renderTodayDiscovery(){if(!todayPickCard)return;const today=koreaToday(),food=shops.map((shop,i)=>({...shop,i})).filter(shop=>shop.c==='food'),seed=[...today].reduce((sum,ch)=>sum+ch.charCodeAt(0),0),pick=food[(seed+todayPickOffset)%food.length],pickProfile=findPublicProfile(pick),benefits=publicStoreProfiles.map(profile=>({profile,index:shopIndexForProfile(profile)})).filter(x=>x.index>=0&&x.profile.today_benefit&&(!x.profile.benefit_until||x.profile.benefit_until>=today));todayPickCard.dataset.shopIndex=String(pick.i);todayPickName.textContent=pick.n;const menu=pickProfile?.featured_menu_name?`대표메뉴 · ${pickProfile.featured_menu_name}`:pick.t;todayPickMeta.textContent=`${menu} · ${clusterName(pick)} · ${memberLabels[pick.m]}`;todayBenefitCount.textContent=`${benefits.length}곳`;todayDiscoveryStatus.textContent=benefits.length?`오늘 등록된 혜택 ${benefits.length}곳과 함께 골라보세요.`:'오늘 한 곳을 골라드려요. 상인이 혜택을 등록하면 여기에 바로 나타납니다.';todayBenefitList.innerHTML=benefits.length?benefits.slice(0,4).map(({profile,index})=>`<button type="button" class="today-benefit-card" data-today-shop="${index}"><span>혜택</span><b>${esc(shops[index].n)}</b><small>${esc(profile.today_benefit)}${profile.benefit_until?` · ${esc(profile.benefit_until)}까지`:''}</small></button>`).join(''):'<p class="today-benefit-empty">지금 공개된 오늘의 혜택은 없습니다. 점포 운영자가 등록하면 자동으로 표시됩니다.</p>';todayBenefitList.querySelectorAll('[data-today-shop]').forEach(button=>button.addEventListener('click',()=>revealRecommendedShop(Number(button.dataset.todayShop))));}
 const fullShopAddress=shop=>shop.a==='청계면 상권'?'전남 무안군 청계면 상권':`전남 무안군 청계면 ${shop.a}`;
 function relatedShops(index,limit=3){
  const current=shops[index],cluster=streetCluster(current);
@@ -137,8 +143,11 @@ mapIllustration();
 document.querySelectorAll('[data-member-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-member-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');memberFilter=btn.dataset.memberFilter;renderMap()}));
 document.querySelectorAll('[data-category-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-category-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');categoryFilter=btn.dataset.categoryFilter;renderMap()}));
 mapSearch?.addEventListener('input',renderMap);
+todayPickCard?.addEventListener('click',()=>revealRecommendedShop(Number(todayPickCard.dataset.shopIndex)));
+todayPickRefresh?.addEventListener('click',()=>{todayPickOffset=(todayPickOffset+1)%Math.max(1,shops.filter(shop=>shop.c==='food').length);renderTodayDiscovery();});
 let mapResizeTimer;window.addEventListener('resize',()=>{clearTimeout(mapResizeTimer);mapResizeTimer=setTimeout(renderMap,120)},{passive:true});
 renderMap();
+renderTodayDiscovery();
 loadPublicStoreProfiles();
 
 const menu=document.querySelector('.menu-btn'),nav=document.querySelector('#nav');

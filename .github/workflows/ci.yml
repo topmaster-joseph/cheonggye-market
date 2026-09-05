@@ -42,12 +42,17 @@ jobs:
           grep -Fq 'id="resourceSearch"' index.html
           ! grep -Fq 'id="mapListToggle"' index.html
           grep -Fq 'class="map-center"' index.html
-          grep -Fq 'cgma-sections.css?v=20260905-public-card-v4' index.html
+          grep -Fq 'cgma-sections.css?v=20260905-today-discovery-v5' index.html
           grep -Fq 'muan-map-art' script.js
           grep -Fq 'stick-person' script.js
           grep -Fq 'store-nearby' script.js
           grep -Fq 'shopRegistryIndex' script.js
           grep -Fq 'CGMA public store card v4' cgma-sections.css
+          grep -Fq 'id="todayDiscovery"' index.html
+          grep -Fq 'id="todayPickRefresh"' index.html
+          grep -Fq 'renderTodayDiscovery' script.js
+          grep -Fq 'revealRecommendedShop' script.js
+          grep -Fq 'CGMA today discovery v5' cgma-sections.css
           grep -Fq 'store_public_profiles' script.js
           grep -Fq 'profileHero' store-admin.html
           grep -Fq "PROFILE_TABLE='store_public_profiles'" store-admin.js
