@@ -29,9 +29,19 @@ jobs:
           node --check resource-detail.js
           node --check admin-resources.js
           node --check admin-petition.js
+          node --check admin-merchants.js
+          node --check admin-notices.js
+          node --check admin-overview.js
+          node --check admin-site-mode.js
+          node --check member-admin.js
           node --check functions/api/resources.js
           node --check functions/api/parking-petition.js
           node --check functions/api/store-events.js
+          node --check functions/api/merchants.js
+          node --check functions/api/notices.js
+          node --check functions/api/site-mode.js
+          node --check functions/_shared/cgma-merchant-defaults.js
+
           node --check functions/_shared/resource-default-content.js
       - name: Verify canonical CGMA root contract
         run: |
@@ -89,6 +99,21 @@ jobs:
           grep -Fq "if(type!=='internal'&&row.url)item.public_url" functions/api/resources.js
           grep -Fq 'parkingPetitionForm' resource-detail.js
           grep -Fq 'cgma_parking_petition' functions/api/parking-petition.js
+
+      - name: Verify merchant directory control plane
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'id="merchantManager"' admin/index.html
+          grep -Fq 'admin-merchants.js?v=20260906-control-plane' admin/index.html
+          grep -Fq 'merchantDirectoryPromise' script.js
+          grep -Fq 'const registeredShops=[' script.js
+          grep -Fq '공식 등록자료에 등재된 72개 상가' index.html
+          grep -Fq 'CREATE TABLE IF NOT EXISTS cgma_merchants' functions/api/merchants.js
+          grep -Fq 'merchantDefaults' functions/api/merchants.js
+          grep -Fq 'id="accessPending"' member-admin/index.html
+          grep -Fq 'id="claimPending"' member-admin/index.html
+          grep -Fq 'syncApprovedMerchant' member-admin.js
 
       - name: Verify isolated customer authorization with central identity
         shell: bash

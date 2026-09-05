@@ -121,7 +121,7 @@ async function requestSiteAccess(){
   button.disabled=true;
   try{
     const note=buildApplicationNote(d);
-    const result=await api(ACCESS,'/request',{method:'POST',body:JSON.stringify({site:SITE,tenant:TENANT,role:'member',note})});
+    const result=await api(ACCESS,'/request',{method:'POST',body:JSON.stringify({site:SITE,tenant:TENANT,role:'member',note,business_name:d.storeName,contact_phone:d.applicantPhone,business_number:d.businessNumber})});
     if(result.already_authorized){status('accessRequestStatus','이미 정회원 권한이 확인되었습니다. 화면을 다시 불러옵니다.');setTimeout(()=>location.reload(),500);return;}
     const submittedNewStore=d.storeRegistryState==='new';
     status('accessRequestStatus',result.already_pending?'이미 정회원 신청이 접수되어 검수 중입니다.':submittedNewStore?'정회원 신청과 신규 점포 정보가 함께 접수되었습니다. 임원 검수 후 점포 등록과 정회원 권한 연결을 진행합니다.':'정회원 신청이 접수되었습니다. 임원 검수 후 이 Google 계정에 정회원 권한이 자동 연결됩니다.');
