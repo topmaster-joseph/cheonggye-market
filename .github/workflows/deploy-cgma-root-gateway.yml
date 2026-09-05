@@ -46,7 +46,7 @@ jobs:
       - name: Verify upstream before routing
         run: |
           set -euo pipefail
-          curl -fsSL --max-redirs 6 --max-time 20 https://cheonggye-market.pages.dev/ | grep -Fq 'QUICK ACCESS & ARCHIVE'
+          curl -fsSL --max-redirs 6 --max-time 20 https://cheonggye-market.pages.dev/ | grep -Fq 'OFFICIAL ARCHIVE'
           curl -fsSL --max-redirs 6 --max-time 20 https://cheonggye-market.pages.dev/admin | grep -Fq 'ADMIN CONSOLE'
           curl -fsSL --max-redirs 6 --max-time 20 https://cheonggye-market.pages.dev/member-admin | grep -Fq 'MEMBERSHIP REVIEW'
           curl -fsSL --max-time 20 https://cheonggye-market.pages.dev/api/resources | grep -Fq '"items"'
