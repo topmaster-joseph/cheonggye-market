@@ -1,30 +1,100 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <base href="/">
-  <meta charset="utf-8">
+<meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>관리자 | 청계면상인회</title>
+  <meta name="robots" content="noindex,nofollow">
+  <title>상인회 운영관리 | 청계면상인회</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="admin-resources.css?v=20260902-tenant-admin">
-  <style>
-    [hidden]{display:none!important}body{background:#f5f0e5}.admin-shell{min-height:100vh;display:grid;grid-template-columns:250px 1fr}.admin-side{background:#143f35;color:#fff;padding:2rem}.admin-side>a{display:block;margin-bottom:2.5rem}.admin-side nav a{display:block;width:100%;padding:.85rem 0;border-bottom:1px solid #416b61;color:#fff;text-align:left}.admin-main{padding:3rem 5vw;min-width:0}.admin-main>h1{font-size:clamp(2.4rem,5vw,4rem);margin:.5rem 0}.admin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}.admin-card{background:#fff;padding:1.5rem;min-height:170px;border-top:4px solid #ff6038}.admin-card b{font-size:2rem}.access-state{padding:1rem;background:#fff;border-left:4px solid #d7f04a}.denied{max-width:640px;margin:12vh auto;background:#fff;padding:3rem;text-align:center}.denied a{display:inline-block;margin-top:1rem;padding:.8rem 1.3rem;border-radius:99px;background:#143f35;color:#fff}@media(max-width:800px){.admin-shell{display:block;padding-top:calc(70px + env(safe-area-inset-top,0px))}.admin-side{position:fixed;top:0;left:0;right:0;width:100%;height:calc(70px + env(safe-area-inset-top,0px));z-index:1200;padding:calc(14px + env(safe-area-inset-top,0px)) 1.2rem 10px;box-sizing:border-box;display:flex;align-items:center}.admin-side>a{margin:0}.admin-side nav{display:none}.admin-grid{grid-template-columns:1fr}.admin-main{padding:2rem 1.2rem}}
-  </style>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../admin-control.css?v=20260906-control-plane">
+  <link rel="stylesheet" href="../admin-resources.css?v=20260906-control-plane">
+  <style>[hidden]{display:none!important}</style>
 </head>
 <body>
   <div id="adminLoading" class="denied"><h1>권한 확인 중</h1><p>EKODI 로그인과 청계면상인회 관리자 권한을 확인하고 있습니다.</p></div>
-  <div id="adminDenied" class="denied" hidden><h1>관리자 전용 페이지입니다</h1><p id="deniedMessage">로그인한 사용자 중 청계면상인회 관리자로 지정된 계정만 사용할 수 있습니다.</p><a id="adminLoginLink" href="https://auth.ekodi.kr/">EKODI 로그인</a></div>
+  <div id="adminDenied" class="denied" hidden><h1>관리자 전용 페이지입니다</h1><p id="deniedMessage">청계면상인회 관리자로 지정된 계정만 사용할 수 있습니다.</p><a id="adminLoginLink" href="https://auth.ekodi.kr/">EKODI 로그인</a></div>
   <div id="adminApp" class="admin-shell" hidden>
     <aside class="admin-side" data-ekodi-fixed-header>
-      <a href="/"><b>청계면상인회</b><br><small>ADMIN CONSOLE</small></a>
-      <nav aria-label="관리 메뉴"><a href="#dashboard">대시보드</a><a href="#resourceManager">공식 자료실 관리</a><a href="#petitionManager">주차장 동의접수</a><a href="/member-admin">회원 신청 관리</a><a href="/#news">공지·상권소식</a></nav>
+      <a class="admin-brand" href="../"><b>청계면상인회</b><br><small>OPERATIONS CONSOLE</small></a>
+      <nav aria-label="관리 메뉴">
+        <span class="admin-nav-label">CONTROL</span>
+        <a href="#dashboard">운영 현황</a>
+        <a href="#merchantManager">점포·회원 명부</a>
+        <a href="#noticeManager">공지·행사 관리</a>
+        <a href="../member-admin>정회원 신청 승인</a>
+        <span class="admin-nav-label">CONTENT</span>
+        <a href="#resourceManager">공식 자료실</a>
+        <a href="#siteModeManager">홈페이지 첫화면</a>
+        <span class="admin-nav-label">FIELD</span>
+        <a href="#petitionManager">주차장 동의접수</a>
+        <a href="../#market-map target="_blank" rel="noopener">공개 상권지도 ↗</a>
+      </nav>
+      <div class="admin-side-foot"><a href="../" target="_blank" rel="noopener">공개 홈페이지 보기 ↗</a><a href="../member target="_blank" rel="noopener">정회원 신청 화면 ↗</a></div>
     </aside>
     <main class="admin-main" id="dashboard">
-      <span>MANAGEMENT</span><h1>관리자 대시보드</h1><p class="access-state" id="accessState"></p>
-      <section class="admin-grid"><article class="admin-card"><span>정회원</span><br><b>51</b><p>공개 홈페이지 기준</p></article><article class="admin-card"><span>공식 자료</span><br><b id="resourceCount">연결</b><p>홈페이지 안에서 직접 관리</p></article><article class="admin-card"><span>관리 권한</span><br><b>Tenant</b><p>청계면상인회 공간 관리자만 수정 가능</p></article></section>
+      <div class="admin-title-row"><div><span class="admin-kicker">CHEONGGYE MERCHANT ASSOCIATION</span><h1>상인회 운영관리</h1></div><a class="admin-view-link" href="../" target="_blank" rel="noopener">공개 화면 보기 ↗</a></div>
+      <p class="access-state" id="accessState"></p>
+      <section class="admin-metrics" aria-label="운영 현황">
+        <article class="admin-metric"><span>공개 점포</span><b id="merchantCount">…</b><p>상권지도·명부 공개 점포</p></article>
+        <article class="admin-metric"><span>정회원 점포</span><b id="regularMerchantCount">…</b><p>정회원으로 공개된 점포</p></article>
+        <article class="admin-metric"><span>정회원 승인 대기</span><b id="memberPendingCount">…</b><p>신규·기존 점포 신청 검토</p></article>
+        <article class="admin-metric"><span>공지·행사</span><b id="noticeCount">…</b><p>홈페이지 공개 게시물</p></article>
+        <article class="admin-metric"><span>공식 자료</span><b id="resourceCount">…</b><p>자료실 관리 항목</p></article>
+        <article class="admin-metric"><span>동의 접수</span><b id="petitionCount">…</b><p>공영주차장 온라인 접수</p></article>
+      </section>
+      <section class="admin-command-grid" aria-label="빠른 업무">
+        <a class="admin-command" href="#merchantManager"><small>MERCHANTS</small><b>점포·회원 명부</b><span>점포, 업종, 주소, 회원구분을 관리하고 공개 상권지도에 반영합니다.</span></a>
+        <a class="admin-command" href="../member-admin><small>MEMBERS</small><b>정회원 신청 승인</b><span>점포와 신청자를 확인해 승인·반려합니다.</span></a>
+        <a class="admin-command" href="#noticeManager"><small>NOTICE</small><b>공지·행사 등록</b><span>상인에게 필요한 소식을 홈페이지에 바로 게시합니다.</span></a>
+        <a class="admin-command" href="#resourceManager"><small>RESOURCE</small><b>공식 자료 관리</b><span>지원사업·축제·소통채널 자료를 정리합니다.</span></a>
+        <a class="admin-command" href="#siteModeManager"><small>HOMEPAGE</small><b>첫화면 전환</b><span>정상·공사중·안내 화면을 관리자 권한으로 바꿉니다.</span></a>
+      </section>
+      <p class="admin-section-note">이 콘솔은 청계면상인회 운영 전용입니다. 회원·점포 정보와 관리자 권한은 다른 기관·테넌트의 기본 데이터로 공유하지 않습니다.</p>
+      <section class="admin-resource-panel" id="merchantManager" hidden>
+        <header class="admin-resource-head"><div><small>MERCHANT DIRECTORY</small><h2>점포·회원 명부</h2><p>점포명, 업종, 주소, 공개전화, 정회원·준회원 구분을 관리합니다. 저장한 내용은 공개 상권지도와 지도 내 점포 디렉터리에 반영됩니다.</p></div><button class="admin-action" id="addMerchantBtn" type="button">+ 새 점포</button></header>
+        <div class="admin-resource-form" style="display:block"><label class="wide">점포 검색<input id="merchantSearch" type="search" placeholder="상호, 업종, 주소 검색"></label></div>
+        <form class="admin-resource-form" id="merchantAdminForm" hidden>
+          <input type="hidden" name="id"><div class="wide"><b id="merchantFormTitle">새 점포 등록</b></div>
+          <label class="wide">점포명<input name="name" maxlength="160" required placeholder="예: 자담치킨&피자마루"></label>
+          <label>회원구분<select name="membership"><option value="regular">정회원</option><option value="associate">준회원</option></select></label>
+          <label>업종분류<select name="category"><option value="food">음식·외식</option><option value="cafe">카페·디저트</option><option value="life">생활·편의</option><option value="culture">문화·서비스</option></select></label>
+          <label>세부업종<input name="industry" maxlength="100" placeholder="예: 치킨·피자"></label>
+          <label>공개전화<input name="phone" maxlength="40" placeholder="예: 061-453-8295"></label>
+          <label class="wide">주소<input name="address" maxlength="240" placeholder="예: 승달산길 37-1"></label>
+          <label>정렬순서<input name="sort_order" type="number" value="100" min="0" max="99999"></label>
+          <div class="admin-resource-options"><label><input name="visible" type="checkbox" checked> 공개 상권지도·명부에 표시</label></div>
+          <div class="admin-resource-actions wide"><button id="merchantCancel" type="button">취소</button><button type="submit">저장</button></div>
+        </form>
+        <p class="admin-resource-status" id="merchantAdminStatus" role="status"></p>
+        <div class="admin-resource-list" id="merchantAdminList"></div>
+      </section>
+      <section class="admin-resource-panel" id="noticeManager" hidden>
+        <header class="admin-resource-head"><div><small>NOTICE & EVENT</small><h2>공지·행사 관리</h2><p>상인회 공지, 행사, 지원사업, 상권소식을 한 곳에서 등록하고 수정합니다.</p></div><button class="admin-action" id="addNoticeBtn" type="button">+ 새 공지·행사</button></header>
+        <form class="admin-resource-form" id="noticeAdminForm" hidden>
+          <input type="hidden" name="id"><div class="wide"><b id="noticeFormTitle">새 공지·행사 등록</b></div>
+          <label>분류<select name="category"><option value="공지">공지</option><option value="행사">행사</option><option value="지원사업">지원사업</option><option value="상권소식">상권소식</option></select></label>
+          <div class="admin-resource-options"><label><input name="pinned" type="checkbox"> 상단 고정</label></div>
+          <label class="wide">제목<input name="title" maxlength="120" required placeholder="예: 9월 상인회 거리청소 캠페인"></label>
+          <label class="wide">내용<textarea name="content" maxlength="4000" rows="8" required placeholder="일시, 장소, 대상, 안내사항을 입력하세요."></textarea></label>
+          <div class="admin-resource-actions wide"><button id="noticeCancel" type="button">취소</button><button type="submit">저장</button></div>
+        </form>
+        <p class="admin-resource-status" id="noticeAdminStatus" role="status"></p>
+        <div class="admin-notice-list" id="noticeAdminList"></div>
+      </section>
+      <section class="admin-resource-panel" id="siteModeManager" hidden>
+        <header class="admin-resource-head"><div><small>SITE PRESENTATION</small><h2>홈페이지 첫화면</h2><p>정상 홈페이지, 공사중 화면, 중요한 안내 첫화면을 선택합니다.</p></div><a class="admin-action" href="../" target="_blank" rel="noopener">공개 화면 보기 ↗</a></header>
+        <form class="admin-resource-form" id="siteModeForm">
+          <label class="wide">첫화면 상태<select name="mode"><option value="normal">정상 홈페이지</option><option value="maintenance">잠시 공사중입니다</option><option value="notice">안내 첫화면</option></select></label>
+          <label class="wide">제목<input name="title" maxlength="120" placeholder="예: 잠시 공사중입니다"></label>
+          <label class="wide">안내문<textarea name="message" maxlength="600" placeholder="방문자에게 보여줄 안내문"></textarea></label>
+          <div class="admin-resource-actions wide"><button type="submit">첫화면 적용</button></div>
+        </form>
+        <p class="admin-resource-status" id="siteModeStatus" role="status"></p>
+        <div class="admin-site-preview"><small id="siteModePreviewLabel">정상 홈페이지</small><h3 id="siteModePreviewTitle">정상 홈페이지</h3><p id="siteModePreviewMessage">현재 홈페이지 전체 콘텐츠가 공개됩니다.</p></div>
+      </section>
       <section class="admin-resource-panel" id="resourceManager" hidden>
-        <header class="admin-resource-head"><div><small>CGMA CONTENT</small><h2>공식 자료실 관리</h2><p>홈페이지 자료실의 제목, 설명, 본문과 연결 원본을 여기서 관리합니다.</p></div><button class="admin-action" id="addResourceBtn" type="button">+ 새 자료</button></header>
+        <header class="admin-resource-head"><div><small>CGMA CONTENT</small><h2>공식 자료실 관리</h2><p>지원사업, 골목축제, 도시재생, 소통채널 자료를 홈페이지 안에서 관리합니다.</p></div><button class="admin-action" id="addResourceBtn" type="button">+ 새 자료</button></header>
         <form class="admin-resource-form" id="resourceAdminForm" hidden>
           <input type="hidden" name="id"><div class="wide"><b id="resourceFormTitle">새 자료 등록</b></div>
           <label>분류<select name="section"><option value="essential">바로가기</option><option value="festival">골목축제</option><option value="support">상권 관련 지원사업</option><option value="revitalization">상권활성화 지원사업</option><option value="urban">도시재생 특화사업</option><option value="communication">소통채널</option></select></label>
@@ -41,40 +111,33 @@
       </section>
       <section class="admin-resource-panel" id="petitionManager" hidden>
         <header class="admin-resource-head"><div><small>PUBLIC AGREEMENT</small><h2>공영주차장 동의 접수</h2><p>홈페이지에서 새로 접수된 동의 내역입니다. 공개 화면에는 개인정보를 표시하지 않습니다.</p></div><button class="admin-action" id="petitionRefresh" type="button">새로고침</button></header>
-        <div class="admin-grid"><article class="admin-card"><span>홈페이지 접수</span><br><b id="petitionCount">0</b><p>현재 저장된 동의 건수</p></article></div>
         <p class="admin-resource-status" id="petitionAdminStatus" role="status"></p><div class="admin-resource-list" id="petitionAdminList"></div>
       </section>
     </main>
   </div>
-  <script src="site-path.js?v=20260902-root-path"></script>
+  <script src="../site-path.js?v=20260902-root-path"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="admin-resources.js?v=20260902-tenant-admin"></script>
-  <script src="admin-petition.js?v=20260903-native"></script>
+  <script src="../admin-overview.js?v=20260906-control-plane"></script>
+  <script src="../admin-merchants.js?v=20260906-control-plane"></script>
+  <script src="../admin-notices.js?v=20260906-control-plane"></script>
+  <script src="../admin-site-mode.js?v=20260906-control-plane"></script>
+  <script src="../admin-resources.js?v=20260906-control-plane"></script>
+  <script src="../admin-petition.js?v=20260906-control-plane"></script>
   <script>
     const client=window.supabase.createClient('https://renzehysxirjilvdxacv.supabase.co','sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_');
     const route=value=>window.CGMA_ROUTE?.route(value)||value;
     const returnUrl=()=>{const url=new URL(location.href);url.hash='';return url.toString()};
     const authUrl=()=>`https://auth.ekodi.kr/?site=cgma&direct=1&return_to=${encodeURIComponent(returnUrl())}`;
-    const loginLink=document.querySelector('#adminLoginLink');
-    if(loginLink)loginLink.href=authUrl();
-
+    const loginLink=document.querySelector('#adminLoginLink');if(loginLink)loginLink.href=authUrl();
     async function consumeHandoff(){
-      const hash=new URLSearchParams(location.hash.replace(/^#/,''));
-      const tokenHash=hash.get('ekodi_token');
+      const hash=new URLSearchParams(location.hash.replace(/^#/,'')),tokenHash=hash.get('ekodi_token');
       if(!tokenHash)return {present:false,ok:true};
       document.querySelector('#adminLoading h1').textContent='로그인 연결 중';
       document.querySelector('#adminLoading p').textContent='EKODI 통합인증 정보를 이 관리자 공간에 연결하고 있습니다.';
       history.replaceState({},document.title,location.pathname+location.search);
-      try{
-        const {error}=await client.auth.verifyOtp({token_hash:tokenHash,type:hash.get('ekodi_type')||'email'});
-        if(error)throw error;
-        return {present:true,ok:true};
-      }catch(error){
-        console.error('CGMA admin auth handoff',error);
-        return {present:true,ok:false};
-      }
+      try{const {error}=await client.auth.verifyOtp({token_hash:tokenHash,type:hash.get('ekodi_type')||'email'});if(error)throw error;return {present:true,ok:true}}
+      catch(error){console.error('CGMA admin auth handoff',error);return {present:true,ok:false}}
     }
-
     (async()=>{
       const handoff=await consumeHandoff();
       if(handoff.present&&!handoff.ok)return deny('통합인증 연결이 만료되었거나 이미 사용되었습니다. 다시 로그인해 주세요.');
@@ -83,18 +146,18 @@
       try{
         const response=await fetch(route('/api/admin-session'),{headers:{Authorization:`Bearer ${token}`}}),result=await response.json();
         if(!response.ok||!result.allowed)return deny('이 계정은 청계면상인회 관리자로 지정되어 있지 않습니다.');
-        document.querySelector('#adminDenied').hidden=true;
-        document.querySelector('#adminLoading').hidden=true;
-        document.querySelector('#adminApp').hidden=false;
+        document.querySelector('#adminDenied').hidden=true;document.querySelector('#adminLoading').hidden=true;document.querySelector('#adminApp').hidden=false;
         document.querySelector('#accessState').textContent=`${result.email||'로그인 계정'} · 청계면상인회 관리자 · 조회 및 수정 가능`;
+        window.CGMA_ADMIN_OVERVIEW?.start(session);
+        window.CGMA_MERCHANT_ADMIN?.start(session);
+        window.CGMA_NOTICE_ADMIN?.start(session);
+        window.CGMA_SITE_MODE_ADMIN?.start(session);
         window.CGMA_RESOURCE_ADMIN?.start(session);
         window.CGMA_PETITION_ADMIN?.start(session);
       }catch(error){console.error(error);return deny('권한 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')}
     })();
     function deny(message){
-      document.querySelector('#adminApp').hidden=true;
-      document.querySelector('#adminLoading').hidden=true;
-      document.querySelector('#adminDenied').hidden=false;
+      document.querySelector('#adminApp').hidden=true;document.querySelector('#adminLoading').hidden=true;document.querySelector('#adminDenied').hidden=false;
       document.querySelector('#deniedMessage').textContent=message;
     }
   </script>

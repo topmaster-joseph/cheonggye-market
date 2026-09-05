@@ -71,33 +71,33 @@ export async function onRequestGet({request,env}){
   if(includeHidden){const admin=await cgmaAdmin(request);if(!admin.allowed)return noStore({error:admin.reason},admin.status)}
   const db=env.cheonggye_market_notices;
   try{
-    if(!db)throw new Error('resource_store_unavailable');await ensure(db);
+    if(!db)throw new Error('resource_store_unavailable');
     if(id){const query=includeHidden?'SELECT * FROM cgma_resources WHERE id=?':'SELECT * FROM cgma_resources WHERE id=? AND visible=1';const row=await db.prepare(query).bind(id).first();if(!row)return noStore({error:'resource_not_found'},404);return includeHidden?noStore({item:row}):Response.json({item:publicItem(row,{detail:true})},{headers:{'Cache-Control':'public, max-age=30, s-maxage=60'}})}
     const query=includeHidden?'SELECT * FROM cgma_resources ORDER BY section,sort_order,title':'SELECT * FROM cgma_resources WHERE visible=1 ORDER BY section,sort_order,title';const result=await db.prepare(query).all();const items=includeHidden?result.results:(result.results||[]).map(row=>publicItem(row));return Response.json({items},{headers:{'Cache-Control':includeHidden?'no-store':'public, max-age=30, s-maxage=60'}});
-  }catch(error){if(includeHidden)return noStore({error:'resource_store_unavailable'},503);console.warn('CGMA resources fallback active',error?.message||error);return fallbackResponse(id)}
+  }catch(error){if(includeHidden){console.warn('CGMA resources admin fallback active',error?.message||error);return noStore({items:fallbackRows(),degraded:true,reason:'resource_store_unavailable'})}console.warn('CGMA resources fallback active',error?.message||error);return fallbackResponse(id)}
 }
 
 export async function onRequestPost({request,env}){
   const admin=await cgmaAdmin(request);if(!admin.allowed)return noStore({error:admin.reason},admin.status);
-  const db=env.cheonggye_market_notices;await ensure(db);
+  const db=env.cheonggye_market_notices;if(!db)return noStore({error:'resource_store_unavailable'},503);
   const body=await request.json(),v=rowInput(body);if(!v.title)return noStore({error:'title_required'},400);
   const id=cleanText(body.id,80).toLowerCase().replace(/[^a-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'')||crypto.randomUUID();
   try{
     await db.prepare('INSERT INTO cgma_resources(id,section,kind,title,url,note,body,sort_order,visible,featured,updated_by) VALUES(?,?,?,?,?,?,?,?,?,?,?)').bind(id,v.section,v.kind,v.title,v.url,v.note,v.body,v.sort_order,v.visible,v.featured,admin.user.email||admin.user.id).run();
-    return noStore({ok:true,id},201);
+    return noStore({ok:true,id,item:{id,...v,updated_by:admin.user.email||admin.user.id}},201);
   }catch{return noStore({error:'resource_create_failed'},409)}
 }
 
 export async function onRequestPut({request,env}){
   const admin=await cgmaAdmin(request);if(!admin.allowed)return noStore({error:admin.reason},admin.status);
-  const db=env.cheonggye_market_notices;await ensure(db);
+  const db=env.cheonggye_market_notices;if(!db)return noStore({error:'resource_store_unavailable'},503);
   const body=await request.json(),id=cleanText(body.id,80),v=rowInput(body);if(!id||!v.title)return noStore({error:'id_title_required'},400);
   await db.prepare('UPDATE cgma_resources SET section=?,kind=?,title=?,url=?,note=?,body=?,sort_order=?,visible=?,featured=?,updated_by=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(v.section,v.kind,v.title,v.url,v.note,v.body,v.sort_order,v.visible,v.featured,admin.user.email||admin.user.id,id).run();
-  return noStore({ok:true,id});
+  return noStore({ok:true,id,item:{id,...v,updated_by:admin.user.email||admin.user.id}});
 }
 export async function onRequestDelete({request,env}){
   const admin=await cgmaAdmin(request);if(!admin.allowed)return noStore({error:admin.reason},admin.status);
-  const db=env.cheonggye_market_notices;await ensure(db);
+  const db=env.cheonggye_market_notices;if(!db)return noStore({error:'resource_store_unavailable'},503);
   const id=cleanText(new URL(request.url).searchParams.get('id'),80);if(!id)return noStore({error:'id_required'},400);
   await db.prepare('DELETE FROM cgma_resources WHERE id=?').bind(id).run();
   return noStore({ok:true,id});
