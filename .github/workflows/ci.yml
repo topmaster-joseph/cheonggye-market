@@ -48,9 +48,11 @@ jobs:
           grep -Fq 'id="resourceSearch"' index.html
           ! grep -Fq 'id="mapListToggle"' index.html
           grep -Fq 'class="map-center"' index.html
-          grep -Fq 'cgma-sections.css?v=20260905-store-insights-v8' index.html
-          grep -Fq 'muan-map-art' script.js
-          grep -Fq 'stick-person' script.js
+          grep -Fq 'cgma-sections.css?v=20260906-road-map-admin-v1' index.html
+          grep -Fq 'leaflet@1.9.4' index.html
+          grep -Fq 'ROAD_GEO' script.js
+          grep -Fq 'shopGeoPoint' script.js
+          grep -Fq 'tile.openstreetmap.org' script.js
           grep -Fq 'store-nearby' script.js
           grep -Fq 'shopRegistryIndex' script.js
           grep -Fq 'CGMA public store card v4' cgma-sections.css
@@ -80,7 +82,7 @@ jobs:
           grep -Fq 'store_public_profiles' script.js
           grep -Fq 'profileHero' store-admin.html
           grep -Fq "PROFILE_TABLE='store_public_profiles'" store-admin.js
-          ! grep -Fq 'tile.openstreetmap.org' script.js
+          grep -Fq 'CGMA real road map v8' cgma-sections.css
           ! grep -Fq 'Littly' index.html
           grep -Fq 'resource-detail.js' resource/index.html
           grep -Fq 'resource?id=' resources.js
@@ -128,6 +130,8 @@ jobs:
           grep -Fq 'Google로 계속하기' index.html
           grep -Fq 'https://auth.ekodi.kr/?site=cgma' index.html
           grep -Fq 'central-auth-bridge.js' index.html
+          grep -Fq 'id="adminNav"' index.html
+          grep -Fq '/api/admin-session' script.js
           grep -Fq "const site=button?.dataset.site||'cgma'" central-auth-bridge.js
           grep -Fq "const MEMBER_APPLY=cgmaAbsolute('/member?apply=1')" central-auth-bridge.js
           grep -Fq 'Google 로그인만으로 무료회원' central-auth-bridge.js
@@ -165,12 +169,17 @@ jobs:
           grep -Fq 'id="accessCard"' member/index.html
           grep -Fq 'id="businessNumber"' member/index.html
           grep -Fq 'id="membershipConsent"' member/index.html
+          grep -Fq 'name="storeRegistryState"' member/index.html
+          grep -Fq '명단에 없는 신규 점포' member/index.html
+          grep -Fq 'id="memberAdminEntry"' member/index.html
           grep -Fq '정회원 신청 제출' member/index.html
           grep -Fq '/member-auth.css' member/index.html
           grep -Fq "const SITE='cgma'" member.js
           grep -Fq 'https://auth.ekodi.kr/?site=' member.js
           grep -Fq 'functions/v1/access-api' member.js
           grep -Fq 'buildApplicationNote' member.js
+          grep -Fq '점포 명단 상태' member.js
+          grep -Fq 'updateAdminEntry' member.js
           grep -Fq 'businessNumber' member.js
           grep -Fq "hash.get('ekodi_token')" member.js
           grep -Fq 'verifyOtp({token_hash:tokenHash' member.js

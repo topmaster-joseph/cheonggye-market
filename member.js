@@ -63,8 +63,21 @@ function setMarketingStore(storeId,storeName=''){
 }
 
 async function loadSiteAccess(){return api(ACCESS,`/me?site=${encodeURIComponent(SITE)}`)}
+async function updateAdminEntry(s){
+  show('memberAdminEntry',false);
+  if(!s)return false;
+  try{
+    const response=await fetch(route('/api/admin-session'),{headers:{Authorization:`Bearer ${s.access_token}`},cache:'no-store'});
+    const result=await response.json().catch(()=>({}));
+    const allowed=response.ok&&result.allowed===true;
+    show('memberAdminEntry',allowed);
+    return allowed;
+  }catch{return false;}
+}
+function storeRegistryState(){return document.querySelector('input[name="storeRegistryState"]:checked')?.value||'existing';}
 function applicationData(){
   return {
+    storeRegistryState:storeRegistryState(),
     applicantName:$('applicantName').value.trim(),
     applicantPhone:$('applicantPhone').value.trim(),
     storeName:$('storeNameApply').value.trim(),
@@ -87,6 +100,7 @@ function validateApplication(d){
 function buildApplicationNote(d){
   return [
     '[청계면상인회 정회원 신청]',
+    `점포 명단 상태: ${d.storeRegistryState==='new'?'명단에 없는 신규 점포':'기존 상가 명단 점포'}`,
     `신청자 성명: ${d.applicantName}`,
     `연락처: ${d.applicantPhone}`,
     `운영 상가명: ${d.storeName}`,
@@ -109,14 +123,15 @@ async function requestSiteAccess(){
     const note=buildApplicationNote(d);
     const result=await api(ACCESS,'/request',{method:'POST',body:JSON.stringify({site:SITE,tenant:TENANT,role:'member',note})});
     if(result.already_authorized){status('accessRequestStatus','이미 정회원 권한이 확인되었습니다. 화면을 다시 불러옵니다.');setTimeout(()=>location.reload(),500);return;}
-    status('accessRequestStatus',result.already_pending?'이미 정회원 신청이 접수되어 검수 중입니다.':'정회원 신청이 접수되었습니다. 임원 검수 후 이 Google 계정에 정회원 권한이 자동 연결됩니다.');
+    const submittedNewStore=d.storeRegistryState==='new';
+    status('accessRequestStatus',result.already_pending?'이미 정회원 신청이 접수되어 검수 중입니다.':submittedNewStore?'정회원 신청과 신규 점포 정보가 함께 접수되었습니다. 임원 검수 후 점포 등록과 정회원 권한 연결을 진행합니다.':'정회원 신청이 접수되었습니다. 임원 검수 후 이 Google 계정에 정회원 권한이 자동 연결됩니다.');
     setStage(3);
   }catch(e){status('accessRequestStatus',e.message==='unauthorized'?'Google 로그인을 다시 확인해 주세요.':'정회원 신청을 처리하지 못했습니다.','error')}
   finally{button.disabled=false}
 }
 
 async function loadStores(){const r=await fetch(`${CORE}/public/stores?tenant=${TENANT}`,{cache:'no-store'});if(!r.ok)throw new Error('stores_failed');const d=await r.json();stores=d.stores||[];renderStores();}
-function renderStores(){const q=$('storeSearch').value.trim().toLowerCase();const list=stores.filter(s=>!q||`${s.name} ${s.public_address||''}`.toLowerCase().includes(q));$('storeList').innerHTML=list.map(s=>`<button class="store ${selectedStore?.id===s.id?'active':''}" data-id="${esc(s.id)}"><b>${esc(s.name)}</b><small>${esc(s.public_address||'주소 확인 중')}</small></button>`).join('')||'<div class="status warn">검색 결과가 없습니다.</div>';$('storeList').querySelectorAll('.store').forEach(b=>b.onclick=()=>{selectedStore=stores.find(s=>s.id===b.dataset.id);$('claimStore').disabled=!selectedStore;renderStores();hideStatus('claimStatus');});}
+function renderStores(){const q=$('storeSearch').value.trim().toLowerCase();const list=stores.filter(s=>!q||`${s.name} ${s.public_address||''}`.toLowerCase().includes(q));$('storeList').innerHTML=list.map(s=>`<button class="store ${selectedStore?.id===s.id?'active':''}" data-id="${esc(s.id)}"><b>${esc(s.name)}</b><small>${esc(s.public_address||'주소 확인 중')}</small></button>`).join('')||'<div class="status warn">검색 결과가 없습니다. 명단에 없던 신규 점포로 신청했다면 관리자 등록이 완료된 뒤 이 목록에 나타납니다.</div>';$('storeList').querySelectorAll('.store').forEach(b=>b.onclick=()=>{selectedStore=stores.find(s=>s.id===b.dataset.id);$('claimStore').disabled=!selectedStore;renderStores();hideStatus('claimStatus');});}
 
 async function loadClaims(){
   const d=await api(MEMBERSHIP,'/mine');
@@ -143,6 +158,7 @@ function unregisteredUI(s,access={}){show('storeCard',false);show('claimsCard',f
 
 async function signedInUI(s){
   show('loginCard',false);show('accountCard',true);$('accountEmail').textContent=s.user.email||s.user.user_metadata?.full_name||'Google 계정';
+  await updateAdminEntry(s);
   if(!$('applicantName').value)$('applicantName').value=s.user.user_metadata?.full_name||s.user.user_metadata?.name||'';
   if(!$('applicantPhone').value&&s.user.phone)$('applicantPhone').value=s.user.phone;
   try{
@@ -151,11 +167,12 @@ async function signedInUI(s){
     else unregisteredUI(s,access);
   }catch{show('accessCard',true);show('storeCard',false);status('accessRequestStatus','정회원 권한 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.','error');setStage(2)}
 }
-async function signedOutUI(){show('loginCard',true);show('accountCard',false);show('accessCard',false);show('storeCard',false);show('claimsCard',false);show('serviceCard',false);setStage(1);}
+async function signedOutUI(){show('memberAdminEntry',false);show('loginCard',true);show('accountCard',false);show('accessCard',false);show('storeCard',false);show('claimsCard',false);show('serviceCard',false);setStage(1);}
 
 $('googleLogin').onclick=openAuthHub;
 $('requestAccess').onclick=requestSiteAccess;
 $('logout').onclick=async()=>{await sb.auth.signOut();await signedOutUI()};
+document.querySelectorAll('input[name="storeRegistryState"]').forEach(input=>input.addEventListener('change',()=>{const isNew=storeRegistryState()==='new';show('newStoreHint',isNew);$('storeNameApply').placeholder=isNew?'신규 상호명 직접 입력':'상호명';$('storeAddressApply').placeholder=isNew?'신규 점포의 무안군 청계면 이하 주소':'무안군 청계면 이하 주소';}));
 $('storeSearch').addEventListener('input',renderStores);
 $('claimStore').onclick=async()=>{if(!selectedStore)return;const displayName=$('displayName').value.trim(),phone=$('phone').value.trim();if(!displayName||!phone)return status('claimStatus','점포 연결 확인을 위해 이름과 연락처를 입력해 주세요.','warn');$('claimStore').disabled=true;try{const d=await api(MEMBERSHIP,'/claim',{method:'POST',body:JSON.stringify({store_id:selectedStore.id,display_name:displayName,phone,note:$('claimNote').value.trim()})});status('claimStatus',d.already_pending?'이미 점포 연결 승인 대기 중입니다.':'점포 연결 신청을 접수했습니다.');setStage(4);await loadClaims()}catch(e){status('claimStatus',e.message==='already_store_member'?'이미 연결된 점포입니다.':e.message==='name_phone_required'?'이름과 연락처를 입력해 주세요.':'신청을 처리하지 못했습니다.','error')}finally{$('claimStore').disabled=false}};
 $('activateService').onclick=()=>{
