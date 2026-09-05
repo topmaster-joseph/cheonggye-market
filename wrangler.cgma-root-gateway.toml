@@ -6,3 +6,7 @@ workers_dev = false
 routes = [
   { pattern = "ekodi.kr/cgma*", zone_name = "ekodi.kr" }
 ]
+
+[[services]]
+binding = "EKODI_SHARED"
+service = "shy-thunder-39a4"

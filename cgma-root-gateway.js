@@ -6,6 +6,19 @@ function isCgmaPath(pathname) {
   return pathname === PREFIX || pathname.startsWith(`${PREFIX}/`);
 }
 
+function isMarketingPath(pathname) {
+  return pathname === `${PREFIX}/marketing` || pathname.startsWith(`${PREFIX}/marketing/`);
+}
+
+async function delegatedMarketingResponse(request, env) {
+  if (!env?.EKODI_SHARED?.fetch) return null;
+  try {
+    const response = await env.EKODI_SHARED.fetch(request);
+    if (response?.headers?.get('x-ekodi-route') === 'marketing-canonical-projection') return response;
+  } catch {}
+  return null;
+}
+
 function upstreamUrl(requestUrl) {
   const source = new URL(requestUrl);
   const pathname = source.pathname === PREFIX ? '/' : source.pathname.slice(PREFIX.length) || '/';
@@ -64,9 +77,13 @@ function gatewayHeaders(response) {
 }
 
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     const url = new URL(request.url);
     if (!isCgmaPath(url.pathname)) return new Response('Not Found', { status: 404 });
+    if (isMarketingPath(url.pathname)) {
+      const delegated = await delegatedMarketingResponse(request, env);
+      if (delegated) return delegated;
+    }
     if (url.pathname === PREFIX) {
       const canonical = new URL(`${PREFIX}/`, CANONICAL_ORIGIN);
       canonical.search = url.search;
@@ -88,4 +105,4 @@ export default {
   },
 };
 
-export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml };
+export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml, isMarketingPath, delegatedMarketingResponse };
