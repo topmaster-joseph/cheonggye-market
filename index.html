@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="styles.css?v=20260729-news-live" />
   <link rel="stylesheet" href="live.css?v=20260904-dashboard" />
   <link rel="stylesheet" href="resources.css?v=20260902-root-hub" />
-  <link rel="stylesheet" href="cgma-sections.css?v=20260905-public-card-v4" />
+  <link rel="stylesheet" href="cgma-sections.css?v=20260905-today-discovery-v5" />
 </head>
 <body>
   <a class="skip" href="#main">본문 바로가기</a>
@@ -72,7 +72,7 @@
 
     <section class="section market-map-section" id="market-map">
       <div class="map-title-row"><div class="map-title-copy"><div class="section-kicker">MARKET MAP <span>02</span></div><h2>한눈에 보는 <em>상권지도</em></h2><p>승달산부터 목포대 후문까지, 84개 상가를 골목별 상점군으로 묶어 한눈에 살펴보세요.</p></div><div class="market-map-summary" aria-label="청계면 상권 현황"><div><small>표시 상가</small><strong id="summaryAll">-</strong></div><div><small>정회원</small><strong id="summaryRegular">-</strong></div><div><small>준회원</small><strong id="summaryAssociate">-</strong></div><div class="summary-area"><small>상권 중심</small><strong>무안군 · 청계면 중심</strong></div></div></div>
-      <div class="map-workspace"><div class="map-toolbar"><label class="map-search"><span aria-hidden="true">⌕</span><input id="mapSearch" type="search" placeholder="상가명 또는 업종 검색" aria-label="상가명 또는 업종 검색"></label><div class="member-filters" role="group" aria-label="회원 구분"><button class="active" data-member-filter="all">전체</button><button data-member-filter="regular">정회원</button><button data-member-filter="associate">준회원</button></div><div class="category-filters" role="group" aria-label="업종 선택"><button class="active" data-category-filter="all">전체업종</button><button data-category-filter="food">음식</button><button data-category-filter="cafe">카페</button><button data-category-filter="life">생활</button><button data-category-filter="culture">문화·서비스</button></div><span id="mapCount" class="map-count"></span></div>
+      <div class="today-discovery" id="todayDiscovery" aria-labelledby="todayDiscoveryTitle"><div class="today-discovery-head"><div><span class="section-kicker">TODAY IN CHEONGGYE</span><h3 id="todayDiscoveryTitle">오늘 청계에서 뭐 먹지?</h3><p id="todayDiscoveryStatus">오늘 한 곳을 골라드리고, 상인이 공개한 혜택도 함께 보여드려요.</p></div><button id="todayPickRefresh" class="today-refresh" type="button">다시 추천</button></div><div class="today-discovery-grid"><button class="today-pick-card" id="todayPickCard" type="button"><span>오늘의 한 곳</span><strong id="todayPickName">청계에서 한 곳을 고르는 중</strong><small id="todayPickMeta">잠시만 기다려 주세요.</small></button><section class="today-benefits" aria-label="오늘 혜택 있는 상가"><div class="today-benefits-head"><b>오늘 혜택 있는 곳</b><span id="todayBenefitCount">0곳</span></div><div class="today-benefit-list" id="todayBenefitList"><p>등록된 혜택을 확인하고 있습니다.</p></div></section></div></div><div class="map-workspace"><div class="map-toolbar"><label class="map-search"><span aria-hidden="true">⌕</span><input id="mapSearch" type="search" placeholder="상가명 또는 업종 검색" aria-label="상가명 또는 업종 검색"></label><div class="member-filters" role="group" aria-label="회원 구분"><button class="active" data-member-filter="all">전체</button><button data-member-filter="regular">정회원</button><button data-member-filter="associate">준회원</button></div><div class="category-filters" role="group" aria-label="업종 선택"><button class="active" data-category-filter="all">전체업종</button><button data-category-filter="food">음식</button><button data-category-filter="cafe">카페</button><button data-category-filter="life">생활</button><button data-category-filter="culture">문화·서비스</button></div><span id="mapCount" class="map-count"></span></div>
         <div class="map-layout" id="mapLayout"><aside class="map-side-panel" aria-label="상가 검색 결과"><div class="map-panel-head"><div><h3>상가 목록</h3><p>목록을 선택하면 상세정보가 함께 바뀝니다.</p></div><strong id="mapDirectoryCount">-</strong></div><div class="map-directory" id="mapDirectory" aria-label="지도에 표시된 상가 목록"></div></aside><div class="map-center"><div class="leaflet-map" id="marketMap" aria-label="무안군 안에서 청계면을 중심으로 그린 만화형 상권지도"></div><div class="map-legend-row" aria-label="회원 구분"><span><i class="map-legend-dot regular"></i>정회원</span><span><i class="map-legend-dot associate"></i>준회원</span></div></div><aside class="map-detail" id="mapDetail" aria-live="polite"><span class="map-detail-tag">선택 상가 정보</span><h3>청계 상권 둘러보기</h3><p>목록이나 지도에서 상가를 선택하면 회원 구분과 기본 정보를 확인할 수 있습니다.</p></aside></div></div>
       <details class="map-source-note"><summary>지도 표시 기준</summary><p>정회원은 2026년 정회원 현황, 준회원은 공개 가능한 등록자료를 기준으로 표시합니다. 그림지도는 무안군 경계를 넘지 않고 청계면과 목포대 후문 상권을 중심으로 단순화해 표시합니다. 실제 축척과 다를 수 있으며 정확한 방문 위치는 등록주소 길찾기로 확인해 주세요.</p></details>
     </section>
@@ -177,7 +177,7 @@
   <script src="site-shell.js?v=20260904-language-inline"></script>
   <script src="site-path.js?v=20260902-root-path"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="script.js?v=20260905-public-card-v4"></script>
+  <script src="script.js?v=20260905-today-discovery-v5"></script>
   <script src="resources.js?v=20260903-readability"></script>
   <script type="module" src="central-auth-bridge.js?v=20260904-direct-login"></script>
 </body>
