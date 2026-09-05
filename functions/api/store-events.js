@@ -5,12 +5,13 @@ const schema=`CREATE TABLE IF NOT EXISTS cgma_store_events(day TEXT NOT NULL,sto
 const clean=(value,max)=>String(value??'').trim().replace(/\s+/g,' ').slice(0,max);
 const storeKey=value=>clean(value,120).toLowerCase().replace(/전남목포대점|무안목포대점|무안캠퍼스시티점|목포대학점|목포대점|목대점|캠퍼스시티점/g,'').replace(/[^0-9a-z가-힣]/g,'');
 const reply=(body,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store'}});
+function originAllowed(value){if(!value)return true;try{const url=new URL(value),host=url.hostname.toLowerCase();if(url.protocol==='https:'&&['cgma.or.kr','www.cgma.or.kr','ekodi.kr','www.ekodi.kr'].includes(host))return true;return url.protocol==='http:'&&['127.0.0.1','localhost'].includes(host);}catch{return false;}}
 function koreaDay(offset=0){const d=new Date(Date.now()-offset*86400000),parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d),o=Object.fromEntries(parts.map(x=>[x.type,x.value]));return `${o.year}-${o.month}-${o.day}`;}
 async function ensure(db){await db.prepare(schema).run();await db.prepare('CREATE INDEX IF NOT EXISTS idx_cgma_store_events_store_day ON cgma_store_events(store_key,day)').run();}
 async function authorizedStore(request,storeId){const auth=request.headers.get('authorization')||'';if(!/^Bearer\s+\S+/i.test(auth)||!storeId)return null;const r=await fetch(`${STORE_API}/stores`,{headers:{apikey:PUBLISHABLE_KEY,Authorization:auth}});if(!r.ok)return null;const data=await r.json().catch(()=>({}));return (data.stores||[]).find(store=>String(store.id)===String(storeId))||null;}
 export async function onRequestPost({request,env}){
  const db=env.cheonggye_market_notices;if(!db)return reply({error:'analytics_store_unavailable'},503);await ensure(db);
- const origin=request.headers.get('origin')||'';if(origin&&!/^https://(cgma.or.kr|www.cgma.or.kr|ekodi.kr)$/i.test(origin)&&!/^http://(127.0.0.1|localhost)(:\d+)?$/i.test(origin))return reply({error:'origin_not_allowed'},403);
+ const origin=request.headers.get('origin')||'';if(!originAllowed(origin))return reply({error:'origin_not_allowed'},403);
  let body;try{body=await request.json()}catch{return reply({error:'invalid_json'},400)}
  if(clean(body.website,120))return reply({ok:true},202);
  const storeName=clean(body.store_name,120),key=storeKey(storeName),eventType=clean(body.event_type,40),source=clean(body.source,50).toLowerCase().replace(/[^a-z0-9_-]/g,'');
