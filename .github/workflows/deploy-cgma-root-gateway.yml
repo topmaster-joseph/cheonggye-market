@@ -54,7 +54,7 @@ jobs:
           }
           check_upstream 'https://cheonggye-market.pages.dev/' 'OFFICIAL ARCHIVE'
           check_upstream 'https://cheonggye-market.pages.dev/admin' 'ADMIN CONSOLE'
-          check_upstream 'https://cheonggye-market.pages.dev/member-admin' 'MEMBERSHIP REVIEW'
+          check_upstream 'https://cheonggye-market.pages.dev/admin/member' 'MEMBERSHIP REVIEW'
           check_upstream 'https://cheonggye-market.pages.dev/api/resources' '"items"'
       - name: Deploy canonical path gateway
         uses: cloudflare/wrangler-action@v3
@@ -86,7 +86,7 @@ jobs:
           check_200 '/cgma/member' 'EKODI 통합인증센터'
           check_200 '/cgma/store' '내 가게 운영 | 청계상권 AI'
           check_200 '/cgma/admin' 'ADMIN CONSOLE'
-          check_200 '/cgma/member-admin' 'MEMBERSHIP REVIEW'
+          check_200 '/cgma/admin/member' 'MEMBERSHIP REVIEW'
           check_200 '/cgma/api/resources' '"items"'
           check_200 '/cgma/site-path.js' "prefix='/cgma'"
 

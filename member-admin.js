@@ -86,7 +86,7 @@ async function loadPending(){
 
 async function signedInUI(s){show('loginCard',false);show('accountCard',true);$('accountEmail').textContent=s.user.email||'관리자 계정';await loadPending()}
 async function signedOutUI(){show('loginCard',true);show('accountCard',false);show('pendingCard',false)}
-$('sendLink').onclick=async()=>{const email=$('email').value.trim();if(!email)return;try{const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:absolute('/member-admin'),shouldCreateUser:true}});if(error)throw error;const el=$('loginStatus');el.textContent='로그인 링크를 보냈습니다.';el.className='status'}catch{const el=$('loginStatus');el.textContent='로그인 링크를 보내지 못했습니다.';el.className='status error'}};
+$('sendLink').onclick=async()=>{const email=$('email').value.trim();if(!email)return;try{const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:absolute('/admin/member'),shouldCreateUser:true}});if(error)throw error;const el=$('loginStatus');el.textContent='로그인 링크를 보냈습니다.';el.className='status'}catch{const el=$('loginStatus');el.textContent='로그인 링크를 보내지 못했습니다.';el.className='status error'}};
 $('logout').onclick=async()=>{await sb.auth.signOut();await signedOutUI()};$('refresh').onclick=loadPending;
 const {data:{session:initial}}=await sb.auth.getSession();if(initial)await signedInUI(initial);else await signedOutUI();
 sb.auth.onAuthStateChange(async(event,s)=>{if(event==='SIGNED_IN'&&s)await signedInUI(s);if(event==='SIGNED_OUT')await signedOutUI()});

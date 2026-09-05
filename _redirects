@@ -5,6 +5,7 @@
 
 /member  /member/index.html  200
 /admin  /admin/index.html  200
-/member-admin  /member-admin/index.html  200
+/admin/member  /member-admin/index.html  200
+/member-admin  /admin/member  301
 /payment-success  /payment-success.html  200
 /payment-fail  /payment-fail.html  200
