@@ -154,7 +154,7 @@ function selectShop(index){
 }
 function renderMap(){
  const benefitCount=activeBenefitEntries().length;if(benefitOnly&&benefitCount===0)benefitOnly=false;
- const list=selectedShops(),allCount=shops.length,regularCount=shops.filter(s=>s.m==='regular').length,associateCount=shops.filter(s=>s.m==='associate').length;
+ const list=selectedShops(),allCount=shops.length,regularCount=shops.filter(s=>s.m==='regular').length,associateCount=shops.filter(s=>s.m==='associate').length;const heroAll=document.querySelector('#heroAll'),heroRegular=document.querySelector('#heroRegular'),heroBenefits=document.querySelector('#heroBenefits');if(heroAll)heroAll.textContent=allCount+'곳';if(heroRegular)heroRegular.textContent=regularCount+'곳';if(heroBenefits)heroBenefits.textContent=benefitCount+'곳';
  document.querySelector('#summaryAll')&&(document.querySelector('#summaryAll').textContent=allCount+'개');document.querySelector('#summaryRegular')&&(document.querySelector('#summaryRegular').textContent=regularCount+'개');document.querySelector('#summaryAssociate')&&(document.querySelector('#summaryAssociate').textContent=associateCount+'개');if(mapCount)mapCount.textContent=`표시 상가 ${list.length}곳`;if(mapDirectoryCount)mapDirectoryCount.textContent=`총 ${list.length}개`;
  if(benefitFilterCount)benefitFilterCount.textContent=String(benefitCount);if(benefitOnlyToggle){benefitOnlyToggle.classList.toggle('active',benefitOnly);benefitOnlyToggle.setAttribute('aria-pressed',String(benefitOnly));benefitOnlyToggle.disabled=benefitCount===0&&!benefitOnly;}
  initMarketMap();markerByIndex.clear();marketMarkerLayer?.clearLayers();

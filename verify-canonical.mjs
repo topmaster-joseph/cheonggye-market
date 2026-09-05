@@ -17,6 +17,9 @@ for(const[file,base]of pages){
 }
 const home=await readFile('index.html','utf8');assert.doesNotMatch(home,/class="ai-menu-disabled"/);assert.match(home,/id="adminNav"/);assert.match(home,/상인회 관리/);assert.doesNotMatch(home,/온라인 LIVE/);assert.match(home,/href="#live">온라인<\/a>/);assert.match(home,/id="siteLanguage"/);assert.match(home,/기획팀장/);assert.match(home,/정경탁/);assert.match(home,/양파창고/);
 assert.equal([...home.matchAll(/id="resources"/g)].length,1);assert.doesNotMatch(home,/id="mapListToggle"/);assert.match(home,/class="map-center"/);assert.match(home,/id="resourceSearch"/);assert.ok(home.includes('cgma-sections.css?v=20260906-road-map-admin-v1'));assert.match(home,/leaflet@1\.9\.4/);assert.match(home,/OpenStreetMap/);
+// EKODI common user UI contract · CGMA tailored
+assert.ok(home.includes('cgma-user-ui.css?v=20260906-common-ui-v1'));assert.match(home,/class="hero cgma-hero"/);assert.match(home,/class="quick-start"/);assert.match(home,/id="heroAll"/);assert.match(home,/id="heroRegular"/);assert.match(home,/id="heroBenefits"/);assert.match(home,/class="cgma-mobile-dock"/);const memberUi=await readFile('member/index.html','utf8');assert.match(memberUi,/class="member-user-page"/);assert.ok(memberUi.includes('/cgma-user-ui.css?v=20260906-common-ui-v1'));assert.match(memberUi,/class="member-shortcuts"/);assert.match(memberUi,/class="cgma-mobile-dock"/);const userUi=await readFile('cgma-user-ui.css','utf8');assert.match(userUi,/EKODI common user UI layer/);assert.match(userUi,/prefers-reduced-motion/);assert.match(userUi,/--ek-touch:44px/);
+
 const pausedAi=await readFile('market-ai.html','utf8');assert.match(pausedAi,/현재 비활성화/);assert.doesNotMatch(pausedAi,/market-ai.js/);
 const redirects=await readFile('_redirects','utf8');
 for(const route of ['/ai ','/member ','/store ','/admin ','/member-admin ','/order/* ','/payment-success ','/payment-fail '])assert.ok(redirects.includes(route),`missing route ${route.trim()}`);

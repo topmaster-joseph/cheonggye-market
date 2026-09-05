@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="google" content="notranslate" />
   <meta name="description" content="무안군 청계면상인회 공식 홈페이지. 청계의 가게와 소식, 상생 프로그램을 만나보세요." />
   <title>청계면상인회 | 오늘도 청계에서 만나요</title>
@@ -14,8 +14,9 @@
   <link rel="stylesheet" href="live.css?v=20260904-dashboard" />
   <link rel="stylesheet" href="resources.css?v=20260902-root-hub" />
   <link rel="stylesheet" href="cgma-sections.css?v=20260906-road-map-admin-v1" />
+  <link rel="stylesheet" href="cgma-user-ui.css?v=20260906-common-ui-v1" />
 </head>
-<body>
+<body class="cgma-user-page">
   <a class="skip" href="#main">본문 바로가기</a>
   <header class="header">
     <a class="brand" data-ekodi-header-home="cgma" href="#top" aria-label="청계면상인회 홈">
@@ -24,27 +25,33 @@
     </a>
     <button class="menu-btn" aria-expanded="false" aria-controls="nav" aria-label="메뉴 열기"><span></span><span></span></button>
     <nav id="nav" aria-label="주요 메뉴">
-      <a href="#about">상인회 소개</a><a href="#market-map">상권지도</a><a href="#resources">자료실</a><a href="#news">상권소식</a><a href="#live">온라인</a><label class="language-picker" aria-label="언어 선택"><span aria-hidden="true">🌐</span><select id="siteLanguage"><option value="ko">한국어</option><option value="en">English</option><option value="zh-CN">中文</option><option value="ja">日本語</option><option value="vi">Tiếng Việt</option><option value="ne">नेपाली</option></select></label><a class="nav-cta" data-central-auth data-site="cgma" href="https://auth.ekodi.kr/?site=cgma&amp;direct=1&amp;return_to=https%3A%2F%2Fekodi.kr%2Fcgma%2F">Google 로그인</a><a class="nav-cta admin-entry" id="adminNav" href="admin" hidden>상인회 관리</a><a class="nav-cta" data-member-apply href="https://auth.ekodi.kr/?site=cgma&amp;direct=1&amp;return_to=https%3A%2F%2Fekodi.kr%2Fcgma%2Fmember%3Fapply%3D1">가입하기</a>
+      <a href="#market-map">가게찾기</a><a href="#news">상권소식</a><a href="#resources">공식자료</a><a href="#about">상인회 소개</a><a href="#live">온라인</a><label class="language-picker" aria-label="언어 선택"><span aria-hidden="true">🌐</span><select id="siteLanguage"><option value="ko">한국어</option><option value="en">English</option><option value="zh-CN">中文</option><option value="ja">日本語</option><option value="vi">Tiếng Việt</option><option value="ne">नेपाली</option></select></label><a class="nav-cta" data-central-auth data-site="cgma" href="https://auth.ekodi.kr/?site=cgma&amp;direct=1&amp;return_to=https%3A%2F%2Fekodi.kr%2Fcgma%2F">Google 로그인</a><a class="nav-cta admin-entry" id="adminNav" href="admin" hidden>상인회 관리</a><a class="nav-cta" data-member-apply href="https://auth.ekodi.kr/?site=cgma&amp;direct=1&amp;return_to=https%3A%2F%2Fekodi.kr%2Fcgma%2Fmember%3Fapply%3D1">가입하기</a>
     </nav>
   </header>
 
   <main id="main">
-    <section class="hero" id="top">
+    <section class="hero cgma-hero" id="top">
       <div class="hero-copy">
-        <p class="eyebrow">전남 무안 · 목포대 후문 골목상권</p>
-        <h1>사람이 오고,<br><em>마음이 머무는</em> 청계</h1>
-        <p class="lead">오래된 가게의 온기와 새로운 아이디어가 만나는 곳.<br>청계의 오늘을 함께 걷고, 먹고, 누려보세요.</p>
-        <div class="hero-actions"><span class="btn ai-disabled" aria-disabled="true">청계상권 AI <small>당분간 비활성화</small></span><a class="text-link" href="#market-map">가게·상권 둘러보기 <span>→</span></a></div>
-        <div class="hero-stats"><div><strong>51</strong><span>함께하는 정회원</span></div><div><strong>72+</strong><span>골목의 다양한 가게</span></div><div><strong>1</strong><span>마음으로 연결된 동네</span></div></div>
+        <div class="hero-context"><span>📍 전남 무안 · 청계면</span><span>🎓 목포대 후문 생활상권</span><span>🤝 상인·주민·대학 연결</span></div>
+        <p class="eyebrow">CHEONGGYE LOCAL COMMONS</p>
+        <h1>오늘 청계에서<br><em>만나고, 찾고, 연결하세요.</em></h1>
+        <p class="lead">처음 온 방문자는 가게와 혜택을 바로 찾고, 상인은 회원·내 가게 업무로 곧장 이동할 수 있습니다. 청계의 골목과 사람, 공식 소식을 한곳에서 이어드립니다.</p>
+        <div class="hero-actions"><a class="btn primary" href="#market-map">오늘의 가게 찾기 <span>→</span></a><a class="btn cream" href="member">상인회원 · 내 가게 <span>→</span></a><a class="text-link" href="#news">오늘의 상권소식 <span>↘</span></a></div>
+        <div class="hero-stats" aria-label="청계 상권 현재 현황"><div><strong id="heroAll">-</strong><span>지도 표시 상가</span></div><div><strong id="heroRegular">-</strong><span>정회원 점포</span></div><div><strong id="heroBenefits">-</strong><span>오늘 혜택</span></div></div>
       </div>
       <div class="hero-art" aria-label="청계 골목의 활기찬 풍경을 표현한 그래픽">
         <div class="sun"></div><div class="mountain m1"></div><div class="mountain m2"></div>
         <div class="shop shop-a"><span>책 · 문구</span></div><div class="shop shop-b"><span>맛있는 한 끼</span></div><div class="shop shop-c"><span>커피 한 잔</span></div>
         <div class="road"></div><div class="walk w1">●</div><div class="walk w2">●</div>
-        <p class="art-caption">승달산길에서 도림길까지<br><b>우리의 하루가 이어집니다</b></p>
+        <p class="art-caption">승달산길에서 도림길까지<br><b>오늘의 청계가 이어집니다</b></p>
       </div>
-      <div class="scroll-hint">SCROLL <span></span></div>
     </section>
+
+    <section class="quick-start" aria-label="청계면상인회 빠른 시작"><div class="quick-start-inner">
+      <a class="quick-card" href="#market-map"><span class="quick-icon" aria-hidden="true">🗺️</span><span><small>VISITOR</small><strong>가게·혜택 바로 찾기</strong><p>실제 도로지도에서 음식·카페·생활 점포와 오늘 혜택을 확인합니다.</p></span><span class="quick-arrow">→</span></a>
+      <a class="quick-card" href="member"><span class="quick-icon" aria-hidden="true">🏪</span><span><small>MERCHANT</small><strong>회원 · 내 가게 업무</strong><p>정회원 신청, 승인 확인, 내 가게 연결과 운영 화면으로 이동합니다.</p></span><span class="quick-arrow">→</span></a>
+      <a class="quick-card" href="#resources"><span class="quick-icon" aria-hidden="true">📚</span><span><small>OFFICIAL</small><strong>공식자료 · 상권소식</strong><p>지원사업, 도시재생, 상인회 공지와 공식 기록을 빠르게 찾습니다.</p></span><span class="quick-arrow">→</span></a>
+    </div></section>
 
     <section class="ticker" aria-label="청계면상인회 주요 가치"><div>같이 사는 골목 <i>✦</i> 대학과 동네의 만남 <i>✦</i> 매일 발견하는 로컬 <i>✦</i> 같이 사는 골목 <i>✦</i> 대학과 동네의 만남 <i>✦</i></div></section>
     <section class="section about" id="about">
@@ -175,6 +182,7 @@
       <p class="form-privacy-note">제출된 개인정보는 회원가입 심사와 연락 목적으로만 사용됩니다.</p>
     </section>
   </main>
+  <nav class="cgma-mobile-dock" aria-label="모바일 빠른 메뉴"><a href="#top"><span>⌂</span>홈</a><a href="#market-map"><span>⌖</span>가게찾기</a><a href="#news"><span>◫</span>소식</a><a class="primary-dock" href="member"><span>●</span>회원</a></nav>
   <footer data-ekodi-footer></footer>
   <script src="site-shell.js?v=20260906-admin-entry"></script>
   <script src="cgma-i18n.js?v=20260905-native-i18n"></script>
