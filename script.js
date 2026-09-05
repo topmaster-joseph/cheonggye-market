@@ -93,6 +93,12 @@ let activeShopIndex=null;
 const categoryVisuals={food:{icon:'🍜',copy:'먹고 머무는 골목'},cafe:{icon:'☕',copy:'잠시 쉬어가는 골목'},life:{icon:'🛍',copy:'생활이 이어지는 골목'},culture:{icon:'✦',copy:'취향과 서비스의 골목'}};
 const shopRegistryIndex=new Map();
 const normalizeShopName=value=>String(value||'').toLowerCase().replace(/전남목포대점|무안목포대점|무안캠퍼스시티점|목포대학점|목포대점|목대점|캠퍼스시티점/g,'').replace(/[^0-9a-z가-힣]/g,'');
+const PUBLIC_PROFILE_URL='https://renzehysxirjilvdxacv.supabase.co/rest/v1/store_public_profiles?select=store_name,store_address,store_phone,hero_image_url,short_intro,featured_menu_name,featured_menu_price,today_benefit,benefit_until&is_published=eq.true';
+const PUBLIC_PROFILE_KEY='sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_';
+let publicStoreProfiles=[];
+const normalizeAddress=value=>String(value||'').toLowerCase().replace(/전라남도|전남|무안군|청계면/g,'').replace(/\s+/g,'').replace(/번지/g,'');
+function findPublicProfile(shop){const nameKey=normalizeShopName(shop.n),addressKey=normalizeAddress(shop.a);return publicStoreProfiles.find(p=>normalizeShopName(p.store_name)===nameKey)||publicStoreProfiles.find(p=>addressKey&&addressKey!=='상권'&&normalizeAddress(p.store_address)===addressKey)||publicStoreProfiles.find(p=>{const pKey=normalizeShopName(p.store_name);return nameKey.length>=4&&pKey.length>=4&&(pKey.includes(nameKey)||nameKey.includes(pKey));});}
+async function loadPublicStoreProfiles(){try{const r=await fetch(PUBLIC_PROFILE_URL,{headers:{apikey:PUBLIC_PROFILE_KEY,Authorization:`Bearer ${PUBLIC_PROFILE_KEY}`}});if(!r.ok)throw new Error('profile_http');publicStoreProfiles=await r.json();if(activeShopIndex!==null)selectShop(activeShopIndex);}catch{publicStoreProfiles=[];}}
 const fullShopAddress=shop=>shop.a==='청계면 상권'?'전남 무안군 청계면 상권':`전남 무안군 청계면 ${shop.a}`;
 function relatedShops(index,limit=3){
  const current=shops[index],cluster=streetCluster(current);
@@ -103,12 +109,19 @@ function selectShop(index){
  const cluster=streetCluster(s),related=relatedShops(index),relatedIds=new Set(related.map(x=>x.i));
  markerByIndex.forEach((marker,i)=>{marker.classList.toggle('active',i===index);marker.classList.toggle('related',i!==index&&relatedIds.has(i));});
  document.querySelectorAll('.directory-item').forEach(p=>p.classList.toggle('active',Number(p.dataset.index)===index));
- const fullAddress=fullShopAddress(s),destination=encodeURIComponent(fullAddress),registry=shopRegistryIndex.get(normalizeShopName(s.n));
+ const fullAddress=fullShopAddress(s),destination=encodeURIComponent(fullAddress),registry=shopRegistryIndex.get(normalizeShopName(s.n)),profile=findPublicProfile(s);
  const directions=`<div class="map-directions"><a href="https://map.naver.com/p/search/${destination}" target="_blank" rel="noopener noreferrer">네이버지도 ↗</a><a href="https://map.kakao.com/link/search/${destination}" target="_blank" rel="noopener noreferrer">길찾기 ↗</a></div>`;
  const memberClass=s.m==='regular'?'regular':'associate',memberLabel=memberLabels[s.m],visual=categoryVisuals[s.c]||categoryVisuals.culture;
- const phone=registry?.phone?`<div><dt>공개 대표전화</dt><dd><a class="map-phone" href="tel:${registry.phone.replace(/\D/g,'')}">${esc(registry.phone)}</a></dd></div>`:'';
+ const publicPhone=profile?.store_phone||registry?.phone||'';
+ const phone=publicPhone?`<div><dt>공개 대표전화</dt><dd><a class="map-phone" href="tel:${publicPhone.replace(/\D/g,'')}">${esc(publicPhone)}</a></dd></div>`:'';
  const relatedHtml=related.length?`<section class="store-nearby"><div class="store-nearby-head"><span>같은 골목에서 함께 보기</span><small>${esc(clusterName(s))}</small></div><div class="store-nearby-list">${related.map(x=>`<button type="button" data-map-related="${x.i}"><span>${categoryVisuals[x.c]?.icon||'•'}</span><b>${esc(x.n)}</b><small>${esc(x.t)}</small></button>`).join('')}</div><p>가까운 거리순이 아니라 같은 골목 상점군을 기준으로 한 탐색 제안입니다.</p></section>`:'';
- mapDetail.innerHTML=`<div class="store-visual category-${s.c}"><div class="store-visual-glyph">${visual.icon}</div><div><small>${esc(clusterName(s))}</small><b>${visual.copy}</b></div></div><div class="map-detail-heading"><span class="map-detail-number">${index+1}</span><div><h3>${esc(s.n)}</h3><div class="map-detail-badges"><span class="member-status ${memberClass}">${memberLabel}</span><span class="map-detail-tag">${labels[s.c]}</span></div></div></div><p>${s.m==='regular'?'청계면상인회 정회원 상가입니다. 지역 안에서 소비가 순환할 수 있도록 방문과 관심으로 함께해 주세요.':'준회원 상가로 등록된 기본 안내입니다.'}</p><dl><div><dt>업종</dt><dd>${esc(s.t)}</dd></div><div><dt>주소</dt><dd>${esc(fullAddress)}</dd></div>${phone}<div><dt>골목 구분</dt><dd>${esc(clusterName(s))}</dd></div></dl>${relatedHtml}<div class="location-caution">그림지도는 상권 탐색용입니다. 실제 방문 위치는 등록주소 길찾기를 이용해 주세요.</div>${directions}`;
+ const benefitActive=profile?.today_benefit&&(!profile.benefit_until||profile.benefit_until>=new Date().toISOString().slice(0,10));
+ const visualHtml=profile?.hero_image_url?`<figure class="store-photo"><img src="${esc(profile.hero_image_url)}" alt="${esc(s.n)} 대표사진" loading="lazy"/><figcaption><small>${esc(clusterName(s))}</small><b>상인이 직접 등록한 대표사진</b></figcaption></figure>`:`<div class="store-visual category-${s.c}"><div class="store-visual-glyph">${visual.icon}</div><div><small>${esc(clusterName(s))}</small><b>${visual.copy}</b></div></div>`;
+ const intro=profile?.short_intro||(s.m==='regular'?'청계면상인회 정회원 상가입니다. 지역 안에서 소비가 순환할 수 있도록 방문과 관심으로 함께해 주세요.':'준회원 상가로 등록된 기본 안내입니다.');
+ const featured=profile?.featured_menu_name?`<section class="store-featured"><span>대표메뉴</span><b>${esc(profile.featured_menu_name)}</b>${profile.featured_menu_price!==null&&profile.featured_menu_price!==undefined?`<strong>${Number(profile.featured_menu_price).toLocaleString('ko-KR')}원</strong>`:''}</section>`:'';
+ const benefit=benefitActive?`<section class="store-benefit"><span>오늘의 혜택</span><b>${esc(profile.today_benefit)}</b>${profile.benefit_until?`<small>${esc(profile.benefit_until)}까지</small>`:''}</section>`:'';
+ const ownerUpdated=profile?'<span class="store-owner-updated">상인이 직접 업데이트</span>':'';
+ mapDetail.innerHTML=`${visualHtml}<div class="map-detail-heading"><span class="map-detail-number">${index+1}</span><div><h3>${esc(s.n)}</h3><div class="map-detail-badges"><span class="member-status ${memberClass}">${memberLabel}</span><span class="map-detail-tag">${labels[s.c]}</span>${ownerUpdated}</div></div></div><p>${esc(intro)}</p>${featured}${benefit}<dl><div><dt>업종</dt><dd>${esc(s.t)}</dd></div><div><dt>주소</dt><dd>${esc(fullAddress)}</dd></div>${phone}<div><dt>골목 구분</dt><dd>${esc(clusterName(s))}</dd></div></dl>${relatedHtml}<div class="location-caution">그림지도는 상권 탐색용입니다. 실제 방문 위치는 등록주소 길찾기를 이용해 주세요.</div>${directions}`;
  mapDetail.querySelectorAll('[data-map-related]').forEach(button=>button.addEventListener('click',()=>selectShop(Number(button.dataset.mapRelated))));
 }
 function renderMap(){
@@ -126,6 +139,7 @@ document.querySelectorAll('[data-category-filter]').forEach(btn=>btn.addEventLis
 mapSearch?.addEventListener('input',renderMap);
 let mapResizeTimer;window.addEventListener('resize',()=>{clearTimeout(mapResizeTimer);mapResizeTimer=setTimeout(renderMap,120)},{passive:true});
 renderMap();
+loadPublicStoreProfiles();
 
 const menu=document.querySelector('.menu-btn'),nav=document.querySelector('#nav');
 menu?.addEventListener('click',()=>{const open=nav.classList.toggle('open');menu.setAttribute('aria-expanded',open)});
