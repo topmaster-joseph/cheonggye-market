@@ -44,7 +44,7 @@ jobs:
           grep -Fq 'id="resourceSearch"' index.html
           ! grep -Fq 'id="mapListToggle"' index.html
           grep -Fq 'class="map-center"' index.html
-          grep -Fq 'cgma-sections.css?v=20260905-benefit-map-v6' index.html
+          grep -Fq 'cgma-sections.css?v=20260905-scene-recommend-v7' index.html
           grep -Fq 'muan-map-art' script.js
           grep -Fq 'stick-person' script.js
           grep -Fq 'store-nearby' script.js
@@ -60,6 +60,12 @@ jobs:
           grep -Fq 'benefit-pin-badge' script.js
           grep -Fq 'activeBenefitEntries' script.js
           grep -Fq 'CGMA benefit map v6' cgma-sections.css
+          grep -Fq 'id="sceneDiscovery"' index.html
+          grep -Fq 'data-scene="lunch"' index.html
+          grep -Fq 'renderSceneRecommendations' script.js
+          grep -Fq 'sceneRecommendations' script.js
+          grep -Fq 'defaultScene' script.js
+          grep -Fq 'CGMA scene recommendation v7' cgma-sections.css
           grep -Fq 'store_public_profiles' script.js
           grep -Fq 'profileHero' store-admin.html
           grep -Fq "PROFILE_TABLE='store_public_profiles'" store-admin.js
