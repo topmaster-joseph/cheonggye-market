@@ -75,6 +75,8 @@ async function loadPending(){
   ]);
   const requests=accessResult.status==='fulfilled'?(accessResult.value.requests||[]):[];
   const claims=claimResult.status==='fulfilled'?(claimResult.value.claims||[]):[];
+  const reviewer=claimResult.status==='fulfilled'?claimResult.value.reviewer:null;
+  if($('authorityLabel'))$('authorityLabel').textContent=reviewer?.authority==='platform'?'PLATFORM ADMIN · DELEGATED':'TENANT ADMIN';
   renderAccess(requests);renderClaims(claims);$('count').textContent=`${requests.length+claims.length}건`;
   if(accessResult.status==='rejected'&&claimResult.status==='rejected')return setStatus('승인 대기 목록을 불러오지 못했습니다. 관리자 권한을 확인해 주세요.','error');
   if(accessResult.status==='rejected')return setStatus('기존 점포 연결 목록은 확인했지만 신규 정회원 신청 목록은 불러오지 못했습니다.','warn');

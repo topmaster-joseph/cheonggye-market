@@ -147,7 +147,8 @@
         const response=await fetch(route('/api/admin-session'),{headers:{Authorization:`Bearer ${token}`}}),result=await response.json();
         if(!response.ok||!result.allowed)return deny('이 계정은 청계면상인회 관리자로 지정되어 있지 않습니다.');
         document.querySelector('#adminDenied').hidden=true;document.querySelector('#adminLoading').hidden=true;document.querySelector('#adminApp').hidden=false;
-        document.querySelector('#accessState').textContent=`${result.email||'로그인 계정'} · 청계면상인회 관리자 · 조회 및 수정 가능`;
+        const authorityLabel=result.authority==='platform'?'EKODI 최고관리자 위임':'청계면상인회 관리자';
+        document.querySelector('#accessState').textContent=`${result.email||'로그인 계정'} · ${authorityLabel} · 청계면상인회 조회 및 수정 가능`;
         window.CGMA_ADMIN_OVERVIEW?.start(session);
         window.CGMA_MERCHANT_ADMIN?.start(session);
         window.CGMA_NOTICE_ADMIN?.start(session);

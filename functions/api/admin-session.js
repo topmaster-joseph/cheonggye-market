@@ -5,6 +5,8 @@ export async function onRequestGet({request}){
   return Response.json({
     allowed:result.allowed,
     grade:result.role||'member',
+    authority:result.authority||'none',
+    scope:result.scope||null,
     mode:result.allowed?'edit':'none',
     reason:result.reason,
     email:result.allowed?result.user?.email:undefined
