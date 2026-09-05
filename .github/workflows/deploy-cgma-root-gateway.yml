@@ -46,10 +46,16 @@ jobs:
       - name: Verify upstream before routing
         run: |
           set -euo pipefail
-          curl -fsSL --max-redirs 6 --max-time 20 https://cheonggye-market.pages.dev/ | grep -Fq 'OFFICIAL ARCHIVE'
-          curl -fsSL --max-redirs 6 --max-time 20 https://cheonggye-market.pages.dev/admin | grep -Fq 'ADMIN CONSOLE'
-          curl -fsSL --max-redirs 6 --max-time 20 https://cheonggye-market.pages.dev/member-admin | grep -Fq 'MEMBERSHIP REVIEW'
-          curl -fsSL --max-time 20 https://cheonggye-market.pages.dev/api/resources | grep -Fq '"items"'
+          check_upstream() {
+            url="$1"; needle="$2"; body=$(mktemp)
+            curl -fsSL --max-redirs 6 --max-time 20 -o "$body" "$url"
+            grep -Fq "$needle" "$body"
+            rm -f "$body"
+          }
+          check_upstream 'https://cheonggye-market.pages.dev/' 'OFFICIAL ARCHIVE'
+          check_upstream 'https://cheonggye-market.pages.dev/admin' 'ADMIN CONSOLE'
+          check_upstream 'https://cheonggye-market.pages.dev/member-admin' 'MEMBERSHIP REVIEW'
+          check_upstream 'https://cheonggye-market.pages.dev/api/resources' '"items"'
       - name: Deploy canonical path gateway
         uses: cloudflare/wrangler-action@v3
         with:
