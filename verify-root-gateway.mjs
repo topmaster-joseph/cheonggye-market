@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import gateway, { upstreamUrl, canonicalLocation, rewriteHtml } from './cgma-root-gateway.js';
+import gateway, { upstreamUrl, canonicalLocation, rewriteHtml, isMarketingPath } from './cgma-root-gateway.js';
 
 assert.equal(upstreamUrl('https://ekodi.kr/cgma').toString(), 'https://cheonggye-market.pages.dev/');
 assert.equal(upstreamUrl('https://ekodi.kr/cgma/admin?x=1').toString(), 'https://cheonggye-market.pages.dev/admin?x=1');
@@ -11,6 +11,22 @@ assert.match(rewritten, /href="\/cgma\/member"/);
 assert.match(rewritten, /src="\/cgma\/app\.js"/);
 assert.match(rewritten, /href="https:\/\/example\.com"/);
 assert.match(rewritten, /rel="canonical" href="https:\/\/ekodi\.kr\/cgma"/);
+
+assert.equal(isMarketingPath('/cgma/marketing'), true);
+assert.equal(isMarketingPath('/cgma/marketing/app.js'), true);
+assert.equal(isMarketingPath('/cgma/member'), false);
+
+let delegatedOverride='';
+const delegatedResponse = await gateway.fetch(new Request('https://ekodi.kr/cgma/marketing', {
+  headers:{'Cloudflare-Workers-Version-Overrides':'shy-thunder-39a4="candidate-version"'}
+}), {EKODI_SHARED:{fetch:async request=>{
+  delegatedOverride=request.headers.get('Cloudflare-Workers-Version-Overrides')||'';
+  return new Response('PAUSED',{status:200,headers:{'x-ekodi-route':'marketing-canonical-projection'}});
+}}});
+assert.equal(delegatedResponse.status, 200);
+assert.equal(delegatedResponse.headers.get('x-ekodi-route'), 'marketing-canonical-projection');
+assert.equal(await delegatedResponse.text(), 'PAUSED');
+assert.equal(delegatedOverride, 'shy-thunder-39a4="candidate-version"');
 
 const rootRedirect = await gateway.fetch(new Request('https://ekodi.kr/cgma?x=1'));
 assert.equal(rootRedirect.status, 308);
