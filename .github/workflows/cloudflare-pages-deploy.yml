@@ -32,9 +32,11 @@ jobs:
           grep -Fq 'position:fixed!important' responsive.css
           grep -Fq 'safe-area-inset-top' responsive.css
           grep -Fq 'body:has(>.topbar),body:has(>.top)' responsive.css
-          grep -Fq 'data-ekodi-fixed-header' admin.html
-          grep -Fq 'position:fixed' admin.html
-          grep -Fq 'safe-area-inset-top' admin.html
+          grep -Fq 'data-ekodi-fixed-header' admin/index.html
+          grep -Fq 'position:fixed' admin/index.html
+          grep -Fq 'safe-area-inset-top' admin/index.html
+          grep -Fq 'MOVED TO CANONICAL ADMIN' admin.html
+          ! grep -Fq 'id="adminApp"' admin.html
 
       - name: Check Cloudflare deployment credentials
         id: credentials
@@ -105,7 +107,9 @@ jobs:
           check_route "$BASE_URL" "/ai" "청계상권 Marketing AI | 현재 비활성화"
           check_route "$BASE_URL" "/member" "회원 계정 · 정회원 신청 | 청계면상인회"
           check_route "$BASE_URL" "/store" "내 가게 운영 | 청계상권 AI"
-          check_route "$BASE_URL" "/admin.html" "data-ekodi-fixed-header"
+          check_route "$BASE_URL" "/admin" "data-ekodi-fixed-header"
+          check_route "$BASE_URL" "/admin.html" "MOVED TO CANONICAL ADMIN"
+          check_route "$BASE_URL" "/member-admin" "MOVED TO ADMIN CONSOLE"
           check_route "$BASE_URL" "/api/resources" "items"
           check_route "$BASE_URL" "/resource/" "resource-detail.js"
           check_route "$BASE_URL" "/api/resources?id=support-plan" "총사업비는 1억원"
