@@ -48,13 +48,20 @@ jobs:
           set -euo pipefail
           check_upstream() {
             url="$1"; needle="$2"; body=$(mktemp)
-            curl -fsSL --max-redirs 6 --max-time 20 -o "$body" "$url"
-            grep -Fq "$needle" "$body"
+            for attempt in $(seq 1 20); do
+              if curl -fsSL --max-redirs 6 --max-time 20 -o "$body" "$url" && grep -Fq "$needle" "$body"; then
+                rm -f "$body"
+                return 0
+              fi
+              sleep 5
+            done
+            echo "Upstream not ready: $url"
             rm -f "$body"
+            return 1
           }
           check_upstream 'https://cheonggye-market.pages.dev/' 'OFFICIAL ARCHIVE'
-          check_upstream 'https://cheonggye-market.pages.dev/admin' 'ADMIN CONSOLE'
-          check_upstream 'https://cheonggye-market.pages.dev/member-admin' 'MEMBERSHIP REVIEW'
+          check_upstream 'https://cheonggye-market.pages.dev/admin' 'id="memberReview"'
+          check_upstream 'https://cheonggye-market.pages.dev/member-admin' 'MOVED TO ADMIN CONSOLE'
           check_upstream 'https://cheonggye-market.pages.dev/api/resources' '"items"'
       - name: Deploy canonical path gateway
         uses: cloudflare/wrangler-action@v3
@@ -86,7 +93,7 @@ jobs:
           check_200 '/cgma/member' 'EKODI 통합인증센터'
           check_200 '/cgma/store' '내 가게 운영 | 청계상권 AI'
           check_200 '/cgma/admin' 'ADMIN CONSOLE'
-          check_200 '/cgma/member-admin' 'MEMBERSHIP REVIEW'
+          check_200 '/cgma/member-admin' 'ADMIN CONSOLE'
           check_200 '/cgma/api/resources' '"items"'
           check_200 '/cgma/site-path.js' "prefix='/cgma'"
 

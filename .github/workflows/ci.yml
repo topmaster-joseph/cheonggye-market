@@ -111,9 +111,15 @@ jobs:
           grep -Fq '공식 등록자료에 등재된 72개 상가' index.html
           grep -Fq 'CREATE TABLE IF NOT EXISTS cgma_merchants' functions/api/merchants.js
           grep -Fq 'merchantDefaults' functions/api/merchants.js
-          grep -Fq 'id="accessPending"' member-admin/index.html
-          grep -Fq 'id="claimPending"' member-admin/index.html
+          grep -Fq 'id="memberReview"' admin/index.html
+          grep -Fq 'id="accessPending"' admin/index.html
+          grep -Fq 'id="claimPending"' admin/index.html
+          grep -Fq 'CGMA_MEMBER_REVIEW' member-admin.js
           grep -Fq 'syncApprovedMerchant' member-admin.js
+          grep -Fq 'MOVED TO ADMIN CONSOLE' member-admin/index.html
+          ! grep -Fq 'id="pendingCard"' member-admin/index.html
+          grep -Fq 'MOVED TO CANONICAL ADMIN' admin.html
+          ! grep -Fq 'id="adminApp"' admin.html
 
       - name: Verify isolated customer authorization with central identity
         shell: bash

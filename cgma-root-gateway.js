@@ -84,6 +84,14 @@ export default {
       const delegated = await delegatedMarketingResponse(request, env);
       if (delegated) return delegated;
     }
+    if (url.pathname === `${PREFIX}/member-admin` || url.pathname === `${PREFIX}/member-admin/`) {
+      const canonical = new URL(`${PREFIX}/admin/`, CANONICAL_ORIGIN);
+      canonical.search = url.search;
+      canonical.searchParams.set('section', 'memberReview');
+      canonical.hash = 'memberReview';
+      return new Response(null, { status: 308, headers: { Location: canonical.toString(), 'X-EKODI-Route': 'cgma-root-gateway', 'X-EKODI-CGMA-Upstream': 'cheonggye-market-pages' } });
+    }
+
     if (url.pathname === PREFIX) {
       const canonical = new URL(`${PREFIX}/`, CANONICAL_ORIGIN);
       canonical.search = url.search;

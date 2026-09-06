@@ -22,7 +22,7 @@
         <a href="#dashboard">운영 현황</a>
         <a href="#merchantManager">점포·회원 명부</a>
         <a href="#noticeManager">공지·행사 관리</a>
-        <a href="../member-admin">정회원 신청 승인</a>
+        <a href="#memberReview">정회원 신청 승인</a>
         <span class="admin-nav-label">CONTENT</span>
         <a href="#resourceManager">공식 자료실</a>
         <a href="#siteModeManager">홈페이지 첫화면</a>
@@ -45,7 +45,7 @@
       </section>
       <section class="admin-command-grid" aria-label="빠른 업무">
         <a class="admin-command" href="#merchantManager"><small>MERCHANTS</small><b>점포·회원 명부</b><span>점포, 업종, 주소, 회원구분을 관리하고 공개 상권지도에 반영합니다.</span></a>
-        <a class="admin-command" href="../member-admin"><small>MEMBERS</small><b>정회원 신청 승인</b><span>점포와 신청자를 확인해 승인·반려합니다.</span></a>
+        <a class="admin-command" href="#memberReview"><small>MEMBERS</small><b>정회원 신청 승인</b><span>점포와 신청자를 확인해 승인·반려합니다.</span></a>
         <a class="admin-command" href="#noticeManager"><small>NOTICE</small><b>공지·행사 등록</b><span>상인에게 필요한 소식을 홈페이지에 바로 게시합니다.</span></a>
         <a class="admin-command" href="#resourceManager"><small>RESOURCE</small><b>공식 자료 관리</b><span>지원사업·축제·소통채널 자료를 정리합니다.</span></a>
         <a class="admin-command" href="#siteModeManager"><small>HOMEPAGE</small><b>첫화면 전환</b><span>정상·공사중·안내 화면을 관리자 권한으로 바꿉니다.</span></a>
@@ -92,6 +92,15 @@
         </form>
         <p class="admin-resource-status" id="siteModeStatus" role="status"></p>
         <div class="admin-site-preview"><small id="siteModePreviewLabel">정상 홈페이지</small><h3 id="siteModePreviewTitle">정상 홈페이지</h3><p id="siteModePreviewMessage">현재 홈페이지 전체 콘텐츠가 공개됩니다.</p></div>
+      </section>
+      <section class="admin-resource-panel admin-member-review" id="memberReview" hidden>
+        <header class="admin-resource-head"><div><small>MEMBERSHIP REVIEW &middot; TENANT CONTEXT</small><h2>정회원 신청 승인</h2><p>신규 정회원 자격과 기존 점포 연결 신청을 같은 운영관리 화면에서 검토합니다. 승인 권한은 화면이 아니라 서버의 Tenant 권한으로 확인합니다.</p></div><div class="admin-member-head-actions"><span class="admin-member-authority" id="authorityLabel">청계면상인회 관리자</span><button class="admin-action" id="memberReviewRefresh" type="button">새로고침</button></div></header>
+        <div class="admin-member-summary"><strong id="memberReviewCount">0건</strong><span>현재 승인 대기</span></div>
+        <p class="admin-resource-status" id="memberReviewStatus" role="status">신청 목록을 확인합니다.</p>
+        <div class="admin-member-columns">
+          <section><div class="admin-member-section-title"><div><small>NEW MEMBER</small><h3>신규 정회원 신청</h3><p>명단에 없던 신규 점포 또는 정회원 자격 자체를 신청한 경우입니다.</p></div><span id="accessCount">0건</span></div><div class="admin-member-grid" id="accessPending"></div></section>
+          <section><div class="admin-member-section-title"><div><small>STORE CLAIM</small><h3>기존 점포 연결 신청</h3><p>이미 등록된 점포를 신청자의 계정과 연결하는 소유·운영 권한 확인입니다.</p></div><span id="claimCount">0건</span></div><div class="admin-member-grid" id="claimPending"></div></section>
+        </div>
       </section>
       <section class="admin-resource-panel" id="resourceManager" hidden>
         <header class="admin-resource-head"><div><small>CGMA CONTENT</small><h2>공식 자료실 관리</h2><p>지원사업, 골목축제, 도시재생, 소통채널 자료를 홈페이지 안에서 관리합니다.</p></div><button class="admin-action" id="addResourceBtn" type="button">+ 새 자료</button></header>
@@ -155,6 +164,11 @@
         window.CGMA_SITE_MODE_ADMIN?.start(session);
         window.CGMA_RESOURCE_ADMIN?.start(session);
         window.CGMA_PETITION_ADMIN?.start(session);
+        import('../member-admin.js?v=20260906-unified-admin-shell-v1').then(()=>{
+          window.CGMA_MEMBER_REVIEW?.start(session,result);
+          const requestedSection=new URL(location.href).searchParams.get('section');
+          if(location.hash==='#memberReview'||requestedSection==='memberReview')requestAnimationFrame(()=>document.querySelector('#memberReview')?.scrollIntoView({block:'start'}));
+        }).catch(error=>console.error('CGMA member review module',error));
       }catch(error){console.error(error);return deny('권한 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')}
     })();
     function deny(message){

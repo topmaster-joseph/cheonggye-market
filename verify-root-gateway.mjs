@@ -33,6 +33,11 @@ assert.equal(rootRedirect.status, 308);
 assert.equal(rootRedirect.headers.get('location'), 'https://ekodi.kr/cgma/?x=1');
 assert.equal(rootRedirect.headers.get('x-ekodi-route'), 'cgma-root-gateway');
 
+const memberAdminRedirect = await gateway.fetch(new Request('https://ekodi.kr/cgma/member-admin?legacy=1'));
+assert.equal(memberAdminRedirect.status, 308);
+assert.equal(memberAdminRedirect.headers.get('location'), 'https://ekodi.kr/cgma/admin/?legacy=1&section=memberReview#memberReview');
+assert.equal(memberAdminRedirect.headers.get('x-ekodi-route'), 'cgma-root-gateway');
+
 const originalFetch = globalThis.fetch;
 let fetchedUrl = '';
 globalThis.fetch = async request => {
