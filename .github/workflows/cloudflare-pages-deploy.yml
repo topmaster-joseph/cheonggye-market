@@ -108,7 +108,7 @@ jobs:
           check_route "$BASE_URL" "/member" "회원 계정 · 정회원 신청 | 청계면상인회"
           check_route "$BASE_URL" "/store" "내 가게 운영 | 청계상권 AI"
           check_route "$BASE_URL" "/admin" "data-ekodi-fixed-header"
-          check_route "$BASE_URL" "/admin.html" "MOVED TO CANONICAL ADMIN"
+          check_route "$BASE_URL" "/admin.html" "data-ekodi-fixed-header"
           check_route "$BASE_URL" "/member-admin" "MOVED TO ADMIN CONSOLE"
           check_route "$BASE_URL" "/api/resources" "items"
           check_route "$BASE_URL" "/resource/" "resource-detail.js"
