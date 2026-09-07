@@ -26,6 +26,7 @@ jobs:
           node --check cgma-i18n.js
           node --check store-insight-model.mjs
           node --check store-action-model.mjs
+          node --check store-experiment-model.mjs
           node --check functions/_middleware.js
           node --check resources.js
           node --check resource-detail.js
@@ -39,6 +40,7 @@ jobs:
           node --check functions/api/resources.js
           node --check functions/api/parking-petition.js
           node --check functions/api/store-events.js
+          node --check functions/api/store-experiments.js
           node --check functions/api/merchants.js
           node --check functions/api/notices.js
           node --check functions/api/site-mode.js
@@ -49,6 +51,8 @@ jobs:
         run: node --test store-insight-model.test.mjs
       - name: Test merchant action queue model
         run: node --test store-action-model.test.mjs
+      - name: Test merchant experiment model
+        run: node --test store-experiment-model.test.mjs
       - name: Verify canonical CGMA root contract
         run: |
           node verify-canonical.mjs
@@ -91,14 +95,19 @@ jobs:
           grep -Fq 'trackStoreEvent' script.js
           grep -Fq 'data-store-direction' script.js
           grep -Fq 'id="insightDetail"' store-admin.html
-          grep -Fq 'store-admin.js?v=20260908-action-queue-v9' store-admin.html
+          grep -Fq 'store-admin.js?v=20260908-experiment-engine-v10' store-admin.html
+          grep -Fq 'id="experimentCard"' store-admin.html
+          grep -Fq 'store-experiment-model.mjs?v=20260908-experiment-engine-v10' store-admin.js
+          grep -Fq 'experimentApi' store-admin.js
+          grep -Fq 'renderExperiment' store-admin.js
+          grep -Fq 'cgma_store_experiments' functions/api/store-experiments.js
           grep -Fq 'id="actionQueue"' store-admin.html
           grep -Fq 'buildStoreActions' store-admin.js
-          grep -Fq 'store-action-model.mjs?v=20260908-action-queue-v9' store-admin.js
+          grep -Fq 'store-action-model.mjs?v=20260908-experiment-engine-v10' store-admin.js
           grep -Fq 'renderInsights' store-admin.js
           grep -Fq 'id="insightTrend"' store-admin.html
           grep -Fq 'id="insightAction"' store-admin.html
-          grep -Fq 'days=14' store-admin.js
+          grep -Fq 'days=30' store-admin.js
           grep -Fq 'summarizeInsights' store-admin.js
           grep -Fq 'cgma_store_events' functions/api/store-events.js
           grep -Fq 'authorizedStore' functions/api/store-events.js
