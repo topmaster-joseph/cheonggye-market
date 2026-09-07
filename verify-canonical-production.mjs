@@ -27,7 +27,7 @@ async function fetchText(path,{marker='',finalPath=''}={}){
 const root=await fetchText('/cgma',{marker:'청계면상인회 | 오늘도 청계에서 만나요',finalPath:'/cgma/'});
 report(root.text.includes('<link rel="canonical" href="https://ekodi.kr/cgma">'),'root canonical link');
 report(!root.text.includes('cgma.ekodi.kr'),'root old public domain absent');
-report(root.text.includes('id="mapListToggle"')&&root.text.includes('id="resourceSearch"')&&(root.text.match(/id="resources"/g)||[]).length===1,'map/archive readability layout');
+report(root.text.includes('id="marketMap"')&&root.text.includes('id="mapDirectory"')&&root.text.includes('id="resourceSearch"')&&(root.text.match(/id="resources"/g)||[]).length===1,'map/archive readability layout');
 
 const cssHref=root.text.match(/<link[^>]+rel=["']stylesheet["'][^>]+href=["']([^"']*styles\.css[^"']*)["']/i)?.[1]||'';
 const scriptSrc=root.text.match(/<script[^>]+src=["']([^"']*site-path\.js[^"']*)["']/i)?.[1]||'';
@@ -41,12 +41,12 @@ if(root.response&&scriptSrc){
   report(js.status===200&&js.headers.get('x-ekodi-route')===EVIDENCE_ROUTE&&body.includes("prefix='/cgma'"),'root site-path resolution',`url=${jsUrl.pathname} status=${js.status}`);
 }else report(false,'root site-path resolution','missing src');
 if(root.response&&redesignHref){const url=new URL(redesignHref,root.response.url),css=await fetch(url,{cache:'no-store'}),body=await css.text();report(css.status===200&&css.headers.get('x-ekodi-route')===EVIDENCE_ROUTE&&body.includes('CGMA map + archive readability redesign'),'map/archive stylesheet',`url=${url.pathname} status=${css.status}`);}else report(false,'map/archive stylesheet','missing href');
-report(root.text.includes('ai-menu-disabled')&&root.text.includes('현재 비활성화'),'Marketing AI menu paused');
+report(!root.text.includes('href="market-ai"')&&!root.text.includes('href="ai"'),'Marketing AI hidden from public navigation');
 await fetchText('/cgma/ai',{marker:'청계상권 Marketing AI | 현재 비활성화',finalPath:'/cgma/market-ai'});
 await fetchText('/cgma/member',{marker:'EKODI 통합인증센터',finalPath:'/cgma/member/'});
 await fetchText('/cgma/store',{marker:'내 가게 운영 | 청계상권 AI',finalPath:'/cgma/store-admin'});
-await fetchText('/cgma/admin',{marker:'ADMIN CONSOLE',finalPath:'/cgma/admin/'});
-await fetchText('/cgma/member-admin',{marker:'ADMIN CONSOLE',finalPath:'/cgma/admin/'});
+await fetchText('/cgma/admin',{marker:'OPERATIONS CONSOLE',finalPath:'/cgma/admin/'});
+await fetchText('/cgma/member-admin',{marker:'OPERATIONS CONSOLE',finalPath:'/cgma/admin/'});
 await fetchText('/cgma/resource?id=bylaws',{marker:'resource-detail.js',finalPath:'/cgma/resource/'});
 
 try{
