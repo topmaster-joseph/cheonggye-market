@@ -35,12 +35,15 @@ jobs:
           node --check admin-merchants.js
           node --check admin-notices.js
           node --check admin-overview.js
+          node --check admin-control-tower.js
           node --check admin-site-mode.js
           node --check member-admin.js
           node --check functions/api/resources.js
           node --check functions/api/parking-petition.js
           node --check functions/api/store-events.js
           node --check functions/api/store-experiments.js
+          node --check functions/api/admin-store-health.js
+          node --check functions/_shared/cgma-market-health.js
           node --check functions/api/merchants.js
           node --check functions/api/notices.js
           node --check functions/api/site-mode.js
@@ -52,7 +55,9 @@ jobs:
       - name: Test merchant action queue model
         run: node --test store-action-model.test.mjs
       - name: Test merchant experiment model
-        run: node --test store-experiment-model.test.mjs
+        run: node --test store-experiment-model.test.mjs      - name: Test market control tower model
+        run: node --test cgma-market-health.test.mjs
+
       - name: Verify canonical CGMA root contract
         run: |
           node verify-canonical.mjs
@@ -101,6 +106,13 @@ jobs:
           grep -Fq 'experimentApi' store-admin.js
           grep -Fq 'renderExperiment' store-admin.js
           grep -Fq 'cgma_store_experiments' functions/api/store-experiments.js
+          grep -Fq 'id="controlTower"' admin/index.html
+          grep -Fq 'admin-control-tower.js?v=20260908-control-tower-v11' admin/index.html
+          grep -Fq 'CGMA_CONTROL_TOWER' admin/index.html
+          grep -Fq 'admin-store-health' admin-control-tower.js
+          grep -Fq 'summarizeMarketHealth' functions/api/admin-store-health.js
+          grep -Fq 'cgmaAdmin' functions/api/admin-store-health.js
+          grep -Fq 'CGMA 8th-gen market control tower v11' admin-control.css
           grep -Fq 'id="actionQueue"' store-admin.html
           grep -Fq 'buildStoreActions' store-admin.js
           grep -Fq 'store-action-model.mjs?v=20260908-experiment-engine-v10' store-admin.js
