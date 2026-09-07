@@ -27,7 +27,7 @@
       const response=await fetch(route('/api/site-mode'),{cache:'no-store'}),data=await response.json();
       if(!response.ok)throw new Error(data.error||'site_mode_load_failed');
       apply(data.setting);
-      status(data.degraded?'저장소를 확인하지 못해 정상 홈페이지로 표시 중입니다.':'현재 첫화면 설정을 불러왔습니다.',Boolean(data.degraded));
+      status(data.forced?'공개 홈페이지는 업데이트 중으로 일시 중지되어 있습니다. 관리자 미리보기로 최신 화면을 확인할 수 있습니다.':data.degraded?'저장소를 확인하지 못해 정상 홈페이지로 표시 중입니다.':'현재 첫화면 설정을 불러왔습니다.',Boolean(data.degraded));
     }catch(error){console.error(error);status('첫화면 설정을 불러오지 못했습니다.',true)}
   }
   async function save(event){
@@ -41,6 +41,10 @@
   function start(session){
     token=session?.access_token||'';if(!token)return;$('siteModeManager').hidden=false;
     const form=$('siteModeForm');form?.addEventListener('submit',save);
+    $('siteModeAdminPreview')?.addEventListener('click',()=>{
+      const popup=window.open('about:blank','_blank');if(!popup){status('팝업이 차단되었습니다. 브라우저에서 팝업을 허용해주세요.',true);return;}
+      try{popup.sessionStorage.setItem('cgma_admin_preview_token',token);popup.location.href=route('/?admin-preview=1')}catch(error){console.error(error);popup.close();status('관리자 미리보기를 열지 못했습니다.',true)}
+    });
     form?.elements.mode?.addEventListener('change',()=>{const mode=form.elements.mode.value,preset=presets[mode];if(mode!=='normal'){form.elements.title.value=preset.title;form.elements.message.value=preset.message}preview()});
     form?.elements.title?.addEventListener('input',preview);form?.elements.message?.addEventListener('input',preview);load();
   }
