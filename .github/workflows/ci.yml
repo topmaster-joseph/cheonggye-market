@@ -101,7 +101,7 @@ jobs:
           grep -Fq 'cgma_store_experiments' functions/api/store-experiments.js
           grep -Fq 'id="actionQueue"' store-admin.html
           grep -Fq 'buildStoreActions' store-admin.js
-          grep -Fq 'store-action-model.mjs?v=20260908-action-queue-v9' store-admin.js
+          grep -Fq 'store-action-model.mjs?v=20260908-experiment-engine-v10' store-admin.js
           grep -Fq 'renderInsights' store-admin.js
           grep -Fq 'id="insightTrend"' store-admin.html
           grep -Fq 'id="insightAction"' store-admin.html
