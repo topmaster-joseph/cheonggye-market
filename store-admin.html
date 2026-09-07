@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex,nofollow"/><title>내 가게 운영 | 청계상권 AI</title><link rel="stylesheet" href="store-admin.css?v=20260908-action-queue-v9"/></head>
+<html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex,nofollow"/><title>내 가게 운영 | 청계상권 AI</title><link rel="stylesheet" href="store-admin.css?v=20260908-experiment-engine-v10"/></head>
 <body>
 <header class="top"><a href="member">← 정회원 · 내 가게</a><div class="row"><select id="storeSelect" class="store-select hide" aria-label="관리할 점포"></select><button id="refresh" class="ghost hide">새로고침</button><button id="logout" class="secondary hide">로그아웃</button></div></header>
 <main class="wrap">
@@ -9,6 +9,8 @@
     <section class="card" id="storeStatusCard"><div class="section-title"><div><span class="kicker">STORE STATUS</span><h2 id="storeName">점포</h2></div><span id="orderBadge" class="badge">주문 OFF</span></div><p id="storeAddress" class="muted"></p><div class="stats"><div class="stat"><small>오늘 주문</small><strong id="todayOrders">0</strong></div><div class="stat"><small>결제완료</small><strong id="paidOrders">0</strong></div><div class="stat"><small>준비중</small><strong id="activeOrders">0</strong></div><div class="stat"><small>판매메뉴</small><strong id="menuCount">0</strong></div></div><div id="storeStatus" class="status" style="margin-top:12px"></div><div class="row" style="margin-top:12px"><button id="toggleOrdering">주문 켜기</button><a id="openOrder" class="button secondary hide" target="_blank" rel="noopener">주문 화면 열기</a></div><div id="qrBox" class="qrbox hide" style="margin-top:10px"></div></section>
 
     <section class="card action-queue-card"><div class="section-title"><div><span class="kicker">TODAY ACTIONS</span><h2>오늘 할 일</h2></div><span id="actionQueueCount" class="badge">0</span></div><p class="muted compact">점포 상태와 최근 반응을 함께 보고 지금 효과가 큰 작업부터 최대 3개만 보여줍니다.</p><div id="actionQueue" class="action-queue"><div class="empty">작업을 정리하고 있습니다.</div></div></section>
+
+    <section class="card experiment-card" id="experimentCard"><div class="section-title"><div><span class="kicker">IMPROVEMENT EXPERIMENT</span><h2>개선 효과 측정</h2></div><span id="experimentBadge" class="badge">대기</span></div><p class="muted compact">한 번에 한 가지 개선만 측정해 변경 전·후의 익명 반응을 같은 기간으로 비교합니다.</p><div id="experimentBody" class="experiment-body"><div class="empty">오늘 할 일에서 효과측정을 시작하면 여기에 결과가 쌓입니다.</div></div><div id="experimentStatus" class="status hide"></div></section>
 
     <section class="card store-insights-card"><div class="section-title"><div><span class="kicker">MARKET MAP INSIGHTS</span><h2>상권지도 반응</h2></div><span id="insightPeriod" class="badge">최근 7일</span></div><p class="muted compact">개인정보 없이 내 가게의 상권지도 상호작용만 집계합니다. 수치는 운영 개선을 위한 참고 지표입니다.</p><div class="insight-summary"><strong id="insightTrend">반응을 확인하는 중</strong><p id="insightTrendDetail" class="muted compact">익명 반응을 최근 7일과 직전 7일로 비교합니다.</p><p id="insightCompare" class="insight-compare">최근 7일 0건 · 직전 7일 0건</p></div><div class="stats insight-stats"><div class="stat"><small>상세 열기</small><strong id="insightDetail">0</strong></div><div class="stat"><small>길찾기</small><strong id="insightDirections">0</strong></div><div class="stat"><small>추천 클릭</small><strong id="insightRecommend">0</strong></div><div class="stat"><small>혜택 클릭</small><strong id="insightBenefit">0</strong></div></div><div class="insight-action"><small>NEXT BEST ACTION</small><strong id="insightAction">가게 정보를 최신 상태로 유지해 주세요.</strong></div><div id="insightStatus" class="status" style="margin-top:12px">최근 반응을 확인하고 있습니다.</div><p class="muted compact insight-note">개인별 추적 없이 익명 클릭 합계로 만든 참고 신호입니다. 표본이 적을 때는 추세를 단정하지 않습니다.</p></section>
 
@@ -24,4 +26,4 @@
   </div>
 </main>
 <footer class="footer">점포 운영자 전용 · Powered by Marketing AI Core</footer>
-<script type="module" src="central-auth-bridge.js?v=20260813"></script><script type="module" src="store-admin.js?v=20260908-action-queue-v9"></script></body></html>
+<script type="module" src="central-auth-bridge.js?v=20260813"></script><script type="module" src="store-admin.js?v=20260908-experiment-engine-v10"></script></body></html>
