@@ -26,6 +26,7 @@ jobs:
           node --check cgma-i18n.js
           node --check store-insight-model.mjs
           node --check store-action-model.mjs
+          node --check store-experiment-model.mjs
           node --check functions/_middleware.js
           node --check resources.js
           node --check resource-detail.js
@@ -39,6 +40,7 @@ jobs:
           node --check functions/api/resources.js
           node --check functions/api/parking-petition.js
           node --check functions/api/store-events.js
+          node --check functions/api/store-experiments.js
           node --check functions/api/merchants.js
           node --check functions/api/notices.js
           node --check functions/api/site-mode.js
