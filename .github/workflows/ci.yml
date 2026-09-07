@@ -25,6 +25,7 @@ jobs:
           node --check site-shell.js
           node --check cgma-i18n.js
           node --check store-insight-model.mjs
+          node --check store-action-model.mjs
           node --check functions/_middleware.js
           node --check resources.js
           node --check resource-detail.js
@@ -46,6 +47,8 @@ jobs:
           node --check functions/_shared/resource-default-content.js
       - name: Test privacy-safe store insight model
         run: node --test store-insight-model.test.mjs
+      - name: Test merchant action queue model
+        run: node --test store-action-model.test.mjs
       - name: Verify canonical CGMA root contract
         run: |
           node verify-canonical.mjs
@@ -88,7 +91,10 @@ jobs:
           grep -Fq 'trackStoreEvent' script.js
           grep -Fq 'data-store-direction' script.js
           grep -Fq 'id="insightDetail"' store-admin.html
-          grep -Fq 'store-admin.js?v=20260907-store-insights-v8-complete' store-admin.html
+          grep -Fq 'store-admin.js?v=20260908-action-queue-v9' store-admin.html
+          grep -Fq 'id="actionQueue"' store-admin.html
+          grep -Fq 'buildStoreActions' store-admin.js
+          grep -Fq 'store-action-model.mjs?v=20260908-action-queue-v9' store-admin.js
           grep -Fq 'renderInsights' store-admin.js
           grep -Fq 'id="insightTrend"' store-admin.html
           grep -Fq 'id="insightAction"' store-admin.html
