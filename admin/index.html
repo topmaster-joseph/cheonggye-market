@@ -83,7 +83,7 @@
         <div class="admin-notice-list" id="noticeAdminList"></div>
       </section>
       <section class="admin-resource-panel" id="siteModeManager" hidden>
-        <header class="admin-resource-head"><div><small>SITE PRESENTATION</small><h2>홈페이지 첫화면</h2><p>정상 홈페이지, 공사중 화면, 중요한 안내 첫화면을 선택합니다.</p></div><a class="admin-action" href="../" target="_blank" rel="noopener">공개 화면 보기 ↗</a></header>
+        <header class="admin-resource-head"><div><small>SITE PRESENTATION</small><h2>홈페이지 첫화면</h2><p>정상 홈페이지, 공사중 화면, 중요한 안내 첫화면을 선택합니다.</p></div><button class="admin-action" id="siteModeAdminPreview" type="button">관리자 미리보기 ↗</button></header>
         <form class="admin-resource-form" id="siteModeForm">
           <label class="wide">첫화면 상태<select name="mode"><option value="normal">정상 홈페이지</option><option value="maintenance">잠시 공사중입니다</option><option value="notice">안내 첫화면</option></select></label>
           <label class="wide">제목<input name="title" maxlength="120" placeholder="예: 잠시 공사중입니다"></label>
@@ -129,7 +129,7 @@
   <script src="../admin-overview.js?v=20260906-control-plane"></script>
   <script src="../admin-merchants.js?v=20260906-control-plane"></script>
   <script src="../admin-notices.js?v=20260906-control-plane"></script>
-  <script src="../admin-site-mode.js?v=20260906-control-plane"></script>
+  <script src="../admin-site-mode.js?v=20260907-maintenance-preview"></script>
   <script src="../admin-resources.js?v=20260906-control-plane"></script>
   <script src="../admin-petition.js?v=20260906-control-plane"></script>
   <script>
