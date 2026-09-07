@@ -1,6 +1,12 @@
 name: CGMA Canonical Health
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'verify-canonical-production.mjs'
+      - '.github/workflows/cgma-canonical-health.yml'
   schedule:
     - cron: '17 * * * *'
   workflow_dispatch:
