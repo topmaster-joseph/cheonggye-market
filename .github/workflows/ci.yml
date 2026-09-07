@@ -55,7 +55,8 @@ jobs:
       - name: Test merchant action queue model
         run: node --test store-action-model.test.mjs
       - name: Test merchant experiment model
-        run: node --test store-experiment-model.test.mjs      - name: Test market control tower model
+        run: node --test store-experiment-model.test.mjs
+      - name: Test market control tower model
         run: node --test cgma-market-health.test.mjs
 
       - name: Verify canonical CGMA root contract
