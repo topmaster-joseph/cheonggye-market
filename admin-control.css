@@ -1,8 +1,8 @@
 :root{--admin-green:#143f35;--admin-lime:#d7f04a;--admin-orange:#ff6038;--admin-paper:#f5f0e5;--admin-line:rgba(20,63,53,.13)}
 [hidden]{display:none!important}
-body{background:var(--admin-paper)}
+body{margin:0;padding-top:0!important;background:var(--admin-paper)}
 .admin-shell{min-height:100vh;display:grid;grid-template-columns:268px minmax(0,1fr)}
-.admin-side{position:sticky;top:0;height:100vh;box-sizing:border-box;background:var(--admin-green);color:#fff;padding:1.7rem 1.3rem;overflow:auto}
+.admin-side{position:sticky;top:0;height:100vh;height:100dvh;box-sizing:border-box;background:var(--admin-green);color:#fff;padding:1.7rem 1.3rem;overflow:hidden}
 .admin-brand{display:block;padding:.35rem .45rem 1.4rem;color:#fff;text-decoration:none}
 .admin-brand b{font-size:1.08rem}.admin-brand small{opacity:.68;letter-spacing:.12em}
 .admin-nav-label{display:block;margin:1.2rem .55rem .35rem;color:#a9c4bc;font-size:.68rem;font-weight:900;letter-spacing:.13em}
@@ -92,3 +92,12 @@ body{background:var(--admin-paper)}
 
 /* CGMA intervention orchestrator v13 */
 .tower-playbook{margin-top:.75rem;padding:.75rem;border-radius:13px;background:#f3f7ef;border:1px solid #dce7d6}.tower-playbook>b{display:block;color:var(--admin-green);font-size:.8rem}.tower-playbook p{margin:.25rem 0 .6rem;color:#607169;font-size:.74rem;line-height:1.5}.tower-start,.tower-cancel,.tower-review-actions button{appearance:none;border:0;border-radius:10px;padding:.58rem .7rem;font:inherit;font-size:.72rem;font-weight:900;cursor:pointer}.tower-start{background:var(--admin-green);color:#fff}.tower-active-label{display:inline-flex;padding:.36rem .55rem;border-radius:999px;background:#eaf3df;color:#486d1b;font-size:.68rem;font-weight:900}.tower-link-note{display:block;color:#7a8782;line-height:1.45}.admin-tower-interventions{margin-top:1rem;padding-top:1rem;border-top:1px solid #e0e7e2}#towerInterventionList{display:grid;gap:.65rem}.tower-intervention-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.8rem;align-items:center;padding:.9rem;border:1px solid #dce4df;border-radius:15px;background:#fff}.tower-intervention-card>div:first-child{display:grid;gap:.18rem}.tower-intervention-card span{width:max-content;padding:.23rem .45rem;border-radius:999px;background:#edf3f0;color:#526b61;font-size:.64rem;font-weight:900}.tower-intervention-card strong{color:var(--admin-green)}.tower-intervention-card b{font-size:.78rem;color:#455b53}.tower-intervention-card p{margin:.15rem 0;color:#687872;font-size:.74rem;line-height:1.5}.tower-intervention-card small{color:#84908c}.tower-cancel{background:#f5ece9;color:#8e4439}.tower-review-actions{display:flex;gap:.35rem;flex-wrap:wrap}.tower-review-actions button{background:var(--admin-green);color:#fff}.tower-review-actions button:nth-child(2){background:#e8f0df;color:#46631d}.tower-review-actions button:nth-child(3){background:#f3e6e3;color:#8a3c33}.tower-outcome{background:#edf3f0!important;color:#52675f!important}@media(max-width:800px){.tower-intervention-card{grid-template-columns:1fr}.tower-review-actions button,.tower-cancel{min-height:40px;flex:1}}
+
+/* Admin shell viewport contract: no public-header offset and no desktop sidebar scrolling. */
+@media(min-width:801px) and (max-height:680px){
+  .admin-side{padding:.85rem .95rem}
+  .admin-brand{padding:.15rem .45rem .6rem}
+  .admin-nav-label{margin:.42rem .5rem .12rem;font-size:.58rem}
+  .admin-side nav a{padding:.36rem .55rem;font-size:.78rem;line-height:1.2}
+  .admin-side-foot{display:none}
+}
