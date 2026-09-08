@@ -116,8 +116,8 @@ jobs:
           grep -Fq 'cgma_store_experiments' functions/api/store-experiments.js
           grep -Fq 'canonicalStoreKey' functions/api/store-experiments.js
           grep -Fq 'id="controlTower"' admin/index.html
-          grep -Fq 'admin-control-tower.js?v=20260908-outcome-evaluator-v14' admin/index.html
-          grep -Fq 'admin-control.css?v=20260908-admin-viewport-v15' admin/index.html
+          grep -Fq 'admin-control-tower.js?v=20260908-review-due-queue-v16' admin/index.html
+          grep -Fq 'admin-control.css?v=20260908-review-due-queue-v16' admin/index.html
           grep -Fq 'padding-top:0!important' admin-control.css
           grep -Fq 'height:100dvh' admin-control.css
           grep -Fq 'overflow:hidden' admin-control.css
@@ -125,6 +125,12 @@ jobs:
           grep -Fq 'id="towerCanonicalStores"' admin/index.html
           grep -Fq 'id="towerInterventionList"' admin/index.html
           grep -Fq 'id="towerInterventionCount"' admin/index.html
+          grep -Fq 'id="towerReviewDueList"' admin/index.html
+          grep -Fq 'id="towerReviewDueCount"' admin/index.html
+          grep -Fq 'REVIEW DUE QUEUE' admin/index.html
+          grep -Fq 'renderReviewDue' admin-control-tower.js
+          grep -Fq 'manualDecisionOnly' admin-control-tower.js
+          grep -Fq 'review_due_count' functions/api/admin-market-interventions.js
           grep -Fq 'CGMA_CONTROL_TOWER' admin/index.html
           grep -Fq 'admin-store-health' admin-control-tower.js
           grep -Fq 'summarizeMarketHealth' functions/api/admin-store-health.js
