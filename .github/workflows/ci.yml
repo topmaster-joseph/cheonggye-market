@@ -78,6 +78,9 @@ jobs:
         run: |
           set -euo pipefail
           grep -Fq 'OFFICIAL ARCHIVE' index.html
+          grep -Fq 'https://ekodi.kr/mail/contact' site-shell.js
+          grep -Fq "url.searchParams.set('source','cgma')" site-shell.js
+          grep -Fq "url.searchParams.set('site','청계면상인회')" site-shell.js
           grep -Fq 'id="resourceSearch"' index.html
           ! grep -Fq 'id="mapListToggle"' index.html
           grep -Fq 'class="map-center"' index.html
