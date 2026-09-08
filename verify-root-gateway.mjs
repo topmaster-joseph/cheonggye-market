@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import gateway, { upstreamUrl, canonicalLocation, rewriteHtml, isMarketingPath } from './cgma-root-gateway.js';
+import gateway, { upstreamUrl, canonicalLocation, rewriteHtml, isMarketingPath, isOwnerAdminPath } from './cgma-root-gateway.js';
 
 assert.equal(upstreamUrl('https://ekodi.kr/cgma').toString(), 'https://cheonggye-market.pages.dev/');
 assert.equal(upstreamUrl('https://ekodi.kr/cgma/admin?x=1').toString(), 'https://cheonggye-market.pages.dev/admin?x=1');
@@ -15,6 +15,10 @@ assert.match(rewritten, /rel="canonical" href="https:\/\/ekodi\.kr\/cgma"/);
 assert.equal(isMarketingPath('/cgma/marketing'), true);
 assert.equal(isMarketingPath('/cgma/marketing/app.js'), true);
 assert.equal(isMarketingPath('/cgma/member'), false);
+assert.equal(isOwnerAdminPath('/cgma/admin/member'), true);
+assert.equal(isOwnerAdminPath('/cgma/admin/member/'), true);
+assert.equal(isOwnerAdminPath('/cgma/admin/assets/cgma-member-admin.js'), true);
+assert.equal(isOwnerAdminPath('/cgma/admin'), false);
 
 let delegatedOverride='';
 const delegatedResponse = await gateway.fetch(new Request('https://ekodi.kr/cgma/marketing', {
@@ -28,6 +32,17 @@ assert.equal(delegatedResponse.headers.get('x-ekodi-route'), 'marketing-canonica
 assert.equal(await delegatedResponse.text(), 'PAUSED');
 assert.equal(delegatedOverride, 'shy-thunder-39a4="candidate-version"');
 
+let ownerRequest='';
+const ownerResponse=await gateway.fetch(new Request('https://ekodi.kr/cgma/admin/member'),{EKODI_SHARED:{fetch:async request=>{ownerRequest=request.url;return new Response('OWNER',{status:200,headers:{'x-ekodi-route':'workspace-admin'}});}}});
+assert.equal(ownerRequest,'https://ekodi.kr/cgma/admin/member');
+assert.equal(ownerResponse.status,200);
+assert.equal(ownerResponse.headers.get('x-ekodi-route'),'workspace-admin');
+const ownerAsset=await gateway.fetch(new Request('https://ekodi.kr/cgma/admin/assets/cgma-member-admin.js'),{EKODI_SHARED:{fetch:async()=>new Response('ASSET',{status:200,headers:{'x-ekodi-route':'admin-workspace-asset'}})}});
+assert.equal(ownerAsset.status,200);
+assert.equal(ownerAsset.headers.get('x-ekodi-route'),'admin-workspace-asset');
+const ownerFailClosed=await gateway.fetch(new Request('https://ekodi.kr/cgma/admin/member'),{EKODI_SHARED:{fetch:async()=>new Response('WRONG',{status:200,headers:{'x-ekodi-route':'cgma-root-gateway'}})}});
+assert.equal(ownerFailClosed.status,502);
+
 const rootRedirect = await gateway.fetch(new Request('https://ekodi.kr/cgma?x=1'));
 assert.equal(rootRedirect.status, 308);
 assert.equal(rootRedirect.headers.get('location'), 'https://ekodi.kr/cgma/?x=1');
@@ -35,7 +50,7 @@ assert.equal(rootRedirect.headers.get('x-ekodi-route'), 'cgma-root-gateway');
 
 const memberAdminRedirect = await gateway.fetch(new Request('https://ekodi.kr/cgma/member-admin?legacy=1'));
 assert.equal(memberAdminRedirect.status, 308);
-assert.equal(memberAdminRedirect.headers.get('location'), 'https://ekodi.kr/cgma/admin/?legacy=1&section=memberReview#memberReview');
+assert.equal(memberAdminRedirect.headers.get('location'), 'https://ekodi.kr/cgma/admin/member?legacy=1');
 assert.equal(memberAdminRedirect.headers.get('x-ekodi-route'), 'cgma-root-gateway');
 
 const originalFetch = globalThis.fetch;
