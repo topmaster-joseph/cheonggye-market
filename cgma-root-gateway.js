@@ -10,6 +10,22 @@ function isMarketingPath(pathname) {
   return pathname === `${PREFIX}/marketing` || pathname.startsWith(`${PREFIX}/marketing/`);
 }
 
+function isOwnerAdminPath(pathname) {
+  return pathname === `${PREFIX}/admin/member`
+    || pathname === `${PREFIX}/admin/member/`
+    || pathname.startsWith(`${PREFIX}/admin/assets/`);
+}
+
+async function delegatedOwnerAdminResponse(request, env) {
+  if (!env?.EKODI_SHARED?.fetch) return new Response('CGMA owner admin unavailable', { status: 503 });
+  try {
+    const response = await env.EKODI_SHARED.fetch(request);
+    const route = response?.headers?.get('x-ekodi-route') || '';
+    if (route === 'workspace-admin' || route === 'admin-workspace-asset') return response;
+  } catch {}
+  return new Response('CGMA owner admin unavailable', { status: 502 });
+}
+
 async function delegatedMarketingResponse(request, env) {
   if (!env?.EKODI_SHARED?.fetch) return null;
   try {
@@ -80,15 +96,14 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (!isCgmaPath(url.pathname)) return new Response('Not Found', { status: 404 });
+    if (isOwnerAdminPath(url.pathname)) return delegatedOwnerAdminResponse(request, env);
     if (isMarketingPath(url.pathname)) {
       const delegated = await delegatedMarketingResponse(request, env);
       if (delegated) return delegated;
     }
     if (url.pathname === `${PREFIX}/member-admin` || url.pathname === `${PREFIX}/member-admin/`) {
-      const canonical = new URL(`${PREFIX}/admin/`, CANONICAL_ORIGIN);
+      const canonical = new URL(`${PREFIX}/admin/member`, CANONICAL_ORIGIN);
       canonical.search = url.search;
-      canonical.searchParams.set('section', 'memberReview');
-      canonical.hash = 'memberReview';
       return new Response(null, { status: 308, headers: { Location: canonical.toString(), 'X-EKODI-Route': 'cgma-root-gateway', 'X-EKODI-CGMA-Upstream': 'cheonggye-market-pages' } });
     }
 
@@ -113,4 +128,4 @@ export default {
   },
 };
 
-export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml, isMarketingPath, delegatedMarketingResponse };
+export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml, isMarketingPath, delegatedMarketingResponse, isOwnerAdminPath, delegatedOwnerAdminResponse };
