@@ -45,6 +45,8 @@ jobs:
           node --check functions/api/admin-store-health.js
           node --check functions/_shared/cgma-market-health.js
           node --check functions/_shared/cgma-store-identity.js
+          node --check functions/_shared/cgma-intervention-playbook.js
+          node --check functions/api/admin-market-interventions.js
           node --check functions/api/merchants.js
           node --check functions/api/notices.js
           node --check functions/api/site-mode.js
@@ -61,6 +63,8 @@ jobs:
         run: node --test cgma-market-health.test.mjs
       - name: Test canonical store identity model
         run: node --test cgma-store-identity.test.mjs
+      - name: Test intervention playbook model
+        run: node --test cgma-intervention-playbook.test.mjs
 
       - name: Verify canonical CGMA root contract
         run: |
@@ -112,11 +116,20 @@ jobs:
           grep -Fq 'cgma_store_experiments' functions/api/store-experiments.js
           grep -Fq 'canonicalStoreKey' functions/api/store-experiments.js
           grep -Fq 'id="controlTower"' admin/index.html
-          grep -Fq 'admin-control-tower.js?v=20260908-semantic-store-graph-v12' admin/index.html
+          grep -Fq 'admin-control-tower.js?v=20260908-intervention-orchestrator-v13' admin/index.html
+          grep -Fq 'admin-control.css?v=20260908-intervention-orchestrator-v13' admin/index.html
           grep -Fq 'id="towerCanonicalStores"' admin/index.html
+          grep -Fq 'id="towerInterventionList"' admin/index.html
+          grep -Fq 'id="towerInterventionCount"' admin/index.html
           grep -Fq 'CGMA_CONTROL_TOWER' admin/index.html
           grep -Fq 'admin-store-health' admin-control-tower.js
           grep -Fq 'summarizeMarketHealth' functions/api/admin-store-health.js
+          grep -Fq 'playbookForSignals' functions/api/admin-store-health.js
+          grep -Fq 'cgma_market_interventions' functions/api/admin-market-interventions.js
+          grep -Fq 'admin_identity_stored:false' functions/api/admin-market-interventions.js
+          grep -Fq 'PLAYBOOKS' functions/_shared/cgma-intervention-playbook.js
+          grep -Fq 'admin-market-interventions' admin-control-tower.js
+          grep -Fq 'CGMA intervention orchestrator v13' admin-control.css
           grep -Fq 'cgmaAdmin' functions/api/admin-store-health.js
           grep -Fq 'resolveIdentity' functions/api/admin-store-health.js
           grep -Fq "aggregation:'canonical_store_day_event'" functions/api/admin-store-health.js
