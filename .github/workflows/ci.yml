@@ -116,8 +116,8 @@ jobs:
           grep -Fq 'cgma_store_experiments' functions/api/store-experiments.js
           grep -Fq 'canonicalStoreKey' functions/api/store-experiments.js
           grep -Fq 'id="controlTower"' admin/index.html
-          grep -Fq 'admin-control-tower.js?v=20260908-intervention-orchestrator-v13' admin/index.html
-          grep -Fq 'admin-control.css?v=20260908-intervention-orchestrator-v13' admin/index.html
+          grep -Fq 'admin-control-tower.js?v=20260908-outcome-evaluator-v14' admin/index.html
+          grep -Fq 'admin-control.css?v=20260908-outcome-evaluator-v14' admin/index.html
           grep -Fq 'id="towerCanonicalStores"' admin/index.html
           grep -Fq 'id="towerInterventionList"' admin/index.html
           grep -Fq 'id="towerInterventionCount"' admin/index.html
