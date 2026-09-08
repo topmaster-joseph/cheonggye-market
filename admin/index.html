@@ -7,7 +7,7 @@
   <title>상인회 운영관리 | 청계면상인회</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="../styles.css">
-  <link rel="stylesheet" href="../admin-control.css?v=20260908-control-tower-v11">
+  <link rel="stylesheet" href="../admin-control.css?v=20260908-intervention-orchestrator-v13">
   <link rel="stylesheet" href="../admin-resources.css?v=20260906-control-plane">
   <style>[hidden]{display:none!important}@media(max-width:800px){.admin-side{position:fixed;top:0;left:0;right:0;padding-top:calc(10px + env(safe-area-inset-top,0px))}}</style>
 </head>
@@ -47,7 +47,7 @@
       <section class="admin-control-tower" id="controlTower" aria-labelledby="controlTowerTitle">
         <header class="admin-tower-head"><div><small>MARKET CONTROL TOWER</small><h2 id="controlTowerTitle">상권 운영 신호</h2><p>점포를 순위화하지 않고, 익명 반응에서 지금 확인할 운영 개입 후보만 찾습니다.</p></div><span id="towerPeriod" class="admin-member-authority">최근 7일</span></header>
         <div class="admin-tower-metrics"><article><span>반응 점포</span><b id="towerActiveStores">…</b></article><article><span>전체 반응</span><b id="towerInteractions">…</b></article><article><span>길찾기</span><b id="towerDirections">…</b></article><article><span>혜택 반응</span><b id="towerBenefits">…</b></article><article><span>상승 신호</span><b id="towerRising">…</b></article><article><span>관찰 필요</span><b id="towerWatch">…</b></article><article><span>실험 진행</span><b id="towerExperiments">…</b></article><article><span>점포 ID 연결</span><b id="towerCanonicalStores">…</b></article></div>
-        <div class="admin-tower-queue"><div class="admin-tower-title"><h3>오늘 확인할 신호</h3><span>최대 8개</span></div><div id="towerQueue"><div class="tower-empty">상권 신호를 확인하고 있습니다.</div></div></div><p class="admin-resource-status" id="towerStatus" role="status">개인 식별정보 없이 점포 단위 익명 반응을 집계합니다.</p>
+        <div class="admin-tower-queue"><div class="admin-tower-title"><h3>오늘 확인할 신호</h3><span>최대 8개</span></div><div id="towerQueue"><div class="tower-empty">상권 신호를 확인하고 있습니다.</div></div></div><div class="admin-tower-interventions"><div class="admin-tower-title"><h3>진행 중 운영카드</h3><span id="towerInterventionCount">0개 진행 중</span></div><div id="towerInterventionList"><div class="tower-empty">운영카드를 확인하고 있습니다.</div></div></div><p class="admin-resource-status" id="towerStatus" role="status">개인 식별정보 없이 점포 단위 익명 반응을 집계합니다.</p>
       </section>
       <section class="admin-command-grid" aria-label="빠른 업무">
         <a class="admin-command" href="#merchantManager"><small>MERCHANTS</small><b>점포·회원 명부</b><span>점포, 업종, 주소, 회원구분을 관리하고 공개 상권지도에 반영합니다.</span></a>
@@ -133,7 +133,7 @@
   <script src="../site-path.js?v=20260902-root-path"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../admin-overview.js?v=20260906-control-plane"></script>
-  <script src="../admin-control-tower.js?v=20260908-semantic-store-graph-v12"></script>
+  <script src="../admin-control-tower.js?v=20260908-intervention-orchestrator-v13"></script>
   <script src="../admin-merchants.js?v=20260906-control-plane"></script>
   <script src="../admin-notices.js?v=20260906-control-plane"></script>
   <script src="../admin-site-mode.js?v=20260907-maintenance-preview"></script>
