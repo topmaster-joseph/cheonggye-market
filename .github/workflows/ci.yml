@@ -117,7 +117,11 @@ jobs:
           grep -Fq 'canonicalStoreKey' functions/api/store-experiments.js
           grep -Fq 'id="controlTower"' admin/index.html
           grep -Fq 'admin-control-tower.js?v=20260908-outcome-evaluator-v14' admin/index.html
-          grep -Fq 'admin-control.css?v=20260908-outcome-evaluator-v14' admin/index.html
+          grep -Fq 'admin-control.css?v=20260908-admin-viewport-v15' admin/index.html
+          grep -Fq 'padding-top:0!important' admin-control.css
+          grep -Fq 'height:100dvh' admin-control.css
+          grep -Fq 'overflow:hidden' admin-control.css
+          grep -Fq '@media(min-width:801px) and (max-height:680px)' admin-control.css
           grep -Fq 'id="towerCanonicalStores"' admin/index.html
           grep -Fq 'id="towerInterventionList"' admin/index.html
           grep -Fq 'id="towerInterventionCount"' admin/index.html
