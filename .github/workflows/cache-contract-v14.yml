@@ -19,16 +19,14 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          repl={
-            'admin-control-tower.js?v=20260908-intervention-orchestrator-v13':'admin-control-tower.js?v=20260908-outcome-evaluator-v14',
-            'admin-control.css?v=20260908-intervention-orchestrator-v13':'admin-control.css?v=20260908-outcome-evaluator-v14'
-          }
+          old='20260908-intervention-orchestrator-v13'
+          new='20260908-outcome-evaluator-v14'
           for name in ['verify-canonical.mjs','.github/workflows/ci.yml']:
-            p=Path(name);s=p.read_text(encoding='utf-8')
-            for old,new in repl.items():
-              if old not in s: raise SystemExit(f'missing {old} in {name}')
-              s=s.replace(old,new)
-            p.write_text(s,encoding='utf-8')
+            p=Path(name)
+            s=p.read_text(encoding='utf-8')
+            if old not in s:
+              raise SystemExit(f'missing {old} in {name}')
+            p.write_text(s.replace(old,new),encoding='utf-8')
           PY
           rm .github/workflows/cache-contract-v14.yml
       - name: Commit contract update
@@ -38,4 +36,4 @@ jobs:
           git add verify-canonical.mjs .github/workflows/ci.yml .github/workflows/cache-contract-v14.yml
           git commit -m "test: align CGMA v14 admin cache contract"
           git push origin HEAD:ai/chatgpt/cgma-v14-cache-bump
-# trigger: align-v14-contract
+# trigger: align-v14-contract-v2
