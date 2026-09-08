@@ -1,0 +1,38 @@
+name: CGMA v14 cache bump helper
+
+on:
+  push:
+    branches: [ai/chatgpt/cgma-v14-cache-bump]
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ai/chatgpt/cgma-v14-cache-bump
+      - name: Bump admin asset cache keys
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('admin/index.html')
+          s=p.read_text(encoding='utf-8')
+          old_css='admin-control.css?v=20260908-intervention-orchestrator-v13'
+          old_js='admin-control-tower.js?v=20260908-intervention-orchestrator-v13'
+          assert old_css in s and old_js in s
+          s=s.replace(old_css,'admin-control.css?v=20260908-outcome-evaluator-v14')
+          s=s.replace(old_js,'admin-control-tower.js?v=20260908-outcome-evaluator-v14')
+          p.write_text(s,encoding='utf-8')
+          PY
+          rm .github/workflows/cache-bump-v14.yml
+      - name: Commit cache bump
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add admin/index.html .github/workflows/cache-bump-v14.yml
+          git commit -m "fix: bump CGMA v14 admin asset cache keys"
+          git push origin HEAD:ai/chatgpt/cgma-v14-cache-bump
