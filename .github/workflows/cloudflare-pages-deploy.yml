@@ -25,6 +25,7 @@ jobs:
         run: |
           node verify-canonical.mjs
           node verify-domain-routing.mjs
+          node verify-site-mode.mjs
 
       - name: Validate mobile fixed-header contract
         run: |
@@ -118,6 +119,8 @@ jobs:
           public_resources="$(curl -fsSL --max-time 15 "${BASE_URL}/api/resources?release=${GITHUB_SHA}")"
           if printf '%s' "$public_resources" | grep -Eq 'drive\.google\.com|docs\.google\.com'; then echo 'Public Google source URL leaked'; exit 1; fi
           check_route "$BASE_URL" "/" "OFFICIAL ARCHIVE"
+          site_mode="$(curl -fsSL --max-time 15 "${BASE_URL}/api/site-mode?release=${GITHUB_SHA}")"
+          if printf '%s' "$site_mode" | grep -Fq '"forced":true'; then echo 'Forced CGMA maintenance mode detected'; exit 1; fi
           check_route "$BASE_URL" "/cgma-sections.css" "CGMA map + archive readability redesign"
           check_css "$BASE_URL"
           echo 'Cheonggye public, AI, member, store and admin surfaces verified with fixed mobile header contract.'

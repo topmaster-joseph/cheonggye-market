@@ -1,6 +1,5 @@
 import { cgmaAdmin } from '../_shared/cgma-admin.js';
 
-const PUBLIC_PAUSE={enabled:true,title:'홈페이지 업데이트 중입니다',message:'청계면상인회 홈페이지를 더 편리하고 안정적으로 개선하고 있습니다. 업데이트가 완료되면 다시 공개하겠습니다.'};
 const defaults={
   normal:{title:'',message:''},
   maintenance:{title:'잠시 공사중입니다',message:'청계면상인회 홈페이지를 더 편리하게 준비하고 있습니다. 잠시 후 다시 찾아주세요.'},
@@ -25,7 +24,6 @@ async function readSetting(db){
     || {site_key:'cgma',mode:'normal',...defaults.normal};
 }
 export async function onRequestGet({env}){
-  if(PUBLIC_PAUSE.enabled)return reply({setting:{site_key:'cgma',mode:'maintenance',title:PUBLIC_PAUSE.title,message:PUBLIC_PAUSE.message},forced:true},200,'public, max-age=15, s-maxage=30');
   const db=env.cheonggye_market_notices;
   if(!db)return reply({setting:{site_key:'cgma',mode:'normal',...defaults.normal},degraded:true});
   try{return reply({setting:await readSetting(db)},200,'public, max-age=15, s-maxage=30')}
