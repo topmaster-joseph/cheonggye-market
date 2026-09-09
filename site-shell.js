@@ -4,7 +4,7 @@
   const homePath=location.pathname==='/'||/\/cgma\/?$/.test(location.pathname);
   if(homePath){
     const apiPath=internal('/api/site-mode');
-    const fallbackSetting={mode:'maintenance',title:'홈페이지 업데이트 중입니다',message:'청계면상인회 홈페이지를 더 편리하고 안정적으로 개선하고 있습니다. 업데이트가 완료되면 다시 공개하겠습니다.'};
+    const fallbackSetting={mode:'normal',title:'',message:''};
     document.documentElement.classList.add('cgma-presentation-pending');
     const params=new URLSearchParams(location.search),previewRequested=params.get('admin-preview')==='1';
     const previewToken=previewRequested?sessionStorage.getItem('cgma_admin_preview_token')||'':'';
@@ -15,7 +15,7 @@
     const showPresentation=setting=>{const overlay=document.createElement('main');overlay.className='cgma-site-presentation';overlay.innerHTML='<div class="box"><div class="mark">청</div><small></small><h1></h1><p></p><div class="actions"><a href="'+contactHref()+'">문의하기</a></div></div>';overlay.querySelector('small').textContent=setting.mode==='maintenance'?'SITE UPDATE':'NOTICE';overlay.querySelector('h1').textContent=setting.title||'잠시 공사중입니다';overlay.querySelector('p').textContent=setting.message||'더 나은 홈페이지를 준비하고 있습니다.';if(setting.mode==='notice'){const button=document.createElement('button');button.type='button';button.textContent='홈페이지 보기';button.onclick=()=>{overlay.remove();document.documentElement.classList.remove('cgma-presentation-active')};overlay.querySelector('.actions').prepend(button)}document.documentElement.classList.remove('cgma-presentation-pending');document.body.prepend(overlay);document.documentElement.classList.add('cgma-presentation-active')};
     const showAdminPreview=()=>{document.documentElement.classList.remove('cgma-presentation-pending');const bar=document.createElement('div');bar.className='cgma-admin-preview-bar';bar.innerHTML='<b>관리자 미리보기</b><span>공개 홈페이지는 일시 중지 상태입니다.</span><a href="'+internal('/admin/')+'">관리자로 돌아가기</a>';document.body.prepend(bar)};
     const verifyPreview=previewRequested&&previewToken?fetch(internal('/api/admin-session'),{headers:{Authorization:'Bearer '+previewToken},cache:'no-store'}).then(r=>r.ok).catch(()=>false):Promise.resolve(false);
-    Promise.all([fetch(apiPath,{cache:'no-store'}).then(r=>r.ok?r.json():{setting:fallbackSetting}).catch(()=>({setting:fallbackSetting})),verifyPreview]).then(([data,previewAllowed])=>{const setting=data?.setting;if(!setting||setting.mode==='normal'){document.documentElement.classList.remove('cgma-presentation-pending');return;}if(previewAllowed){showAdminPreview();return}if(previewRequested)sessionStorage.removeItem('cgma_admin_preview_token');showPresentation(setting)}).catch(error=>{console.warn('CGMA presentation mode',error);showPresentation(fallbackSetting)});
+    Promise.all([fetch(apiPath,{cache:'no-store'}).then(r=>r.ok?r.json():{setting:fallbackSetting}).catch(()=>({setting:fallbackSetting})),verifyPreview]).then(([data,previewAllowed])=>{const setting=data?.setting;if(!setting||setting.mode==='normal'){document.documentElement.classList.remove('cgma-presentation-pending');return;}if(previewAllowed){showAdminPreview();return}if(previewRequested)sessionStorage.removeItem('cgma_admin_preview_token');showPresentation(setting)}).catch(error=>{console.warn('CGMA presentation mode',error);document.documentElement.classList.remove('cgma-presentation-pending')});
   }
 
   const footerMarkup = `

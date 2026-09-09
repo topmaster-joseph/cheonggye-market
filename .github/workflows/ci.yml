@@ -70,6 +70,7 @@ jobs:
         run: |
           node verify-canonical.mjs
           node verify-domain-routing.mjs
+          node verify-site-mode.mjs
       - name: Compile Cloudflare Pages Functions
         run: |
           npx --yes wrangler@3.90.0 pages functions build functions --outfile=/tmp/cgma-pages-functions-check.js
