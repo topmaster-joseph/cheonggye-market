@@ -84,9 +84,13 @@ jobs:
           grep -Fq 'id="resourceSearch"' index.html
           ! grep -Fq 'id="mapListToggle"' index.html
           grep -Fq 'class="map-center"' index.html
-          grep -Fq 'cgma-sections.css?v=20260908-map-4x3-dorim-v9' index.html
+          grep -Fq 'cgma-sections.css?v=20260911-map-dorim-v10' index.html
           grep -Fq 'leaflet@1.9.4' index.html
           grep -Fq 'ROAD_GEO' script.js
+          grep -Fq 'MUAN_COUNTY_MIN_ZOOM=11' script.js
+          grep -Fq 'MARKET_MAX_ZOOM=18' script.js
+          grep -Fq '.market-map-section .map-workspace{order:2}' cgma-sections.css
+          grep -Fq '.market-map-section .today-discovery{order:3' cgma-sections.css
           grep -Fq 'shopGeoPoint' script.js
           grep -Fq 'tile.openstreetmap.org' script.js
           grep -Fq 'store-nearby' script.js
