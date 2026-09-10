@@ -3,7 +3,7 @@
 if(window.__CGMA_NATIVE_I18N_BOOTED)return;
 window.__CGMA_NATIVE_I18N_BOOTED=true;
 
-const VERSION=8;
+const VERSION=10;
 const LOCALE_KEY='ekodi_user_locale';
 const LEGACY_KEY='ekodi-language';
 const COOKIE_KEY='ekodi_locale';
@@ -46,8 +46,56 @@ const ATTR_ROWS=[
 ['언어 선택','Choose language'],['메뉴 열기','Open menu'],['주요 메뉴','Main navigation'],['청계면상인회 홈','Cheonggye Merchants Association home'],['청계 상권 현재 현황','Current Cheonggye market status'],['청계 골목의 활기찬 풍경을 표현한 그래픽','Illustration of lively Cheonggye streets'],['청계면상인회 빠른 시작','Cheonggye Merchants Association quick start'],['청계면상인회 주요 가치','Cheonggye Merchants Association values'],['청계면상인회 임원 및 운영진','Association leadership'],['청계면 상권 현황','Cheonggye market status'],['오늘 혜택 있는 상가','Shops with offers today'],['상황별 추천','Recommendations by situation'],['회원 구분','Membership type'],['업종 선택','Category'],['상가 검색 결과','Shop search results'],['지도에 표시된 상가 목록','Shops shown on map'],['청계면 상권의 실제 도로와 상가 위치를 보는 지도','Map showing real roads and shop locations in Cheonggye'],['회원 구분','Membership type'],['자료 분류','Resource category'],['모바일 빠른 메뉴','Mobile quick menu'],['상가명 또는 업종 검색','Search shop name or category'],['자료실 검색','Search official archive'],['제목','Title'],['내용','Content']
 ];
 const TEXT_EN=new Map(TEXT_ROWS);
+const EXTRA_TEXT_ROWS=[
+  ['오늘 한 곳을 골라드려요. 상인이 혜택을 등록하면 여기에 바로 나타납니다.','We pick one place for today. Merchant offers appear here automatically.'],
+  ['잠시 쉬어갈 카페 세 곳을 골라봤어요.','Here are three cafés for a short break.'],
+  ['점심에 들르기 좋은 곳을 골라봤어요.','Here are three good places for lunch.'],
+  ['저녁에 들르기 좋은 곳을 골라봤어요.','Here are three good places for dinner.'],
+  ['생활에 필요한 곳을 골라봤어요.','Here are three useful everyday places.'],
+  ['청계면상인회 정회원 상가입니다.','This shop is a full member of the Cheonggye Merchants Association.'],
+  ['지역 안에서 소비가 순환할 수 있도록 방문과 관심으로 함께해 주세요.','Visit and support local shops so spending can circulate within the community.'],
+  ['실제 도로 기반 개략 위치에서 가까운 순으로 보여드립니다.','Shown in order of proximity using approximate positions based on real roads.'],
+  ['상세 좌표가 확인되지 않아 해당 골목·상권 중심에 개략 표시했습니다.','Exact coordinates are unavailable, so this shop is shown approximately near its street or district center.'],
+  ['정확한 건물 위치는 아래 길찾기로 확인해 주세요.','Use the directions links below to confirm the exact building location.'],
+  ['자료실 연결을 준비하고 있습니다.','Connecting to the official archive.'],['잠시 후 다시 확인해 주세요.','Please try again shortly.'],
+  ['공지사항을 불러오지 못했습니다.','Notices could not be loaded.'],['공식 출처 연결을 다시 확인하고 있습니다.','Rechecking connections to official sources.'],
+  ['지금은 새 공고를 불러오지 못했습니다.','New public notices could not be loaded right now.'],
+  ['Google로 무료 로그인','Free Sign in with Google'],['Google 로그인만으로 무료회원 계정을 시작할 수 있습니다.','Start a free member account with Google sign-in only.'],
+  ['정회원 신청 시에만 추가정보를 받습니다.','Additional information is requested only when applying for full membership.'],
+  ['가입하기를 누르면 먼저 Google 계정으로 무료 로그인합니다.','Select Join to sign in free with your Google account first.'],
+  ['이후 정회원 신청을 선택할 때만 상가·사업자 등 추가정보를 입력합니다.','Shop and business details are requested only if you later apply for full membership.'],
+  ['Google 로그인 후 정회원 신청','Apply for Full Membership after Google Sign-in'],['무료 로그인 단계에서는 Google 계정만 확인합니다.','The free sign-in step checks only your Google account.'],
+  ['정회원 신청 단계에서 필요한 추가정보를 입력해 주세요.','Enter the additional information only at the full-member application step.'],
+  ['Google 로그인 후 신청','Sign in with Google, then Apply'],['기존 Google 설문은 기본 가입 절차에서 사용하지 않습니다.','The old Google Form is not used for the standard sign-up flow.'],
+  ['정회원 심사에 필요한 정보만 별도 신청 화면에서 받습니다.','Only information needed for full-member review is collected on the dedicated application screen.'],
+  ['관리자 운영관리','Admin Operations'],['공개 대표전화 미확인','Public phone not confirmed'],['네이버지도 ↗','Naver Map ↗'],['길찾기 ↗','Directions ↗'],
+  ['골목 구분','Street Area'],['지도 위치 기준','Map Position Basis'],['상권 중심 개략 위치','Approximate District-Center Location'],['같은 골목에서 함께 보기','See Nearby on the Same Street']
+];
+for(const [ko,en] of EXTRA_TEXT_ROWS)TEXT_EN.set(ko,en);
+for(const [ko,en] of [
+  ['자료실 연결을 준비하고 있습니다. 잠시 후 다시 확인해 주세요.','Connecting to the official archive. Please try again shortly.'],
+  ['상세 좌표가 확인되지 않아 해당 골목·상권 중심에 개략 표시했습니다. 정확한 건물 위치는 아래 길찾기로 확인해 주세요.','Exact coordinates are unavailable, so this shop is shown approximately near its street or district center. Use the directions links below to confirm the exact building location.'],
+  ['실제 도로 지도를 기준으로 위치를 표시했습니다. 건물 출입구 등 최종 방문 위치는 아래 길찾기로 확인해 주세요.','The position is based on the real street map. Use the directions links below to confirm the final entrance and destination.'],
+  ['Google 로그인만으로 무료회원 계정을 시작할 수 있습니다. 정회원 신청 시에만 추가정보를 받습니다.','Start a free member account with Google sign-in only. Additional information is requested only when applying for full membership.'],
+  ['가입하기를 누르면 먼저 Google 계정으로 무료 로그인합니다. 이후 정회원 신청을 선택할 때만 상가·사업자 등 추가정보를 입력합니다.','Select Join to sign in free with your Google account first. Shop and business details are requested only if you later apply for full membership.'],
+  ['무료 로그인 단계에서는 Google 계정만 확인합니다. 정회원 신청 단계에서 필요한 추가정보를 입력해 주세요.','The free sign-in step checks only your Google account. Enter additional information only at the full-member application step.'],
+  ['기존 Google 설문은 기본 가입 절차에서 사용하지 않습니다. 정회원 심사에 필요한 정보만 별도 신청 화면에서 받습니다.','The old Google Form is not used for standard sign-up. Only information needed for full-member review is collected on the dedicated application screen.'],
+  ['Google 무료 로그인이 확인되었습니다. 정회원으로 신청할 때만 상가·사업자 등 추가정보를 입력합니다.','Your free Google sign-in is confirmed. Shop and business details are requested only when you apply for full membership.'],
+  ['정회원 신청 화면 →','Full-Member Application →'],['Google 로그인 후 신청 →','Sign in with Google, then Apply →'],['잠시 후 새로고침해 주세요.','Please refresh again shortly.'],
+  ['청계면 생활상권','Cheonggye Local District'],['먹고 머무는 골목','A street to eat and stay'],['음식·외식','Food & Dining'],['상권','District']
+])TEXT_EN.set(ko,en);
+for(const [ko,en] of [
+  ['청계면상인회 정회원 상가입니다. 지역 안에서 소비가 순환할 수 있도록 방문과 관심으로 함께해 주세요.','This shop is a full member of the Cheonggye Merchants Association. Visit and support local shops so spending can circulate within the community.'],
+  ['준회원 상가로 등록된 기본 안내입니다.','This is the basic information for a registered associate-member shop.'],
+  ['공지사항을 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.','Notices could not be loaded. Please try again shortly.'],
+  ['대표메뉴','Featured Menu'],['영업안내','Business Hours'],['작성 닫기','Close Editor'],['등록되었습니다.','Published.'],['공지를 등록하고 있습니다.','Publishing notice.'],['로그인 후 다시 시도해 주세요.','Please sign in and try again.'],['등록 권한을 확인해 주세요.','Please check your publishing permission.']
+])TEXT_EN.set(ko,en);
+const TOKEN_ROWS=[
+  ['정회원','Full Member'],['준회원','Associate Member'],['추천','Pick'],['표시 상가','Shown Shops'],['음식·외식','Food & Dining'],['음식점','Restaurant'],['한식','Korean Food'],['치킨·피자','Chicken · Pizza'],['카페','Café'],['의료','Medical'],['미용','Beauty'],['편의점','Convenience Store'],['생활용품','Household Goods'],['문화·서비스','Culture · Services'],['주점','Pub'],['금융','Finance'],['환경서비스','Environmental Services'],['행정서비스','Administrative Services'],['광고·인쇄','Advertising · Printing'],['패스트푸드','Fast Food'],['생활체육','Recreation'],['꽃·식물','Flowers · Plants'],['베이커리','Bakery'],['일식','Japanese Food'],['횟집','Sashimi'],['주방·인테리어','Kitchen · Interior'],['기관','Institution'],['교육','Education'],['디자인','Design'],['분식','Snack Food'],['문구','Stationery'],['사진','Photography'],['마트','Grocery'],['서점','Bookstore'],['노래방','Karaoke'],['서비스','Services']
+];
+const TOKEN_EN=new Map(TOKEN_ROWS);
 const ATTR_EN=new Map(ATTR_ROWS);
-const REVERSE_TEXT=new Map(TEXT_ROWS.map(([ko,en])=>[en,ko]));
+const REVERSE_TEXT=new Map([...TEXT_ROWS,...EXTRA_TEXT_ROWS].map(([ko,en])=>[en,ko]));
 const REVERSE_ATTR=new Map(ATTR_ROWS.map(([ko,en])=>[en,ko]));
 const textSources=new WeakMap();
 const attrSources=new WeakMap();
@@ -83,24 +131,42 @@ function applyCopy(locale){
   const c=COPY[locale]||COPY['ko-KR'];
   document.documentElement.lang=locale;
   document.documentElement.dataset.ekodiLocale=locale;
+  document.documentElement.dataset.ekodiI18nVersion=String(VERSION);
+  document.documentElement.dataset.ekodiI18nState='ready';
   updateMeta(locale);
   setText('.header nav a[href="#about"]',c.about);setText('.header nav a[href="#market-map"]',c.map);setText('.header nav a[href="#resources"]',c.resources);setText('.header nav a[href="#news"]',c.news);setText('.header nav a[href="#live"]',c.live);setText('.header nav [data-central-auth]',c.login);setText('.header nav [data-member-apply]',c.join);
   setText('.live-head > div > span:not(.live-dot)',c.liveKicker);setText('.live-head > p',c.liveIntro);setText('.meeting-room h3',c.meetingTitle);setText('.meeting-room .live-card-copy p',c.meetingBody);setText('.meeting-room .live-fallback',c.meetingOpen);setText('.youtube-live h3',c.youtubeTitle);setText('.youtube-live .live-card-copy p',c.youtubeBody);setText('.youtube-live .live-fallback',c.youtubeOpen);
   const brand=document.querySelector('.header .brand');if(brand)brand.setAttribute('aria-label',c.home);if(language)language.setAttribute('aria-label',c.language);
 }
+function dynamicSource(value){
+  const now=compact(value);if(!/[가-힣]/.test(now))return'';
+  if(/^\d+\s*(곳|개)$/.test(now)||/정회원|준회원|추천\s*\d+|표시 상가|총\s*\d+개|공개 대표전화|골목 구분|지도 위치 기준|상권 중심 개략 위치|같은 골목에서/.test(now))return now;
+  return'';
+}
+function translateDynamic(source){
+  let value=source;
+  for(const [ko,en] of TOKEN_EN)value=value.split(ko).join(en);
+  value=value.replace(/(\d+)\s*곳/g,'$1 places').replace(/총\s*(\d+)\s*개/g,'Total $1').replace(/(\d+)\s*개/g,'$1');
+  return value;
+}
 function sourceForText(node){
-  const existing=textSources.get(node);if(existing)return existing;
-  const now=compact(node.nodeValue);const source=TEXT_EN.has(now)?now:REVERSE_TEXT.get(now);
-  if(source)textSources.set(node,source);return source||'';
+  const now=compact(node.nodeValue);const existing=textSources.get(node);
+  if(existing){
+    const expected=activeLocale==='en'?(TEXT_EN.get(existing)||translateDynamic(existing)):existing;
+    if(now===compact(expected)||now===compact(existing))return existing;
+  }
+  const source=TEXT_EN.has(now)?now:(REVERSE_TEXT.get(now)||dynamicSource(now));
+  if(source)textSources.set(node,source);else if(existing)textSources.delete(node);
+  return source||'';
 }
 function sourceForAttr(node,name){
   let bag=attrSources.get(node);if(!bag){bag={};attrSources.set(node,bag);}if(bag[name])return bag[name];
   const now=compact(node.getAttribute(name));const source=ATTR_EN.has(now)?now:REVERSE_ATTR.get(now);if(source)bag[name]=source;return source||'';
 }
 function translateTextNode(node){
-  const parent=node.parentElement;if(!parent||/^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA|OPTION)$/i.test(parent.tagName))return;
+  const parent=node.parentElement;if(!parent||/^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA)$/i.test(parent.tagName)||(parent.tagName==='OPTION'&&parent.closest('#siteLanguage')))return;
   const source=sourceForText(node);if(!source)return;
-  const desired=activeLocale==='en'?(TEXT_EN.get(source)||source):source;
+  const desired=activeLocale==='en'?(TEXT_EN.get(source)||translateDynamic(source)):source;
   if(compact(node.nodeValue)!==compact(desired))node.nodeValue=preserveSpace(node.nodeValue,desired);
 }
 function translateElementAttrs(node){
@@ -123,6 +189,8 @@ function scheduleTranslate(){if(scheduled)return;scheduled=true;requestAnimation
 function installObserver(){if(observer||!document.body)return;observer=new MutationObserver(records=>{for(const record of records){if(record.type==='characterData')translateTextNode(record.target);for(const node of record.addedNodes||[])translateTree(node);if(record.type==='attributes')translateElementAttrs(record.target);}scheduleTranslate();});observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-label','placeholder','title']});}
 function installPreparingStyle(){if(document.getElementById('cgma-i18n-preparing-style'))return;const style=document.createElement('style');style.id='cgma-i18n-preparing-style';style.textContent='.cgma-i18n-preparing{position:fixed;z-index:2147483640;left:50%;top:max(20px,env(safe-area-inset-top));transform:translateX(-50%);width:min(92vw,520px);padding:14px 18px;border:1px solid rgba(20,63,53,.2);border-radius:16px;background:#fff;color:#143f35;box-shadow:0 18px 55px rgba(0,0,0,.18);font:600 14px/1.55 system-ui,-apple-system,"Noto Sans KR",sans-serif}.cgma-i18n-preparing strong{display:block;margin-bottom:3px;font-size:15px}.cgma-i18n-preparing p{margin:0;color:#52675d}';document.head.append(style);}
 function showPreparing(locale){
+  document.documentElement.dataset.ekodiI18nVersion=String(VERSION);
+  document.documentElement.dataset.ekodiI18nState='fallback-pending';
   installPreparingStyle();document.querySelector('.cgma-i18n-preparing')?.remove();const copy=PREPARING[locale]||{title:'Translation is being prepared',body:'Returning to Korean.'};const box=document.createElement('div');box.className='cgma-i18n-preparing';box.setAttribute('role','status');box.setAttribute('aria-live','polite');box.innerHTML=`<strong>${copy.title}</strong><p>${copy.body}</p>`;document.body.append(box);clearTimeout(fallbackTimer);fallbackTimer=setTimeout(()=>{box.remove();apply('ko-KR',{save:true,emit:true});},1600);
 }
 function requestLocale(value,{save=true,emit=true}={}){
@@ -144,5 +212,5 @@ function boot(){ensureNativeBoundary();bindBrandHome();const initial=queryLocale
 language?.addEventListener('change',()=>requestLocale(language.value));
 window.addEventListener('ekodi:locale-change',event=>{if(event.detail?.source==='cgma-native-i18n')return;const locale=normalize(event.detail?.locale);if(locale)requestLocale(locale,{save:true,emit:false});});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-window.CGMANativeI18n=Object.freeze({version:VERSION,supported:[...SUPPORTED],ready:[...READY],getLocale:()=>activeLocale,setLocale:locale=>requestLocale(locale),refresh:scheduleTranslate});
+window.CGMANativeI18n=Object.freeze({version:VERSION,supported:[...SUPPORTED],ready:[...READY],getLocale:()=>activeLocale,setLocale:locale=>requestLocale(locale),refresh:scheduleTranslate,health:()=>({version:VERSION,locale:activeLocale,state:document.documentElement.dataset.ekodiI18nState||'unknown',browserTranslation:document.documentElement.dataset.ekodiBrowserTranslation||'',supported:[...SUPPORTED],ready:[...READY]})});
 })();

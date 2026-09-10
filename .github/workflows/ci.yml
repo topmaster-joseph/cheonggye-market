@@ -263,6 +263,11 @@ jobs:
           grep -Fq 'media-meeting-adapter.js?v=2' index.html
           grep -Fq 'media-meeting-adapter.js' index.html
           grep -Fq 'cgma-i18n.js' index.html
+          grep -Fq 'cgma-i18n.js?v=20260911-gen10-native-i18n' index.html
+          grep -Fq 'const VERSION=10;' cgma-i18n.js
+          grep -Fq "ekodiI18nState='ready'" cgma-i18n.js
+          grep -Fq "ekodiI18nState='fallback-pending'" cgma-i18n.js
+          grep -Fq 'health:()=>({' cgma-i18n.js
           if grep -Fq 'translate.google.com' site-shell.js || grep -Fq 'googtrans=' site-shell.js; then
             echo 'Browser translation injection detected'
             exit 1
