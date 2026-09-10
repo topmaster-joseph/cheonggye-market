@@ -164,7 +164,7 @@ jobs:
           grep -Fq 'verifiedPublicStoreId' functions/api/store-events.js
           grep -Fq 'canonicalStoreKey' functions/api/store-events.js
           grep -Fq 'cgma_store_aliases' functions/_shared/cgma-store-identity.js
-          grep -Fq 'script.js?v=20260908-map-4x3-dorim-v9' index.html
+          grep -Fq 'script.js?v=20260911-map-dorim-v10' index.html
           grep -Fq 'select=store_id,store_name' script.js
           grep -Fq 'store_public_profiles' script.js
           grep -Fq 'profileHero' store-admin.html
