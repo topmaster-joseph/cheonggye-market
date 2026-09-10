@@ -38,7 +38,7 @@ const ROAD_GEO={
  dorim:{from:[34.91225,126.42945],to:[34.90895,126.43115],min:15,max:95},
  yeongsan:{from:[34.90872,126.43135],to:[34.91108,126.42872],min:1680,max:1702}, central:{from:[34.91002,126.42925],to:[34.91023,126.42715],min:6,max:26},
  campus:{center:[34.91255,126.43725]},
- dorimri:{center:[34.91220,126.43335]},
+ dorimri:{center:[34.91020,126.43100]},
  bokgil:{center:[34.90775,126.42585]},
  generic:{center:[34.91092,126.42970]}
 };
@@ -56,7 +56,7 @@ const ADDRESS_EXACT_GEO={
  '영산로1696':[34.9102510,126.4304629],
  '청계중앙길12':[34.9102713,126.4287009]
 };
-const DORIMRI_MAP_CENTER=ROAD_GEO.dorimri.center,MARKET_DEFAULT_ZOOM=16,MUAN_COUNTY_MIN_ZOOM=10;
+const DORIMRI_MAP_CENTER=ROAD_GEO.dorimri.center,MARKET_DEFAULT_ZOOM=16,MUAN_COUNTY_MIN_ZOOM=11,MARKET_MAX_ZOOM=18;
 let marketLeafletMap=null,marketMarkerLayer=null;
 function geoKey(value){return String(value||'').replace(/\s+/g,'').toLowerCase();}
 function addressNumber(address){
@@ -84,9 +84,9 @@ function markerNode(marker){return marker?.getElement?.()?.querySelector('.marke
 function initMarketMap(){
  if(!marketMapElement||!window.L||marketLeafletMap)return;
  marketMapElement.classList.add('real-road-map');
- marketLeafletMap=L.map(marketMapElement,{zoomControl:true,scrollWheelZoom:false,minZoom:MUAN_COUNTY_MIN_ZOOM,maxZoom:19,preferCanvas:true});
+ marketLeafletMap=L.map(marketMapElement,{zoomControl:true,scrollWheelZoom:false,minZoom:MUAN_COUNTY_MIN_ZOOM,maxZoom:MARKET_MAX_ZOOM,preferCanvas:true});
  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-  maxZoom:19,
+  maxZoom:MARKET_MAX_ZOOM,
   attribution:'&copy; OpenStreetMap contributors'
  }).addTo(marketLeafletMap);
  marketMarkerLayer=L.layerGroup().addTo(marketLeafletMap);
