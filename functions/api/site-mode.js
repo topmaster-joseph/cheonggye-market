@@ -1,6 +1,6 @@
 import { cgmaAdmin } from '../_shared/cgma-admin.js';
 
-const PUBLIC_PAUSE={enabled:true,title:'홈페이지 업데이트 중입니다',message:'청계면상인회 홈페이지를 더 편리하고 안정적으로 개선하고 있습니다. 업데이트가 완료되면 다시 공개하겠습니다.'};
+const PUBLIC_PAUSE={enabled:false,title:'홈페이지 업데이트 중입니다',message:'청계면상인회 홈페이지를 더 편리하고 안정적으로 개선하고 있습니다. 업데이트가 완료되면 다시 공개하겠습니다.'};
 const defaults={
   normal:{title:'',message:''},
   maintenance:{title:'잠시 공사중입니다',message:'청계면상인회 홈페이지를 더 편리하게 준비하고 있습니다. 잠시 후 다시 찾아주세요.'},
