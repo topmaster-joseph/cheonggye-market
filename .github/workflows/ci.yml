@@ -24,6 +24,9 @@ jobs:
           node --check central-auth-bridge.js
           node --check site-shell.js
           node --check cgma-i18n.js
+          node --check store-insight-model.mjs
+          node --check store-action-model.mjs
+          node --check store-experiment-model.mjs
           node --check functions/_middleware.js
           node --check resources.js
           node --check resource-detail.js
@@ -32,17 +35,37 @@ jobs:
           node --check admin-merchants.js
           node --check admin-notices.js
           node --check admin-overview.js
+          node --check admin-control-tower.js
           node --check admin-site-mode.js
           node --check member-admin.js
           node --check functions/api/resources.js
           node --check functions/api/parking-petition.js
           node --check functions/api/store-events.js
+          node --check functions/api/store-experiments.js
+          node --check functions/api/admin-store-health.js
+          node --check functions/_shared/cgma-market-health.js
+          node --check functions/_shared/cgma-store-identity.js
+          node --check functions/_shared/cgma-intervention-playbook.js
+          node --check functions/api/admin-market-interventions.js
           node --check functions/api/merchants.js
           node --check functions/api/notices.js
           node --check functions/api/site-mode.js
           node --check functions/_shared/cgma-merchant-defaults.js
 
           node --check functions/_shared/resource-default-content.js
+      - name: Test privacy-safe store insight model
+        run: node --test store-insight-model.test.mjs
+      - name: Test merchant action queue model
+        run: node --test store-action-model.test.mjs
+      - name: Test merchant experiment model
+        run: node --test store-experiment-model.test.mjs
+      - name: Test market control tower model
+        run: node --test cgma-market-health.test.mjs
+      - name: Test canonical store identity model
+        run: node --test cgma-store-identity.test.mjs
+      - name: Test intervention playbook model
+        run: node --test cgma-intervention-playbook.test.mjs
+
       - name: Verify canonical CGMA root contract
         run: |
           node verify-canonical.mjs
@@ -55,12 +78,19 @@ jobs:
         run: |
           set -euo pipefail
           grep -Fq 'OFFICIAL ARCHIVE' index.html
+          grep -Fq 'https://ekodi.kr/mail/contact' site-shell.js
+          grep -Fq "url.searchParams.set('source','cgma')" site-shell.js
+          grep -Fq "url.searchParams.set('site','청계면상인회')" site-shell.js
           grep -Fq 'id="resourceSearch"' index.html
           ! grep -Fq 'id="mapListToggle"' index.html
           grep -Fq 'class="map-center"' index.html
-          grep -Fq 'cgma-sections.css?v=20260906-road-map-admin-v1' index.html
+          grep -Fq 'cgma-sections.css?v=20260911-map-dorim-v10' index.html
           grep -Fq 'leaflet@1.9.4' index.html
           grep -Fq 'ROAD_GEO' script.js
+          grep -Fq 'MUAN_COUNTY_MIN_ZOOM=11' script.js
+          grep -Fq 'MARKET_MAX_ZOOM=18' script.js
+          grep -Fq '.market-map-section .map-workspace{order:2}' cgma-sections.css
+          grep -Fq '.market-map-section .today-discovery{order:3' cgma-sections.css
           grep -Fq 'shopGeoPoint' script.js
           grep -Fq 'tile.openstreetmap.org' script.js
           grep -Fq 'store-nearby' script.js
@@ -85,10 +115,57 @@ jobs:
           grep -Fq 'trackStoreEvent' script.js
           grep -Fq 'data-store-direction' script.js
           grep -Fq 'id="insightDetail"' store-admin.html
-          grep -Fq 'store-admin.js?v=20260905-store-insights-v8' store-admin.html
+          grep -Fq 'store-admin.js?v=20260908-experiment-engine-v10' store-admin.html
+          grep -Fq 'id="experimentCard"' store-admin.html
+          grep -Fq 'store-experiment-model.mjs?v=20260908-experiment-engine-v10' store-admin.js
+          grep -Fq 'experimentApi' store-admin.js
+          grep -Fq 'renderExperiment' store-admin.js
+          grep -Fq 'cgma_store_experiments' functions/api/store-experiments.js
+          grep -Fq 'canonicalStoreKey' functions/api/store-experiments.js
+          grep -Fq 'id="controlTower"' admin/index.html
+          grep -Fq 'admin-control-tower.js?v=20260908-review-due-queue-v16' admin/index.html
+          grep -Fq 'admin-control.css?v=20260908-review-due-queue-v16' admin/index.html
+          grep -Fq 'padding-top:0!important' admin-control.css
+          grep -Fq 'height:100dvh' admin-control.css
+          grep -Fq 'overflow:hidden' admin-control.css
+          grep -Fq '@media(min-width:801px) and (max-height:680px)' admin-control.css
+          grep -Fq 'id="towerCanonicalStores"' admin/index.html
+          grep -Fq 'id="towerInterventionList"' admin/index.html
+          grep -Fq 'id="towerInterventionCount"' admin/index.html
+          grep -Fq 'id="towerReviewDueList"' admin/index.html
+          grep -Fq 'id="towerReviewDueCount"' admin/index.html
+          grep -Fq 'REVIEW DUE QUEUE' admin/index.html
+          grep -Fq 'renderReviewDue' admin-control-tower.js
+          grep -Fq 'manualDecisionOnly' admin-control-tower.js
+          grep -Fq 'review_due_count' functions/api/admin-market-interventions.js
+          grep -Fq 'CGMA_CONTROL_TOWER' admin/index.html
+          grep -Fq 'admin-store-health' admin-control-tower.js
+          grep -Fq 'summarizeMarketHealth' functions/api/admin-store-health.js
+          grep -Fq 'playbookForSignals' functions/api/admin-store-health.js
+          grep -Fq 'cgma_market_interventions' functions/api/admin-market-interventions.js
+          grep -Fq 'admin_identity_stored:false' functions/api/admin-market-interventions.js
+          grep -Fq 'PLAYBOOKS' functions/_shared/cgma-intervention-playbook.js
+          grep -Fq 'admin-market-interventions' admin-control-tower.js
+          grep -Fq 'CGMA intervention orchestrator v13' admin-control.css
+          grep -Fq 'cgmaAdmin' functions/api/admin-store-health.js
+          grep -Fq 'resolveIdentity' functions/api/admin-store-health.js
+          grep -Fq "aggregation:'canonical_store_day_event'" functions/api/admin-store-health.js
+          grep -Fq 'CGMA 8th-gen market control tower v11' admin-control.css
+          grep -Fq 'id="actionQueue"' store-admin.html
+          grep -Fq 'buildStoreActions' store-admin.js
+          grep -Fq 'store-action-model.mjs?v=20260908-experiment-engine-v10' store-admin.js
           grep -Fq 'renderInsights' store-admin.js
+          grep -Fq 'id="insightTrend"' store-admin.html
+          grep -Fq 'id="insightAction"' store-admin.html
+          grep -Fq 'days=30' store-admin.js
+          grep -Fq 'summarizeInsights' store-admin.js
           grep -Fq 'cgma_store_events' functions/api/store-events.js
           grep -Fq 'authorizedStore' functions/api/store-events.js
+          grep -Fq 'verifiedPublicStoreId' functions/api/store-events.js
+          grep -Fq 'canonicalStoreKey' functions/api/store-events.js
+          grep -Fq 'cgma_store_aliases' functions/_shared/cgma-store-identity.js
+          grep -Fq 'script.js?v=20260911-map-dorim-v10' index.html
+          grep -Fq 'select=store_id,store_name' script.js
           grep -Fq 'store_public_profiles' script.js
           grep -Fq 'profileHero' store-admin.html
           grep -Fq "PROFILE_TABLE='store_public_profiles'" store-admin.js

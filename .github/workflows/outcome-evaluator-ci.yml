@@ -1,0 +1,48 @@
+name: CGMA Outcome Evaluator CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-review-due:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Validate review due scripts
+        run: |
+          node --check functions/_shared/cgma-intervention-outcome.js
+          node --check functions/api/admin-market-interventions.js
+          node --check admin-control-tower.js
+      - name: Test intervention outcome evaluator
+        run: node --test cgma-intervention-outcome.test.mjs
+      - name: Regress intervention and control models
+        run: |
+          node --test cgma-intervention-playbook.test.mjs
+          node --test cgma-market-health.test.mjs
+          node --test cgma-store-identity.test.mjs
+      - name: Verify review due contract
+        run: |
+          grep -Fq '20260908-review-due-queue-v16' admin-control-tower.js
+          grep -Fq 'id="towerReviewDueList"' admin/index.html
+          grep -Fq 'renderReviewDue' admin-control-tower.js
+          grep -Fq 'manualDecisionOnly' admin-control-tower.js
+          grep -Fq 'review_due:reviewDue' functions/api/admin-market-interventions.js
+          grep -Fq 'review_due_count:reviewDue.length' functions/api/admin-market-interventions.js
+          grep -Fq 'evaluateInterventionOutcome' functions/api/admin-market-interventions.js
+          grep -Fq "review_not_ready" functions/api/admin-market-interventions.js
+          grep -Fq "window_days:7" functions/api/admin-market-interventions.js
+          grep -Fq 'visitor_identifiers:false' functions/api/admin-market-interventions.js
+          grep -Fq 'admin_identity_stored:false' functions/api/admin-market-interventions.js
+          node verify-canonical.mjs
+          node verify-domain-routing.mjs
+      - name: Compile Cloudflare Pages Functions
+        run: npx --yes wrangler@3.90.0 pages functions build functions --outfile=/tmp/cgma-pages-functions-v16.js
