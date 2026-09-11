@@ -1,7 +1,7 @@
 (()=>{
   const route=value=>window.CGMA_ROUTE?.route(value)||value;
   const $=id=>document.getElementById(id);
-  const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
+  const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const categoryLabel={food:'음식·외식',cafe:'카페·디저트',life:'생활·편의',culture:'문화·서비스'};
   const memberLabel={regular:'정회원',associate:'준회원'};
   const originLabel={existing:'기존회원',new:'신규회원',none:'비회원',unknown:'미분류'};
