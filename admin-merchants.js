@@ -4,17 +4,16 @@
   const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const categoryLabel={food:'음식·외식',cafe:'카페·디저트',life:'생활·편의',culture:'문화·서비스'};
   const memberLabel={regular:'정회원',associate:'준회원'};
-  const originLabel={existing:'기존회원',new:'신규회원',none:'비회원',unknown:'미분류'};
   let token='',items=[];
   const status=(text,error=false)=>{const el=$('merchantAdminStatus');if(!el)return;el.textContent=text||'';el.className=`admin-resource-status${error?' error':''}`};
   const headers=()=>({'Content-Type':'application/json',Authorization:`Bearer ${token}`});
   function reset(){
-    const form=$('merchantAdminForm');form.reset();form.elements.id.value='';form.elements.membership.value='regular';if(form.elements.member_origin)form.elements.member_origin.value='new';form.elements.category.value='food';form.elements.visible.checked=true;
+    const form=$('merchantAdminForm');form.reset();form.elements.id.value='';form.elements.membership.value='associate';form.elements.category.value='food';form.elements.visible.checked=true;
     form.hidden=false;$('merchantFormTitle').textContent='새 점포 등록';form.elements.name.focus();
   }
   function edit(id){
     const item=items.find(row=>row.id===id);if(!item)return;const form=$('merchantAdminForm');
-    for(const key of ['id','name','category','industry','address','phone','membership','member_origin','sort_order'])if(form.elements[key])form.elements[key].value=item[key]??'';
+    for(const key of ['id','name','category','industry','address','phone','membership','sort_order'])if(form.elements[key])form.elements[key].value=item[key]??'';
     form.elements.visible.checked=Number(item.visible)!==0;form.hidden=false;$('merchantFormTitle').textContent='점포 정보 수정';form.scrollIntoView({behavior:'smooth',block:'center'});
   }
   function render(){
@@ -22,7 +21,7 @@
     const q=String($('merchantSearch')?.value||'').trim().toLowerCase();
     const list=items.filter(item=>!q||`${item.name} ${item.industry||''} ${item.address||''}`.toLowerCase().includes(q));
     if(!list.length){root.innerHTML='<div class="admin-empty">조건에 맞는 점포가 없습니다.</div>';return}
-    root.innerHTML=list.map(item=>`<article class="admin-resource-item"><div><div class="admin-resource-meta"><span class="admin-chip">${esc(memberLabel[item.membership]||item.membership)}</span><span class="admin-chip">${esc(originLabel[item.member_origin]||item.member_origin||'미분류')}</span><span class="admin-chip">${esc(categoryLabel[item.category]||item.category)}</span>${Number(item.visible)===0?'<span class="admin-chip off">비공개</span>':''}</div><h3>${esc(item.name)}</h3><p>${esc(item.industry||'업종 미입력')} · ${esc(item.address||'주소 미입력')}${item.phone?` · ${esc(item.phone)}`:''}</p></div><div class="admin-resource-buttons"><button type="button" data-edit="${esc(item.id)}">수정</button><button type="button" class="danger" data-remove="${esc(item.id)}">삭제</button></div></article>`).join('');
+    root.innerHTML=list.map(item=>`<article class="admin-resource-item"><div><div class="admin-resource-meta"><span class="admin-chip">${esc(memberLabel[item.membership]||item.membership)}</span><span class="admin-chip">${esc(categoryLabel[item.category]||item.category)}</span>${Number(item.visible)===0?'<span class="admin-chip off">비공개</span>':''}</div><h3>${esc(item.name)}</h3><p>${esc(item.industry||'업종 미입력')} · ${esc(item.address||'주소 미입력')}${item.phone?` · ${esc(item.phone)}`:''}</p></div><div class="admin-resource-buttons"><button type="button" data-edit="${esc(item.id)}">수정</button><button type="button" class="danger" data-remove="${esc(item.id)}">삭제</button></div></article>`).join('');
     root.querySelectorAll('[data-edit]').forEach(button=>button.onclick=()=>edit(button.dataset.edit));
     root.querySelectorAll('[data-remove]').forEach(button=>button.onclick=()=>remove(button.dataset.remove));
   }
@@ -30,7 +29,7 @@
     const visible=items.filter(item=>Number(item.visible)!==0);
     if($('merchantCount'))$('merchantCount').textContent=String(visible.length);
     if($('regularMerchantCount'))$('regularMerchantCount').textContent=String(visible.filter(item=>item.membership==='regular').length);
-    if($('existingMerchantCount'))$('existingMerchantCount').textContent=String(visible.filter(item=>item.member_origin==='existing').length);
+    if($('associateMerchantCount'))$('associateMerchantCount').textContent=String(visible.filter(item=>item.membership==='associate').length);
   }
   async function load(){
     status('점포·회원 명부를 불러오는 중입니다.');
@@ -42,8 +41,7 @@
   }
   async function save(event){
     event.preventDefault();const form=event.currentTarget,data=new FormData(form),id=String(data.get('id')||'').trim();
-    const current=items.find(row=>row.id===id);
-    const payload={id,name:data.get('name'),category:data.get('category'),industry:data.get('industry'),address:data.get('address'),phone:data.get('phone'),membership:data.get('membership'),member_origin:data.get('member_origin')||current?.member_origin||(id?'unknown':'new'),sort_order:Number(data.get('sort_order')||100),visible:data.get('visible')==='on'};
+    const payload={id,name:data.get('name'),category:data.get('category'),industry:data.get('industry'),address:data.get('address'),phone:data.get('phone'),membership:data.get('membership'),sort_order:Number(data.get('sort_order')||100),visible:data.get('visible')==='on'};
     status(id?'점포 정보를 수정하고 있습니다.':'새 점포를 등록하고 있습니다.');
     try{
       const response=await fetch(route('/api/merchants'),{method:id?'PUT':'POST',headers:headers(),body:JSON.stringify(payload)}),result=await response.json();
