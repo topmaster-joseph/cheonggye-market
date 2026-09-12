@@ -261,7 +261,7 @@ jobs:
           grep -Fq 'data-ekodi-media-provider="youtube"' index.html
           grep -Fq 'data-ekodi-channel-handle="@cgma4989"' index.html
           grep -Fq 'data-ekodi-channel-id="UC001JT9opxVBt9z_h-tsx8A"' index.html
-          grep -Fq 'media-meeting-adapter.js?v=2' index.html
+          grep -Fq 'media-meeting-adapter.js?v=3' index.html
           grep -Fq 'media-meeting-adapter.js' index.html
           grep -Fq 'cgma-i18n.js' index.html
           grep -Fq 'cgma-i18n.js?v=20260912-gen10-publication-ledger' index.html
