@@ -16,7 +16,7 @@ function shouldEnhanceMerchantDirectory(pathname) {
 
 class MerchantDirectoryHead {
   element(element) {
-    element.append('<script src="/merchant-directory-web.js?v=20260912-regular-associate-v2" defer></script>', { html: true });
+    element.append('<script src="/merchant-directory-web.js?v=20260912-regular-54-map-v3" defer></script>', { html: true });
   }
 }
 
