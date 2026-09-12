@@ -21,25 +21,38 @@
     document.head.appendChild(style);
   }
 
-  function installCompliantBaseMap(attempt=0){
+  function loadScript(id,src){
+    return new Promise((resolve,reject)=>{
+      const current=$(id);
+      if(current){if(current.dataset.loaded==='1')resolve();else{current.addEventListener('load',resolve,{once:true});current.addEventListener('error',reject,{once:true})}return}
+      const script=document.createElement('script');script.id=id;script.src=src;script.async=false;
+      script.addEventListener('load',()=>{script.dataset.loaded='1';resolve()},{once:true});script.addEventListener('error',reject,{once:true});document.head.appendChild(script);
+    });
+  }
+  function installMapLibreCss(){
+    if($('cgmaMapLibreCss'))return;
+    const link=document.createElement('link');link.id='cgmaMapLibreCss';link.rel='stylesheet';link.href='https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css';document.head.appendChild(link);
+  }
+  async function installCompliantBaseMap(attempt=0){
     if(typeof marketLeafletMap==='undefined'||!marketLeafletMap||!window.L){
-      if(attempt<12)setTimeout(()=>installCompliantBaseMap(attempt+1),120);
+      if(attempt<16)setTimeout(()=>installCompliantBaseMap(attempt+1),120);
       return;
     }
-    let blockedLayerFound=false;
+    if(marketLeafletMap.__cgmaOpenFreeMapInstalled)return;
     marketLeafletMap.eachLayer(layer=>{
-      if(layer instanceof window.L.TileLayer&&String(layer._url||'').includes('tile.openstreetmap.org')){
-        marketLeafletMap.removeLayer(layer);
-        blockedLayerFound=true;
-      }
+      const url=String(layer?._url||'');
+      if(layer instanceof window.L.TileLayer&&(url.includes('tile.openstreetmap.org')||url.includes('basemaps.cartocdn.com')))marketLeafletMap.removeLayer(layer);
     });
-    if(!blockedLayerFound)return;
-    window.L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
-      subdomains:'abcd',
-      maxZoom:20,
-      detectRetina:true,
-      attribution:'&copy; OpenStreetMap contributors &copy; CARTO'
-    }).addTo(marketLeafletMap);
+    try{
+      installMapLibreCss();
+      if(!window.maplibregl)await loadScript('cgmaMapLibreJs','https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js');
+      if(!window.L.maplibreGL)await loadScript('cgmaMapLibreLeafletJs','https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js');
+      window.L.maplibreGL({style:'https://tiles.openfreemap.org/styles/positron'}).addTo(marketLeafletMap);
+      marketLeafletMap.attributionControl?.addAttribution('OpenFreeMap © OpenMapTiles · Data © OpenStreetMap contributors');
+      marketLeafletMap.__cgmaOpenFreeMapInstalled=true;
+    }catch(error){
+      console.warn('CGMA OpenFreeMap basemap unavailable',error);
+    }
   }
 
   function installPublicCount(){
