@@ -10,8 +10,12 @@ const COOKIE_KEY='ekodi_locale';
 const QUERY_KEY='lang';
 const SUPPORTED=new Set(['ko-KR','en','zh-CN','ja','vi','ne']);
 const READY=new Set(['ko-KR','en']);
+const PUBLICATION_STATUS_URL='https://api.ekodi.kr/api/i18n/v1/status?service=cgma';
 const language=document.getElementById('siteLanguage');
 let activeLocale='ko-KR';
+let publishedReady=new Set(['ko-KR']);
+let publicationKnown=false;
+let publicationState='fail-closed';
 let observer=null;
 let scheduled=false;
 let fallbackTimer=0;
@@ -19,6 +23,10 @@ let fallbackTimer=0;
 const COPY={
   'ko-KR':{title:'청계면상인회 | 오늘도 청계에서 만나요',description:'무안군 청계면상인회 공식 홈페이지. 청계의 가게와 소식, 상생 프로그램을 만나보세요.',about:'상인회 소개',map:'가게찾기',resources:'공식자료',news:'상권소식',live:'온라인',login:'Google 로그인',join:'가입하기',liveKicker:'실시간 소통 공간',liveIntro:'정기회의와 온라인 임원회는 Jitsi에서, 현장 행사와 상권 소식은 YouTube에서 만납니다.',meetingTitle:'실시간 화상회의',meetingBody:'홈페이지 안에서 이름을 입력하고 회의에 참여할 수 있습니다. 카메라와 마이크는 참여자가 직접 허용할 때만 사용됩니다.',meetingOpen:'회의실을 새 창에서 열기 ↗',youtubeTitle:'YouTube 방송',youtubeBody:'라이브 중에는 실시간 영상을 보여주고, 방송이 없거나 임베드할 수 없을 때는 안전한 안내 카드로 전환합니다.',youtubeOpen:'YouTube 라이브 확인 ↗',home:'청계면상인회 홈',language:'언어 선택'},
   en:{title:'Cheonggye Merchants Association | Meet Cheonggye Today',description:'Official website of the Cheonggye Merchants Association in Muan. Find local shops, news, programs, and community information.',about:'About',map:'Find Shops',resources:'Official Info',news:'Market News',live:'Online',login:'Google Sign in',join:'Join',liveKicker:'Live connection space',liveIntro:'Meetings and online leadership sessions happen on Jitsi, while local events and market news are shared on YouTube.',meetingTitle:'Live video meeting',meetingBody:'Enter your name and join the meeting right here. Camera and microphone are used only after you grant permission.',meetingOpen:'Open meeting in a new window ↗',youtubeTitle:'YouTube Broadcast',youtubeBody:'A live stream appears here in real time. When no live stream is active, a safe status card links to the channel.',youtubeOpen:'Check YouTube Live ↗',home:'Cheonggye Merchants Association home',language:'Choose language'}
+};
+
+const UNPUBLISHED={
+  en:{title:'English page is currently not published',body:'The Korean page remains available. Returning to Korean.'}
 };
 
 const PREPARING={
@@ -113,6 +121,9 @@ function normalize(value){
   return'';
 }
 function controlLocale(locale){return locale==='ko-KR'?'ko':locale;}
+function isReady(locale){return READY.has(locale)&&publishedReady.has(locale);}
+function syncLanguageOptions(){if(!language)return;for(const option of language.options){const locale=normalize(option.value);if(!locale||!READY.has(locale)||locale==='ko-KR')continue;option.disabled=!publishedReady.has(locale);option.dataset.ekodiPublication=publishedReady.has(locale)?'published':'hidden';}}
+async function refreshPublicationStatus(){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),1800);try{const response=await fetch(PUBLICATION_STATUS_URL,{cache:'no-store',signal:controller.signal,headers:{accept:'application/json'}});if(!response.ok)throw new Error(`publication_status_${response.status}`);const data=await response.json(),next=new Set(['ko-KR']);for(const item of Array.isArray(data.languages)?data.languages:[])if(item?.public===true&&READY.has(normalize(item.locale)))next.add(normalize(item.locale));publishedReady=next;publicationKnown=true;publicationState='central-ledger';}catch{publishedReady=new Set(['ko-KR']);publicationKnown=false;publicationState='fail-closed';}finally{clearTimeout(timer);document.documentElement.dataset.ekodiI18nPublication=publicationState;syncLanguageOptions();}return publishedReady;}
 function compact(value){return String(value||'').replace(/\s+/g,' ').trim();}
 function preserveSpace(raw,value){
   const lead=String(raw).match(/^\s*/)?.[0]||'';
@@ -188,29 +199,26 @@ function translateTree(root=document.body){
 function scheduleTranslate(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;translateTree(document.body);});}
 function installObserver(){if(observer||!document.body)return;observer=new MutationObserver(records=>{for(const record of records){if(record.type==='characterData')translateTextNode(record.target);for(const node of record.addedNodes||[])translateTree(node);if(record.type==='attributes')translateElementAttrs(record.target);}scheduleTranslate();});observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-label','placeholder','title']});}
 function installPreparingStyle(){if(document.getElementById('cgma-i18n-preparing-style'))return;const style=document.createElement('style');style.id='cgma-i18n-preparing-style';style.textContent='.cgma-i18n-preparing{position:fixed;z-index:2147483640;left:50%;top:max(20px,env(safe-area-inset-top));transform:translateX(-50%);width:min(92vw,520px);padding:14px 18px;border:1px solid rgba(20,63,53,.2);border-radius:16px;background:#fff;color:#143f35;box-shadow:0 18px 55px rgba(0,0,0,.18);font:600 14px/1.55 system-ui,-apple-system,"Noto Sans KR",sans-serif}.cgma-i18n-preparing strong{display:block;margin-bottom:3px;font-size:15px}.cgma-i18n-preparing p{margin:0;color:#52675d}';document.head.append(style);}
-function showPreparing(locale){
+function showPreparing(locale,{unpublished=false}={}){
   document.documentElement.dataset.ekodiI18nVersion=String(VERSION);
-  document.documentElement.dataset.ekodiI18nState='fallback-pending';
-  installPreparingStyle();document.querySelector('.cgma-i18n-preparing')?.remove();const copy=PREPARING[locale]||{title:'Translation is being prepared',body:'Returning to Korean.'};const box=document.createElement('div');box.className='cgma-i18n-preparing';box.setAttribute('role','status');box.setAttribute('aria-live','polite');box.innerHTML=`<strong>${copy.title}</strong><p>${copy.body}</p>`;document.body.append(box);clearTimeout(fallbackTimer);fallbackTimer=setTimeout(()=>{box.remove();apply('ko-KR',{save:true,emit:true});},1600);
+  document.documentElement.dataset.ekodiI18nState=unpublished?'fallback-unpublished':'fallback-pending';
+  installPreparingStyle();document.querySelector('.cgma-i18n-preparing')?.remove();const copy=unpublished?(UNPUBLISHED[locale]||{title:'This language is not currently published',body:'Returning to Korean.'}):(PREPARING[locale]||{title:'Translation is being prepared',body:'Returning to Korean.'});const box=document.createElement('div');box.className='cgma-i18n-preparing';box.setAttribute('role','status');box.setAttribute('aria-live','polite');box.innerHTML=`<strong>${copy.title}</strong><p>${copy.body}</p>`;document.body.append(box);clearTimeout(fallbackTimer);fallbackTimer=setTimeout(()=>{box.remove();apply('ko-KR',{save:true,emit:true});},1600);
 }
 function requestLocale(value,{save=true,emit=true}={}){
   const locale=normalize(value)||'ko-KR';
-  if(!READY.has(locale)){
-    if(language)language.value=controlLocale(locale);
-    showPreparing(locale);
-    return activeLocale;
-  }
+  if(!READY.has(locale)){if(language)language.value=controlLocale(locale);showPreparing(locale);return activeLocale;}
+  if(!isReady(locale)){showPreparing(locale,{unpublished:true});return activeLocale;}
   return apply(locale,{save,emit});
 }
 function apply(value,{save=true,emit=true}={}){
-  const locale=READY.has(normalize(value))?normalize(value):'ko-KR';
+  const locale=isReady(normalize(value))?normalize(value):'ko-KR';
   activeLocale=locale;if(save)persist(locale);if(language&&language.value!==controlLocale(locale))language.value=controlLocale(locale);applyCopy(locale);translateTree(document.body);scheduleTranslate();if(emit)window.dispatchEvent(new CustomEvent('ekodi:locale-change',{detail:{locale,version:VERSION,source:'cgma-native-i18n'}}));return locale;
 }
 function homeUrl(){const url=new URL(location.href);url.search='';url.hash='';url.pathname=(url.hostname==='ekodi.kr'||url.hostname==='www.ekodi.kr')?'/cgma/':'/';return url;}
 function bindBrandHome(){const brand=document.querySelector('.header .brand');if(!brand)return;brand.dataset.ekodiHeaderHome='cgma';brand.href=homeUrl().toString();brand.addEventListener('click',event=>{const target=homeUrl(),here=new URL(location.href);here.search='';here.hash='';if(here.origin===target.origin&&here.pathname.replace(/\/+$/,'/')===target.pathname.replace(/\/+$/,'/')){event.preventDefault();window.scrollTo({top:0,left:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});try{history.replaceState(history.state,'',target.pathname+location.search);}catch{}}});}
-function boot(){ensureNativeBoundary();bindBrandHome();const initial=queryLocale()||readCookie()||readStorage()||normalize(document.documentElement.lang)||normalize(navigator.language)||'ko-KR';apply(READY.has(initial)?initial:'ko-KR',{save:true,emit:false});installObserver();if(initial&&!READY.has(initial))showPreparing(initial);}
+async function boot(){ensureNativeBoundary();bindBrandHome();await refreshPublicationStatus();const initial=queryLocale()||readCookie()||readStorage()||normalize(document.documentElement.lang)||normalize(navigator.language)||'ko-KR';apply(isReady(initial)?initial:'ko-KR',{save:true,emit:false});installObserver();if(initial&&!READY.has(initial))showPreparing(initial);else if(initial&&READY.has(initial)&&!isReady(initial))showPreparing(initial,{unpublished:true});}
 language?.addEventListener('change',()=>requestLocale(language.value));
 window.addEventListener('ekodi:locale-change',event=>{if(event.detail?.source==='cgma-native-i18n')return;const locale=normalize(event.detail?.locale);if(locale)requestLocale(locale,{save:true,emit:false});});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-window.CGMANativeI18n=Object.freeze({version:VERSION,supported:[...SUPPORTED],ready:[...READY],getLocale:()=>activeLocale,setLocale:locale=>requestLocale(locale),refresh:scheduleTranslate,health:()=>({version:VERSION,locale:activeLocale,state:document.documentElement.dataset.ekodiI18nState||'unknown',browserTranslation:document.documentElement.dataset.ekodiBrowserTranslation||'',supported:[...SUPPORTED],ready:[...READY]})});
+window.CGMANativeI18n=Object.freeze({version:VERSION,supported:[...SUPPORTED],ready:[...READY],getLocale:()=>activeLocale,setLocale:locale=>requestLocale(locale),refresh:scheduleTranslate,refreshPublication:refreshPublicationStatus,health:()=>({version:VERSION,locale:activeLocale,state:document.documentElement.dataset.ekodiI18nState||'unknown',publicationState,publishedReady:[...publishedReady],browserTranslation:document.documentElement.dataset.ekodiBrowserTranslation||'',supported:[...SUPPORTED],ready:[...READY]})});
 })();
