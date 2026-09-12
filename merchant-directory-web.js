@@ -21,6 +21,27 @@
     document.head.appendChild(style);
   }
 
+  function installCompliantBaseMap(attempt=0){
+    if(typeof marketLeafletMap==='undefined'||!marketLeafletMap||!window.L){
+      if(attempt<12)setTimeout(()=>installCompliantBaseMap(attempt+1),120);
+      return;
+    }
+    let blockedLayerFound=false;
+    marketLeafletMap.eachLayer(layer=>{
+      if(layer instanceof window.L.TileLayer&&String(layer._url||'').includes('tile.openstreetmap.org')){
+        marketLeafletMap.removeLayer(layer);
+        blockedLayerFound=true;
+      }
+    });
+    if(!blockedLayerFound)return;
+    window.L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+      subdomains:'abcd',
+      maxZoom:20,
+      detectRetina:true,
+      attribution:'&copy; OpenStreetMap contributors &copy; CARTO'
+    }).addTo(marketLeafletMap);
+  }
+
   function installPublicCount(){
     const stats=document.querySelector('.hero-stats');
     if(!stats||$('heroAssociate'))return;
@@ -57,6 +78,7 @@
 
   function init(){
     installStyles();
+    installCompliantBaseMap();
     installPublicCount();
     installAdminMetric();
     refreshPublicCount();
