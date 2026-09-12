@@ -8,6 +8,14 @@
     style.id='merchantDirectoryWebStyles';
     style.textContent=`
       .hero-stats.has-associate-member-stat{grid-template-columns:repeat(4,minmax(0,1fr));}
+      .market-pin.regular{background:#075c43!important;box-shadow:0 0 0 4px rgba(216,255,62,.52),0 5px 16px rgba(7,66,50,.48)!important;transform:scale(1.14);z-index:2;}
+      .market-pin.regular.active{transform:scale(1.28);box-shadow:0 0 0 5px rgba(216,255,62,.64),0 7px 20px rgba(7,66,50,.56)!important;}
+      .market-pin.associate{background:#ad895b!important;opacity:.84;box-shadow:0 2px 8px rgba(70,52,31,.24)!important;}
+      .map-legend-dot.regular{background:#075c43!important;box-shadow:0 0 0 3px rgba(216,255,62,.48);}
+      .map-legend-dot.associate{background:#ad895b!important;}
+      .directory-item.regular .directory-number{background:#075c43!important;box-shadow:0 0 0 3px rgba(216,255,62,.36);}
+      .directory-item.associate .directory-number{background:#ad895b!important;opacity:.9;}
+      .directory-item.regular b{color:#075c43;font-weight:900;}
       @media(max-width:760px){.hero-stats.has-associate-member-stat{grid-template-columns:repeat(2,minmax(0,1fr));}}
     `;
     document.head.appendChild(style);
