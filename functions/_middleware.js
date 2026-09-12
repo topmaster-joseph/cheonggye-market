@@ -16,7 +16,7 @@ function shouldEnhanceMerchantDirectory(pathname) {
 
 class MerchantDirectoryHead {
   element(element) {
-    element.append('<script src="/merchant-directory-web.js?v=20260912-compliant-map-v4" defer></script>', { html: true });
+    element.append('<script src="/merchant-directory-web.js?v=20260912-openfreemap-v5" defer></script>', { html: true });
   }
 }
 
