@@ -267,7 +267,7 @@ jobs:
           grep -Fq 'cgma-i18n.js?v=20260912-gen10-publication-ledger' index.html
           grep -Fq 'const VERSION=10;' cgma-i18n.js
           grep -Fq "ekodiI18nState='ready'" cgma-i18n.js
-          grep -Fq "ekodiI18nState='fallback-pending'" cgma-i18n.js
+          grep -Fq "unpublished?'fallback-unpublished':'fallback-pending'" cgma-i18n.js
           grep -Fq 'health:()=>({' cgma-i18n.js
           grep -Fq "PUBLICATION_STATUS_URL='https://api.ekodi.kr/api/i18n/v1/status?service=cgma'" cgma-i18n.js
           grep -Fq "publicationState='fail-closed'" cgma-i18n.js
