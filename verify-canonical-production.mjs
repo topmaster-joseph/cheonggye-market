@@ -8,14 +8,14 @@ function report(ok,label,detail=''){
   console.log(`${ok?'PASS':'FAIL'} ${label}${detail?` ${detail}`:''}`);
 }
 
-async function fetchText(path,{marker='',finalPath=''}={}){
+async function fetchText(path,{marker='',finalPath='',expectedRoute=EVIDENCE_ROUTE,expectedUpstream=EVIDENCE_UPSTREAM}={}){
   try{
     const response=await fetch(`${BASE}${path}${path.includes('?')?'&':'?'}proof=${Date.now()}`,{redirect:'follow',cache:'no-store'});
     const text=await response.text();
     const route=response.headers.get('x-ekodi-route')||'';
     const upstream=response.headers.get('x-ekodi-cgma-upstream')||'';
     const actualPath=new URL(response.url).pathname;
-    const ok=response.status===200&&route===EVIDENCE_ROUTE&&upstream===EVIDENCE_UPSTREAM&&(!marker||text.includes(marker))&&(!finalPath||actualPath===finalPath);
+    const ok=response.status===200&&route===expectedRoute&&(!expectedUpstream||upstream===expectedUpstream)&&(!marker||text.includes(marker))&&(!finalPath||actualPath===finalPath);
     report(ok,path,`status=${response.status} final=${actualPath} route=${route}`);
     return {response,text,actualPath,ok};
   }catch(error){
@@ -46,7 +46,7 @@ await fetchText('/cgma/ai',{marker:'청계상권 Marketing AI | 현재 비활성
 await fetchText('/cgma/member',{marker:'EKODI 통합인증센터',finalPath:'/cgma/member/'});
 await fetchText('/cgma/store',{marker:'내 가게 운영 | 청계상권 AI',finalPath:'/cgma/store-admin'});
 await fetchText('/cgma/admin',{marker:'OPERATIONS CONSOLE',finalPath:'/cgma/admin/'});
-await fetchText('/cgma/member-admin',{marker:'OPERATIONS CONSOLE',finalPath:'/cgma/admin/'});
+await fetchText('/cgma/member-admin',{marker:'<title>EKODI Workspace Admin</title>',finalPath:'/cgma/admin/member',expectedRoute:'workspace-admin',expectedUpstream:''});
 await fetchText('/cgma/resource?id=bylaws',{marker:'resource-detail.js',finalPath:'/cgma/resource/'});
 
 try{

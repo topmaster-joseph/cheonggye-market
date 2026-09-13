@@ -261,10 +261,10 @@ jobs:
           grep -Fq 'data-ekodi-media-provider="youtube"' index.html
           grep -Fq 'data-ekodi-channel-handle="@cgma4989"' index.html
           grep -Fq 'data-ekodi-channel-id="UC001JT9opxVBt9z_h-tsx8A"' index.html
-          grep -Fq 'media-meeting-adapter.js?v=3' index.html
+          grep -Fq 'media-meeting-adapter.js?v=3-locale-priority' index.html
           grep -Fq 'media-meeting-adapter.js' index.html
           grep -Fq 'cgma-i18n.js' index.html
-          grep -Fq 'cgma-i18n.js?v=20260912-gen10-publication-ledger' index.html
+          grep -Fq 'cgma-i18n.js?v=20260913-gen10-boot-sync' index.html
           grep -Fq 'const VERSION=10;' cgma-i18n.js
           grep -Fq "ekodiI18nState='ready'" cgma-i18n.js
           grep -Fq "unpublished?'fallback-unpublished':'fallback-pending'" cgma-i18n.js
@@ -272,6 +272,7 @@ jobs:
           grep -Fq "PUBLICATION_STATUS_URL='https://api.ekodi.kr/api/i18n/v1/status?service=cgma'" cgma-i18n.js
           grep -Fq "publicationState='fail-closed'" cgma-i18n.js
           grep -Fq "publishedReady=new Set(['ko-KR'])" cgma-i18n.js
+          grep -Fq "apply(isReady(initial)?initial:'ko-KR',{save:true,emit:true})" cgma-i18n.js
           grep -Fq 'id="languageManager"' admin/index.html
           grep -Fq 'admin-language-management.js?v=20260912-language-publication-v1' admin/index.html
           grep -Fq "const API='https://api.ekodi.kr/api/i18n/v1/admin'" admin-language-management.js
