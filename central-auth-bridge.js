@@ -48,6 +48,7 @@ function updateJoinArea(s){
   const signedIn=Boolean(s);
   const loginButton=document.querySelector('[data-central-auth]');
   const loginPanel=document.querySelector('.login-provider.google');
+  const memberService=document.querySelector('[data-member-service]');
   const joinLinks=[...document.querySelectorAll('[data-member-apply], a[href="#join-form"]')];
   const joinCopy=document.querySelector('#join > div:nth-child(2) > p');
   const joinForm=document.getElementById('join-form');
@@ -62,6 +63,12 @@ function updateJoinArea(s){
     };
   }
 
+  if(memberService){
+    const label=memberService.querySelector('b');
+    memberService.href=signedIn?cgmaRoute('/member'):'#login';
+    if(label)label.textContent=signedIn?'내 가게':'회원';
+  }
+
   if(loginPanel){
     loginPanel.href=signedIn?cgmaRoute('/member'):authUrl;
     loginPanel.innerHTML=`<span>G</span> ${signedIn?'내 계정으로 계속':'Google로 무료 로그인'}`;
@@ -73,6 +80,7 @@ function updateJoinArea(s){
   }
 
   joinLinks.forEach(link=>{
+    if(link.matches('[data-auth-only]'))link.hidden=!signedIn;
     link.textContent=signedIn?'정회원 신청':'가입하기';
     link.href=signedIn?cgmaRoute('/member?apply=1'):'#login';
     link.removeAttribute('target');
