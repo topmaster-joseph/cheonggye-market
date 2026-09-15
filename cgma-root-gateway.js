@@ -15,9 +15,9 @@ function isLivePath(pathname) {
 }
 
 function isOwnerAdminPath(pathname) {
-  return pathname === `${PREFIX}/admin/member`
-    || pathname === `${PREFIX}/admin/member/`
-    || pathname.startsWith(`${PREFIX}/admin/assets/`);
+  const path = String(pathname || '');
+  if (path === `${PREFIX}/admin` || path === `${PREFIX}/admin/`) return false;
+  return path.startsWith(`${PREFIX}/admin/`);
 }
 
 async function delegatedLiveResponse(request, env) {
