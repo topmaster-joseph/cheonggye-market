@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import gateway, { upstreamUrl, canonicalLocation, rewriteHtml, isMarketingPath, isOwnerAdminPath } from './cgma-root-gateway.js';
+import gateway, { upstreamUrl, canonicalLocation, rewriteHtml, isLivePath, isMarketingPath, isOwnerAdminPath } from './cgma-root-gateway.js';
 
 assert.equal(upstreamUrl('https://ekodi.kr/cgma').toString(), 'https://cheonggye-market.pages.dev/');
 assert.equal(upstreamUrl('https://ekodi.kr/cgma/admin?x=1').toString(), 'https://cheonggye-market.pages.dev/admin?x=1');
@@ -11,6 +11,19 @@ assert.match(rewritten, /href="\/cgma\/member"/);
 assert.match(rewritten, /src="\/cgma\/app\.js"/);
 assert.match(rewritten, /href="https:\/\/example\.com"/);
 assert.match(rewritten, /rel="canonical" href="https:\/\/ekodi\.kr\/cgma"/);
+
+assert.equal(isLivePath('/cgma/live'), true);
+assert.equal(isLivePath('/cgma/live/'), true);
+assert.equal(isLivePath('/cgma/live/index.html'), true);
+assert.equal(isLivePath('/cgma/live/assets'), false);
+
+let liveRequest='';
+const liveResponse=await gateway.fetch(new Request('https://ekodi.kr/cgma/live/?room=test'),{EKODI_SHARED:{fetch:async request=>{liveRequest=request.url;return new Response('<body data-tenant="cgma">LIVE</body>',{status:200,headers:{'content-type':'text/html'}});}}});
+assert.equal(liveRequest,'https://ekodi.kr/cgma/live/?room=test');
+assert.equal(liveResponse.status,200);
+assert.match(await liveResponse.text(),/data-tenant="cgma"/);
+const liveUnavailable=await gateway.fetch(new Request('https://ekodi.kr/cgma/live/'),{});
+assert.equal(liveUnavailable.status,503);
 
 assert.equal(isMarketingPath('/cgma/marketing'), true);
 assert.equal(isMarketingPath('/cgma/marketing/app.js'), true);
