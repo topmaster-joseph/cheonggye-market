@@ -10,10 +10,20 @@ function isMarketingPath(pathname) {
   return pathname === `${PREFIX}/marketing` || pathname.startsWith(`${PREFIX}/marketing/`);
 }
 
+function isLivePath(pathname) {
+  return pathname === `${PREFIX}/live` || pathname === `${PREFIX}/live/` || pathname === `${PREFIX}/live/index.html`;
+}
+
 function isOwnerAdminPath(pathname) {
   return pathname === `${PREFIX}/admin/member`
     || pathname === `${PREFIX}/admin/member/`
     || pathname.startsWith(`${PREFIX}/admin/assets/`);
+}
+
+async function delegatedLiveResponse(request, env) {
+  if (!env?.EKODI_SHARED?.fetch) return new Response('CGMA live unavailable', { status: 503 });
+  try { return await env.EKODI_SHARED.fetch(request); }
+  catch { return new Response('CGMA live unavailable', { status: 502 }); }
 }
 
 async function delegatedOwnerAdminResponse(request, env) {
@@ -96,6 +106,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (!isCgmaPath(url.pathname)) return new Response('Not Found', { status: 404 });
+    if (isLivePath(url.pathname)) return delegatedLiveResponse(request, env);
     if (isOwnerAdminPath(url.pathname)) return delegatedOwnerAdminResponse(request, env);
     if (isMarketingPath(url.pathname)) {
       const delegated = await delegatedMarketingResponse(request, env);
@@ -128,4 +139,4 @@ export default {
   },
 };
 
-export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml, isMarketingPath, delegatedMarketingResponse, isOwnerAdminPath, delegatedOwnerAdminResponse };
+export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml, isLivePath, delegatedLiveResponse, isMarketingPath, delegatedMarketingResponse, isOwnerAdminPath, delegatedOwnerAdminResponse };
