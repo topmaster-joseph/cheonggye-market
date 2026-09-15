@@ -31,7 +31,10 @@ assert.equal(isMarketingPath('/cgma/member'), false);
 assert.equal(isOwnerAdminPath('/cgma/admin/member'), true);
 assert.equal(isOwnerAdminPath('/cgma/admin/member/'), true);
 assert.equal(isOwnerAdminPath('/cgma/admin/assets/cgma-member-admin.js'), true);
+assert.equal(isOwnerAdminPath('/cgma/admin/publishing'), true);
+assert.equal(isOwnerAdminPath('/cgma/admin/marketing'), true);
 assert.equal(isOwnerAdminPath('/cgma/admin'), false);
+assert.equal(isOwnerAdminPath('/cgma/admin/'), false);
 
 let delegatedOverride='';
 const delegatedResponse = await gateway.fetch(new Request('https://ekodi.kr/cgma/marketing', {
@@ -50,6 +53,11 @@ const ownerResponse=await gateway.fetch(new Request('https://ekodi.kr/cgma/admin
 assert.equal(ownerRequest,'https://ekodi.kr/cgma/admin/member');
 assert.equal(ownerResponse.status,200);
 assert.equal(ownerResponse.headers.get('x-ekodi-route'),'workspace-admin');
+let publishingRequest='';
+const publishingResponse=await gateway.fetch(new Request('https://ekodi.kr/cgma/admin/publishing?tab=channels'),{EKODI_SHARED:{fetch:async request=>{publishingRequest=request.url;return new Response('PUBLISHING',{status:200,headers:{'x-ekodi-route':'workspace-admin'}});}}});
+assert.equal(publishingRequest,'https://ekodi.kr/cgma/admin/publishing?tab=channels');
+assert.equal(publishingResponse.status,200);
+assert.equal(publishingResponse.headers.get('x-ekodi-route'),'workspace-admin');
 const ownerAsset=await gateway.fetch(new Request('https://ekodi.kr/cgma/admin/assets/cgma-member-admin.js'),{EKODI_SHARED:{fetch:async()=>new Response('ASSET',{status:200,headers:{'x-ekodi-route':'admin-workspace-asset'}})}});
 assert.equal(ownerAsset.status,200);
 assert.equal(ownerAsset.headers.get('x-ekodi-route'),'admin-workspace-asset');
