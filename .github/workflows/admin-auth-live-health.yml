@@ -28,7 +28,7 @@ jobs:
             printf '%s' "$body" | grep -Fq '[hidden]{display:none!important}'
             printf '%s' "$body" | grep -Fq 'id="adminApp" class="admin-shell" hidden'
             printf '%s' "$body" | grep -Fq 'id="adminLoginLink"'
-            printf '%s' "$body" | grep -Fq 'https://auth.ekodi.kr/'
+            printf '%s' "$body" | grep -Fq 'https://ekodi.kr/auth/'
             printf '%s' "$body" | grep -Fq "hash.get('ekodi_token')"
             printf '%s' "$body" | grep -Fq 'verifyOtp({token_hash:tokenHash'
             echo "OK $url"
