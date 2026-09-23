@@ -22,11 +22,15 @@ jobs:
           grep -Fq '[hidden]{display:none!important}' "$page"
           grep -Fq 'id="adminApp" class="admin-shell" hidden' "$page"
           grep -Fq 'id="adminLoginLink"' "$page"
-          grep -Fq 'https://auth.ekodi.kr/?site=cgma&direct=1' "$page"
+          grep -Fq 'https://ekodi.kr/auth/?site=cgma&direct=1' "$page"
           grep -Fq "hash.get('ekodi_token')" "$page"
           grep -Fq 'verifyOtp({token_hash:tokenHash' "$page"
           grep -Fq "document.querySelector('#adminApp').hidden=true" "$page"
           grep -Fq 'id="memberReview"' "$page"
+          grep -Fq 'id="towerReviewDueTitle">오늘 검토할 운영카드</h3>' "$page"
+          grep -Fq '검토일이 된 운영카드만 모아 보여줍니다.' "$page"
+          grep -Fq 'id="towerReviewDueCount">0개</span>' "$page"
+          ! grep -Fq '?? ??? ????' "$page"
           grep -Fq 'CGMA_MEMBER_REVIEW' member-admin.js
           for bridge in admin.html member-admin.html member-admin/index.html; do
             echo "Checking compatibility bridge $bridge"
