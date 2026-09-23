@@ -13,7 +13,7 @@
 </head>
 <body>
   <div id="adminLoading" class="denied"><h1>권한 확인 중</h1><p>EKODI 로그인과 청계면상인회 관리자 권한을 확인하고 있습니다.</p></div>
-  <div id="adminDenied" class="denied" hidden><h1>관리자 전용 페이지입니다</h1><p id="deniedMessage">청계면상인회 관리자로 지정된 계정만 사용할 수 있습니다.</p><a id="adminLoginLink" href="https://auth.ekodi.kr/">EKODI 로그인</a></div>
+  <div id="adminDenied" class="denied" hidden><h1>관리자 전용 페이지입니다</h1><p id="deniedMessage">청계면상인회 관리자로 지정된 계정만 사용할 수 있습니다.</p><a id="adminLoginLink" href="https://ekodi.kr/auth/">EKODI 로그인</a></div>
   <div id="adminApp" class="admin-shell" hidden>
     <aside class="admin-side" data-ekodi-fixed-header>
       <a class="admin-brand" href="../"><b>청계면상인회</b><br><small>OPERATIONS CONSOLE</small></a>
@@ -48,8 +48,8 @@
       <section class="admin-control-tower" id="controlTower" aria-labelledby="controlTowerTitle">
         <header class="admin-tower-head"><div><small>MARKET CONTROL TOWER</small><h2 id="controlTowerTitle">상권 운영 신호</h2><p>점포를 순위화하지 않고, 익명 반응에서 지금 확인할 운영 개입 후보만 찾습니다.</p></div><span id="towerPeriod" class="admin-member-authority">최근 7일</span></header>
         <section class="tower-review-due" aria-labelledby="towerReviewDueTitle">
-          <div class="tower-review-due-head"><div><small>REVIEW DUE QUEUE</small><h3 id="towerReviewDueTitle">?? ??? ????</h3><p>???? ? ??? ?? ????. ?? ??? ??? ??? ???? ?? ???????? ??? ???? ?? ???.</p></div><span class="tower-review-due-count" id="towerReviewDueCount">0?</span></div>
-          <div id="towerReviewDueList" class="tower-review-due-list" aria-live="polite"><div class="tower-empty">??? ????? ???? ????.</div></div>
+          <div class="tower-review-due-head"><div><small>REVIEW DUE QUEUE</small><h3 id="towerReviewDueTitle">오늘 검토할 운영카드</h3><p>검토일이 된 운영카드만 모아 보여줍니다. 익명 반응을 비교해 참고하되 최종 판단은 관리자가 합니다.</p></div><span class="tower-review-due-count" id="towerReviewDueCount">0개</span></div>
+          <div id="towerReviewDueList" class="tower-review-due-list" aria-live="polite"><div class="tower-empty">오늘 검토할 운영카드를 확인하고 있습니다.</div></div>
         </section>
         <div class="admin-tower-metrics"><article><span>반응 점포</span><b id="towerActiveStores">…</b></article><article><span>전체 반응</span><b id="towerInteractions">…</b></article><article><span>길찾기</span><b id="towerDirections">…</b></article><article><span>혜택 반응</span><b id="towerBenefits">…</b></article><article><span>상승 신호</span><b id="towerRising">…</b></article><article><span>관찰 필요</span><b id="towerWatch">…</b></article><article><span>실험 진행</span><b id="towerExperiments">…</b></article><article><span>점포 ID 연결</span><b id="towerCanonicalStores">…</b></article></div>
         <div class="admin-tower-queue"><div class="admin-tower-title"><h3>오늘 확인할 신호</h3><span>최대 8개</span></div><div id="towerQueue"><div class="tower-empty">상권 신호를 확인하고 있습니다.</div></div></div><div class="admin-tower-interventions"><div class="admin-tower-title"><h3>진행 중 운영카드</h3><span id="towerInterventionCount">0개 진행 중</span></div><div id="towerInterventionList"><div class="tower-empty">운영카드를 확인하고 있습니다.</div></div></div><p class="admin-resource-status" id="towerStatus" role="status">개인 식별정보 없이 점포 단위 익명 반응을 집계합니다.</p>
@@ -157,7 +157,7 @@
     const client=window.supabase.createClient('https://renzehysxirjilvdxacv.supabase.co','sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_');
     const route=value=>window.CGMA_ROUTE?.route(value)||value;
     const returnUrl=()=>{const url=new URL(location.href);url.hash='';return url.toString()};
-    const authUrl=()=>`https://auth.ekodi.kr/?site=cgma&direct=1&return_to=${encodeURIComponent(returnUrl())}`;
+    const authUrl=()=>`https://ekodi.kr/auth/?site=cgma&direct=1&return_to=${encodeURIComponent(returnUrl())}`;
     const loginLink=document.querySelector('#adminLoginLink');if(loginLink)loginLink.href=authUrl();
     async function consumeHandoff(){
       const hash=new URLSearchParams(location.hash.replace(/^#/,'')),tokenHash=hash.get('ekodi_token');
