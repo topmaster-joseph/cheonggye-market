@@ -6,11 +6,17 @@ assert.equal(upstreamUrl('https://ekodi.kr/cgma/admin?x=1').toString(), 'https:/
 assert.equal(canonicalLocation('/member/'), 'https://ekodi.kr/cgma/member/');
 assert.equal(canonicalLocation('https://example.com/x'), 'https://example.com/x');
 
-const rewritten = rewriteHtml('<head></head><a href="/member">M</a><script src="/app.js"></script><a href="https://example.com">E</a>');
+const rewritten = rewriteHtml('<html><head></head><body><header class="site-header">H</header><a href="/member">M</a><script src="/app.js"></script><a href="https://example.com">E</a></body></html>');
 assert.match(rewritten, /href="\/cgma\/member"/);
 assert.match(rewritten, /src="\/cgma\/app\.js"/);
 assert.match(rewritten, /href="https:\/\/example\.com"/);
 assert.match(rewritten, /rel="canonical" href="https:\/\/ekodi\.kr\/cgma"/);
+assert.match(rewritten, /data-ekodi-tenant-readability="v1"/);
+assert.match(rewritten, /data-ekodi-tenant-readability-style="v1"/);
+assert.match(rewritten, /https:\/\/ekodi\.kr\/shell\/user-ui-shell\.css\?tenant-readability=v1/);
+assert.match(rewritten, /data-ekodi-tenant-mobile-header="v1"/);
+assert.match(rewritten, /https:\/\/ekodi\.kr\/shell\/mobile-fixed-header\.js\?tenant-readability=v1/);
+assert.match(rewritten, /data-ekodi-fixed-header="v1"/);
 
 assert.equal(isLivePath('/cgma/live'), true);
 assert.equal(isLivePath('/cgma/live/'), true);
@@ -78,13 +84,19 @@ const originalFetch = globalThis.fetch;
 let fetchedUrl = '';
 globalThis.fetch = async request => {
   fetchedUrl = request.url;
-  return new Response('<html><head></head><body><a href="/admin">Admin</a></body></html>', {headers:{'content-type':'text/html'}});
+  return new Response('<html><head></head><body><header>CGMA</header><a href="/admin">Admin</a></body></html>', {headers:{'content-type':'text/html','content-security-policy':"default-src 'self'; style-src 'self'; script-src 'self'"}});
 };
 const htmlResponse = await gateway.fetch(new Request('https://ekodi.kr/cgma/admin'));
 assert.equal(fetchedUrl, 'https://cheonggye-market.pages.dev/admin');
 assert.equal(htmlResponse.status, 200);
 assert.equal(htmlResponse.headers.get('x-ekodi-route'), 'cgma-root-gateway');
-assert.match(await htmlResponse.text(), /href="\/cgma\/admin"/);
+assert.equal(htmlResponse.headers.get('x-ekodi-tenant-readability'), 'v1');
+assert.match(htmlResponse.headers.get('content-security-policy') || '', /style-src[^;]*https:\/\/ekodi\.kr/);
+assert.match(htmlResponse.headers.get('content-security-policy') || '', /script-src[^;]*https:\/\/ekodi\.kr/);
+const htmlBody = await htmlResponse.text();
+assert.match(htmlBody, /href="\/cgma\/admin"/);
+assert.match(htmlBody, /data-ekodi-tenant-readability="v1"/);
+assert.match(htmlBody, /data-ekodi-fixed-header="v1"/);
 
 globalThis.fetch = async () => new Response(null, {status:308,headers:{location:'/admin/'}});
 const redirectResponse = await gateway.fetch(new Request('https://ekodi.kr/cgma/admin'));
