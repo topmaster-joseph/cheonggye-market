@@ -1,6 +1,9 @@
 const PREFIX = '/cgma';
 const CANONICAL_ORIGIN = 'https://ekodi.kr';
 const UPSTREAM_ORIGIN = 'https://cheonggye-market.pages.dev';
+const TENANT_READABILITY_VERSION = 'v1';
+const TENANT_READABILITY_STYLE = `${CANONICAL_ORIGIN}/shell/user-ui-shell.css?tenant-readability=${TENANT_READABILITY_VERSION}`;
+const MOBILE_FIXED_HEADER_SCRIPT = `${CANONICAL_ORIGIN}/shell/mobile-fixed-header.js?tenant-readability=${TENANT_READABILITY_VERSION}`;
 
 function isCgmaPath(pathname) {
   return pathname === PREFIX || pathname.startsWith(`${PREFIX}/`);
@@ -88,8 +91,26 @@ function rewriteHtml(html) {
   });
   next = next.replace(/<link\s+rel=["']canonical["'][^>]*>/gi, '');
   const canonical = '<link rel="canonical" href="https://ekodi.kr/cgma">';
-  if (/<\/head>/i.test(next)) next = next.replace(/<\/head>/i, `${canonical}</head>`);
+  const readabilityAssets = `<link rel="stylesheet" href="${TENANT_READABILITY_STYLE}" data-ekodi-tenant-readability-style="${TENANT_READABILITY_VERSION}"><script src="${MOBILE_FIXED_HEADER_SCRIPT}" defer data-ekodi-tenant-mobile-header="${TENANT_READABILITY_VERSION}"></script>`;
+  if (/<html\b/i.test(next) && !/data-ekodi-tenant-readability=/i.test(next)) {
+    next = next.replace(/<html\b([^>]*)>/i, `<html$1 data-ekodi-tenant-readability="${TENANT_READABILITY_VERSION}">`);
+  }
+  if (/<\/head>/i.test(next)) {
+    const assets = next.includes('data-ekodi-tenant-readability-style=') ? '' : readabilityAssets;
+    next = next.replace(/<\/head>/i, `${canonical}${assets}</head>`);
+  }
+  if (!/data-ekodi-fixed-header=/i.test(next)) {
+    next = next.replace(/<header\b([^>]*)>/i, `<header$1 data-ekodi-fixed-header="${TENANT_READABILITY_VERSION}">`);
+  }
   return next;
+}
+
+function extendCspDirective(csp, name, origin) {
+  const parts = String(csp || '').split(';').map(value => value.trim()).filter(Boolean);
+  const index = parts.findIndex(part => part === name || part.startsWith(`${name} `));
+  if (index < 0) parts.push(`${name} 'self' ${origin}`);
+  else if (!parts[index].split(/\s+/).includes(origin)) parts[index] = `${parts[index]} ${origin}`;
+  return parts.join('; ');
 }
 
 function gatewayHeaders(response) {
@@ -97,8 +118,15 @@ function gatewayHeaders(response) {
   headers.delete('content-length');
   headers.set('X-EKODI-Route', 'cgma-root-gateway');
   headers.set('X-EKODI-CGMA-Upstream', 'cheonggye-market-pages');
+  headers.set('X-EKODI-Tenant-Readability', TENANT_READABILITY_VERSION);
   headers.set('X-Content-Type-Options', 'nosniff');
   headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  const csp = headers.get('content-security-policy');
+  if (csp) {
+    let next = extendCspDirective(csp, 'style-src', CANONICAL_ORIGIN);
+    next = extendCspDirective(next, 'script-src', CANONICAL_ORIGIN);
+    headers.set('content-security-policy', next);
+  }
   return headers;
 }
 
