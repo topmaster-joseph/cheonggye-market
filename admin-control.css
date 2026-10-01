@@ -106,3 +106,45 @@ body{margin:0;padding-top:0!important;background:var(--admin-paper)}
 .tower-review-due-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:.75rem}.tower-review-due-head small{display:block;color:#71825e;font-size:.67rem;font-weight:900;letter-spacing:.09em}.tower-review-due-head h3{margin:.2rem 0;color:var(--admin-green)}.tower-review-due-head p{margin:0;max-width:760px;color:#66756e;font-size:.76rem;line-height:1.55}.tower-review-due-count{display:inline-flex;align-items:center;justify-content:center;min-width:54px;padding:.42rem .6rem;border-radius:999px;background:#e7eedb;color:#54682f;font-size:.72rem;font-weight:900}.tower-review-due-count.attention{background:#dff09f;color:#39580d}
 .tower-review-due-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}.tower-review-due-card{padding:.9rem;border:1px solid #d8e2d2;border-radius:15px;background:#fff;box-shadow:0 8px 24px rgba(41,72,53,.05)}.tower-review-due-card>header{display:flex;align-items:flex-start;gap:.65rem}.tower-review-due-card>header>div{display:grid;gap:.14rem}.tower-review-due-card strong{color:var(--admin-green)}.tower-review-due-card header b{font-size:.76rem;color:#52645c}.tower-due-badge{flex:0 0 auto;padding:.27rem .48rem;border-radius:999px;background:#eef3e9;color:#607052;font-size:.64rem;font-weight:900}.tower-due-badge.overdue{background:#fff0df;color:#8b541f}.tower-due-objective{margin:.55rem 0 .2rem;color:#64746d;font-size:.74rem;line-height:1.5}.tower-due-recommendation{display:grid;grid-template-columns:auto 1fr;gap:.2rem .55rem;align-items:center;margin:.65rem 0;padding:.65rem .72rem;border-radius:12px;background:#f5f8ef}.tower-due-recommendation span{font-size:.66rem;font-weight:900;color:#738266}.tower-due-recommendation b{font-size:.78rem;color:var(--admin-green)}.tower-due-recommendation small{grid-column:1/-1;color:#7a8881;line-height:1.45}.tower-review-due-card .tower-review-actions{margin-top:.55rem}.tower-review-due-card .tower-review-actions button{min-height:40px}
 @media(max-width:800px){.tower-review-due-head{display:block}.tower-review-due-count{margin-top:.6rem}.tower-review-due-list{grid-template-columns:1fr}}
+
+
+/* 2026-10-01 compact tabbed admin dashboard + fixed desktop sidebar */
+.admin-tab-hidden{display:none!important}
+.admin-title-actions{display:flex;align-items:center;justify-content:flex-end;gap:.55rem;flex-wrap:wrap}
+.admin-title-actions #towerPeriod{margin:0}
+.admin-toolbar{display:flex;align-items:center;justify-content:space-between;gap:.8rem;margin:1rem 0 .2rem}
+.admin-workspace-tabs{display:flex;gap:.35rem;flex-wrap:wrap;padding:.3rem;border:1px solid var(--admin-line);border-radius:16px;background:rgba(255,255,255,.55)}
+.admin-workspace-tabs button,.admin-quick-actions button{appearance:none;border:0;font:inherit;font-weight:850;cursor:pointer}
+.admin-workspace-tabs button{padding:.65rem .9rem;border-radius:12px;background:transparent;color:#5e6f69}
+.admin-workspace-tabs button.is-active,.admin-workspace-tabs button[aria-selected="true"]{background:var(--admin-green);color:#fff}
+.admin-quick-actions{display:flex;gap:.4rem;flex-wrap:wrap}
+.admin-quick-actions button{padding:.68rem .85rem;border:1px solid var(--admin-line);border-radius:12px;background:#fff;color:var(--admin-green)}
+.admin-quick-actions button:first-child{background:var(--admin-green);color:#fff}
+.admin-side nav a.is-active{background:rgba(255,255,255,.12)}
+.tower-review-due.is-empty{padding:.75rem 1rem}
+.tower-review-due.is-empty .tower-review-due-head{margin-bottom:0}
+.tower-review-due.is-empty .tower-review-due-head p,.tower-review-due.is-empty .tower-review-due-list{display:none}
+
+@media(min-width:801px){
+  .admin-shell{display:block;min-height:100dvh}
+  .admin-side{position:fixed!important;top:0!important;bottom:0;left:0;width:268px;height:100dvh!important;overflow:hidden!important;z-index:100}
+  .admin-side nav{overflow:hidden!important}
+  .admin-main{margin-left:268px}
+  .admin-side{padding:1.05rem 1.05rem}
+  .admin-brand{padding:.25rem .4rem .75rem}
+  .admin-nav-label{margin:.55rem .5rem .12rem;font-size:.61rem}
+  .admin-side nav a{padding:.45rem .6rem;font-size:.82rem;line-height:1.25}
+  .admin-side-foot{margin-top:.65rem;padding-top:.55rem;gap:.1rem}
+  .admin-side-foot a{padding:.3rem .5rem;font-size:.72rem}
+}
+@media(max-width:800px){
+  .admin-toolbar{align-items:stretch;flex-direction:column}
+  .admin-workspace-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:.25rem;overflow:visible}
+  .admin-workspace-tabs button{padding:.62rem .3rem;font-size:.78rem;white-space:nowrap}
+  .admin-quick-actions button{flex:1}
+  .admin-title-actions{justify-content:flex-start;margin-bottom:.7rem}
+}
+@media(max-width:520px){
+  .admin-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .admin-metric{min-height:112px;padding:1rem}
+}

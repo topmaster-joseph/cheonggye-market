@@ -18,32 +18,45 @@
     <aside class="admin-side" data-ekodi-fixed-header>
       <a class="admin-brand" href="../"><b>청계면상인회</b><br><small>OPERATIONS CONSOLE</small></a>
       <nav aria-label="관리 메뉴">
-        <span class="admin-nav-label">CONTROL</span>
-        <a href="#dashboard">운영 현황</a>
-        <a href="#controlTower">상권 컨트롤타워</a>
-        <a href="#merchantManager">점포·회원 명부</a>
-        <a href="#noticeManager">공지·행사 관리</a>
-        <a href="#memberReview">정회원 신청 승인</a>
+        <span class="admin-nav-label">TODAY</span>
+        <a href="#dashboard" data-admin-group="today">오늘</a>
+        <a href="#controlTower" data-admin-group="today">상권 운영 신호</a>
+        <span class="admin-nav-label">MERCHANTS</span>
+        <a href="#merchantManager" data-admin-group="members">점포·회원 명부</a>
+        <a href="#memberReview" data-admin-group="members">정회원 신청 승인</a>
         <span class="admin-nav-label">CONTENT</span>
-        <a href="#resourceManager">공식 자료실</a>
-        <a href="#siteModeManager">홈페이지 첫화면</a>
-        <a href="#languageManager">다국어 번역·게시</a>
+        <a href="#noticeManager" data-admin-group="content">공지·행사 관리</a>
+        <a href="#resourceManager" data-admin-group="content">공식 자료실</a>
+        <a href="#siteModeManager" data-admin-group="content">홈페이지 첫화면</a>
+        <a href="#languageManager" data-admin-group="content">다국어 번역·게시</a>
         <span class="admin-nav-label">FIELD</span>
-        <a href="#petitionManager">주차장 동의접수</a>
+        <a href="#petitionManager" data-admin-group="field">주차장 동의접수</a>
         <a href="../#market-map" target="_blank" rel="noopener">공개 상권지도 ↗</a>
       </nav>
       <div class="admin-side-foot"><a href="../" target="_blank" rel="noopener">공개 홈페이지 보기 ↗</a><a href="../member" target="_blank" rel="noopener">정회원 신청 화면 ↗</a></div>
     </aside>
     <main class="admin-main" id="dashboard">
-      <div class="admin-title-row"><div><span class="admin-kicker">CHEONGGYE MERCHANT ASSOCIATION</span><h1>상인회 운영관리</h1></div><a class="admin-view-link" href="../" target="_blank" rel="noopener">공개 화면 보기 ↗</a></div>
+      <div class="admin-title-row"><div><span class="admin-kicker">CHEONGGYE MERCHANT ASSOCIATION</span><h1>상인회 운영관리</h1></div><div class="admin-title-actions"><span id="adminGlobalPeriod"></span><a class="admin-view-link" href="../" target="_blank" rel="noopener">공개 화면 보기 ↗</a></div></div>
       <p class="access-state" id="accessState"></p>
+      <div class="admin-toolbar">
+        <div class="admin-workspace-tabs" role="tablist" aria-label="운영관리 영역">
+          <button type="button" role="tab" data-admin-tab="today" aria-selected="true">오늘</button>
+          <button type="button" role="tab" data-admin-tab="members" aria-selected="false">점포·회원</button>
+          <button type="button" role="tab" data-admin-tab="content" aria-selected="false">콘텐츠</button>
+          <button type="button" role="tab" data-admin-tab="field" aria-selected="false">현장</button>
+        </div>
+        <div class="admin-quick-actions">
+          <button type="button" id="quickAddMerchant">+ 점포 등록</button>
+          <button type="button" id="quickAddNotice">+ 공지 등록</button>
+        </div>
+      </div>
       <section class="admin-metrics" aria-label="운영 현황">
-        <article class="admin-metric"><span>공개 점포</span><b id="merchantCount">…</b><p>상권지도·명부 공개 점포</p></article>
-        <article class="admin-metric"><span>정회원 점포</span><b id="regularMerchantCount">…</b><p>정회원으로 공개된 점포</p></article>
-        <article class="admin-metric"><span>정회원 승인 대기</span><b id="memberPendingCount">…</b><p>신규·기존 점포 신청 검토</p></article>
-        <article class="admin-metric"><span>공지·행사</span><b id="noticeCount">…</b><p>홈페이지 공개 게시물</p></article>
-        <article class="admin-metric"><span>공식 자료</span><b id="resourceCount">…</b><p>자료실 관리 항목</p></article>
-        <article class="admin-metric"><span>동의 접수</span><b id="petitionCount">…</b><p>공영주차장 온라인 접수</p></article>
+        <article class="admin-metric" data-admin-metric="merchant"><span>공개 점포</span><b id="merchantCount">…</b><p>상권지도·명부 공개 점포</p></article>
+        <article class="admin-metric" data-admin-metric="regular"><span>정회원 점포</span><b id="regularMerchantCount">…</b><p>정회원으로 공개된 점포</p></article>
+        <article class="admin-metric" data-admin-metric="pending"><span>정회원 승인 대기</span><b id="memberPendingCount">…</b><p>신규·기존 점포 신청 검토</p></article>
+        <article class="admin-metric" data-admin-metric="notice"><span>공지·행사</span><b id="noticeCount">…</b><p>홈페이지 공개 게시물</p></article>
+        <article class="admin-metric" data-admin-metric="resource"><span>공식 자료</span><b id="resourceCount">…</b><p>자료실 관리 항목</p></article>
+        <article class="admin-metric" data-admin-metric="petition"><span>동의 접수</span><b id="petitionCount">…</b><p>공영주차장 온라인 접수</p></article>
       </section>
       <section class="admin-control-tower" id="controlTower" aria-labelledby="controlTowerTitle">
         <header class="admin-tower-head"><div><small>MARKET CONTROL TOWER</small><h2 id="controlTowerTitle">상권 운영 신호</h2><p>점포를 순위화하지 않고, 익명 반응에서 지금 확인할 운영 개입 후보만 찾습니다.</p></div><span id="towerPeriod" class="admin-member-authority">최근 7일</span></header>
@@ -153,6 +166,7 @@
   <script src="../admin-language-management.js?v=20260912-language-publication-v1"></script>
   <script src="../admin-resources.js?v=20260906-control-plane"></script>
   <script src="../admin-petition.js?v=20260906-control-plane"></script>
+  <script src="../admin-dashboard.js?v=20261001-tabs-fixed-sidebar-v1"></script>
   <script>
     const client=window.supabase.createClient('https://renzehysxirjilvdxacv.supabase.co','sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_');
     const route=value=>window.CGMA_ROUTE?.route(value)||value;
@@ -178,7 +192,7 @@
         if(!response.ok||!result.allowed)return deny('이 계정은 청계면상인회 관리자로 지정되어 있지 않습니다.');
         document.querySelector('#adminDenied').hidden=true;document.querySelector('#adminLoading').hidden=true;document.querySelector('#adminApp').hidden=false;
         const authorityLabel=result.authority==='platform'?'EKODI 최고관리자 위임':'청계면상인회 관리자';
-        document.querySelector('#accessState').textContent=`${result.email||'로그인 계정'} · ${authorityLabel} · 청계면상인회 조회 및 수정 가능`;
+        const accessState=document.querySelector('#accessState');accessState.textContent=`현재 권한: ${authorityLabel}`;accessState.title=`${result.email||'로그인 계정'} · ${authorityLabel} · 청계면상인회 조회 및 수정 가능`;
         window.CGMA_ADMIN_OVERVIEW?.start(session);
         window.CGMA_CONTROL_TOWER?.start(session);
         window.CGMA_MERCHANT_ADMIN?.start(session);
