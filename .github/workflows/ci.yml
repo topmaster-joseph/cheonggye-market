@@ -35,6 +35,7 @@ jobs:
           node --check admin-merchants.js
           node --check admin-notices.js
           node --check admin-overview.js
+          node --check admin-dashboard.js
           node --check admin-control-tower.js
           node --check admin-site-mode.js
           node --check admin-language-management.js
@@ -60,6 +61,8 @@ jobs:
         run: node --test store-action-model.test.mjs
       - name: Test merchant experiment model
         run: node --test store-experiment-model.test.mjs
+      - name: Test compact admin dashboard contract
+        run: node --test cgma-admin-dashboard.test.mjs
       - name: Test market control tower model
         run: node --test cgma-market-health.test.mjs
       - name: Test canonical store identity model
@@ -124,6 +127,13 @@ jobs:
           grep -Fq 'cgma_store_experiments' functions/api/store-experiments.js
           grep -Fq 'canonicalStoreKey' functions/api/store-experiments.js
           grep -Fq 'id="controlTower"' admin/index.html
+          grep -Fq 'data-admin-tab="today"' admin/index.html
+          grep -Fq 'data-admin-tab="members"' admin/index.html
+          grep -Fq 'data-admin-tab="content"' admin/index.html
+          grep -Fq 'data-admin-tab="field"' admin/index.html
+          grep -Fq 'admin-dashboard.js?v=20261001-tabs-fixed-sidebar-v1' admin/index.html
+          grep -Fq 'position:fixed!important' admin-control.css
+          grep -Fq '.admin-side nav{overflow:hidden!important}' admin-control.css
           grep -Fq 'admin-control-tower.js?v=20260908-review-due-queue-v16' admin/index.html
           grep -Fq 'admin-control.css?v=20260908-review-due-queue-v16' admin/index.html
           grep -Fq 'padding-top:0!important' admin-control.css
