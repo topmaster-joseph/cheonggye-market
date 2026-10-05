@@ -34,6 +34,7 @@ jobs:
           node --check admin-petition.js
           node --check admin-merchants.js
           node --check admin-notices.js
+          node --check notice-board-v2.js
           node --check admin-overview.js
           node --check admin-dashboard.js
           node --check admin-control-tower.js
@@ -63,6 +64,8 @@ jobs:
         run: node --test store-experiment-model.test.mjs
       - name: Test compact admin dashboard contract
         run: node --test cgma-admin-dashboard.test.mjs
+      - name: Test public-surface notice board contract
+        run: node --test cgma-notice-board.test.mjs
       - name: Test market control tower model
         run: node --test cgma-market-health.test.mjs
       - name: Test canonical store identity model
