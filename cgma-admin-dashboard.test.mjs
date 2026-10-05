@@ -55,3 +55,16 @@ test('notice permalink shell preserves canonical asset and link base',async()=>{
   assert.match(home,/location\.hostname==='ekodi\.kr'\?'\/cgma\/':'\/'/);
   assert.doesNotMatch(home,/<\/script>\\n\s*<script src="notice-board-v2\.js/);
 });
+
+
+test('CGMA uses EKODI native browser verification after production deploy',async()=>{
+  const workflow=await fs.readFile(new URL('./.github/workflows/cloudflare-pages-deploy.yml',import.meta.url),'utf8');
+  assert.match(workflow,/native_surface_verification_desktop:/);
+  assert.match(workflow,/native_surface_verification_mobile:/);
+  assert.equal((workflow.match(/ekodi-background-browser-worker\.yml@main/g)||[]).length,2);
+  assert.equal((workflow.match(/surface_paths:\s*\/cgma\/,\/cgma\/notices\/1/g)||[]).length,2);
+  assert.match(workflow,/device_profile:\s*desktop/);
+  assert.match(workflow,/device_profile:\s*mobile-portrait/);
+  assert.equal((workflow.match(/needs\.deploy\.outputs\.deployed == 'true'/g)||[]).length,2);
+  assert.doesNotMatch(workflow,/tinyfish|browserless|browserbase|selenium-grid/i);
+});
