@@ -38,10 +38,6 @@
       openTarget('members','merchantManager');
       setTimeout(()=>document.getElementById('addMerchantBtn')?.click(),80);
     });
-    document.getElementById('quickAddNotice')?.addEventListener('click',()=>{
-      openTarget('content','noticeManager');
-      setTimeout(()=>document.getElementById('addNoticeBtn')?.click(),80);
-    });
     const period=document.getElementById('towerPeriod'),periodSlot=document.getElementById('adminGlobalPeriod');
     if(period&&periodSlot)periodSlot.append(period);
     const due=document.getElementById('towerReviewDueCount'),dueSection=document.querySelector('.tower-review-due');
