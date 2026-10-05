@@ -253,7 +253,7 @@ jobs:
           grep -Fq 'https://auth.ekodi.kr/?site=cgma' index.html
           grep -Fq 'central-auth-bridge.js' index.html
           grep -Fq 'id="adminNav"' index.html
-          grep -Fq '/api/admin-session' script.js
+          grep -Fq '/api/admin-session' notice-board-v2.js
           grep -Fq "const site=button?.dataset.site||'cgma'" central-auth-bridge.js
           grep -Fq "const MEMBER_APPLY=cgmaAbsolute('/member?apply=1')" central-auth-bridge.js
           grep -Fq 'Google 로그인만으로 무료회원' central-auth-bridge.js
