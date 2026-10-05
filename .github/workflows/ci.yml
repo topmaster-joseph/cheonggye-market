@@ -34,6 +34,7 @@ jobs:
           node --check admin-petition.js
           node --check admin-merchants.js
           node --check admin-notices.js
+          node --check notice-board-v2.js
           node --check admin-overview.js
           node --check admin-dashboard.js
           node --check admin-control-tower.js
@@ -63,6 +64,8 @@ jobs:
         run: node --test store-experiment-model.test.mjs
       - name: Test compact admin dashboard contract
         run: node --test cgma-admin-dashboard.test.mjs
+      - name: Test public-surface notice board contract
+        run: node --test cgma-notice-board.test.mjs
       - name: Test market control tower model
         run: node --test cgma-market-health.test.mjs
       - name: Test canonical store identity model
@@ -250,7 +253,7 @@ jobs:
           grep -Fq 'https://auth.ekodi.kr/?site=cgma' index.html
           grep -Fq 'central-auth-bridge.js' index.html
           grep -Fq 'id="adminNav"' index.html
-          grep -Fq '/api/admin-session' script.js
+          grep -Fq '/api/admin-session' notice-board-v2.js
           grep -Fq "const site=button?.dataset.site||'cgma'" central-auth-bridge.js
           grep -Fq "const MEMBER_APPLY=cgmaAbsolute('/member?apply=1')" central-auth-bridge.js
           grep -Fq 'Google 로그인만으로 무료회원' central-auth-bridge.js

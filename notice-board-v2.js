@@ -4,6 +4,7 @@
   const editor=document.querySelector('#noticeEditor');
   const toggle=document.querySelector('#noticeWriteToggle');
   const status=document.querySelector('#noticeFormStatus');
+  const adminNav=document.querySelector('#adminNav');
   if(!list||!form)return;
 
   let items=[],canManage=false,rendering=false;
@@ -68,6 +69,7 @@
       items=Array.isArray(data.items)?data.items:[];
       const auth=await authority();canManage=auth.allowed;
       if(toggle)toggle.hidden=!canManage;
+      if(adminNav)adminNav.hidden=!canManage;
       render();
     }catch{
       list.innerHTML='<div class="notice-loading">공지사항을 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.</div>';
@@ -127,7 +129,21 @@
   },true);
 
   toggle?.addEventListener('click',()=>{
-    if(!editor.hidden&&form.elements.id.value){form.reset();form.elements.id.value='';status.textContent=''}
+    if(!canManage)return;
+    if(editor.hidden){
+      form.reset();
+      form.elements.id.value='';
+      status.textContent='';
+      editor.hidden=false;
+      toggle.textContent='작성 닫기';
+      form.elements.title?.focus();
+      return;
+    }
+    editor.hidden=true;
+    form.reset();
+    form.elements.id.value='';
+    status.textContent='';
+    toggle.textContent='공지 작성';
   },true);
 
   const observer=new MutationObserver(()=>{
