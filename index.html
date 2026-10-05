@@ -115,7 +115,7 @@
           <button class="board-write-button" id="noticeWriteToggle" type="button" hidden>공지 작성</button>
         </div>
         <div class="notice-editor" id="noticeEditor" hidden>
-          <form id="noticeForm">
+          <form id="noticeForm"><input type="hidden" name="id">
             <div class="notice-form-row"><label>분류<select name="category"><option>공지</option><option>회의</option><option>행사</option><option>회원</option><option>긴급</option></select></label><label>제목<input name="title" maxlength="120" required placeholder="공지 제목을 입력해 주세요"></label></div>
             <label>내용<textarea name="content" maxlength="4000" rows="5" required placeholder="회원에게 알릴 내용을 입력해 주세요"></textarea></label>
             <div class="notice-form-actions"><label class="notice-pin"><input name="pinned" type="checkbox"> 상단 고정</label><button type="submit">공지 등록</button></div><p id="noticeFormStatus" role="status"></p>
@@ -190,7 +190,7 @@
   <script src="cgma-home-nav.js?v=20260915-progressive-v1"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="script.js?v=20260911-map-dorim-v10"></script>
+  <script src="script.js?v=20260911-map-dorim-v10"></script>\n  <script src="notice-board-v2.js?v=20261005-public-admin-v1"></script>
   <script src="resources.js?v=20260903-readability"></script>
   <script type="module" src="central-auth-bridge.js?v=20260915-auth-only-signup-v1"></script>
 </body>

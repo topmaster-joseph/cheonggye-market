@@ -29,3 +29,19 @@ test('empty review queue collapses without hiding non-empty work',()=>{
   assert.match(js,/classList\.toggle\('is-empty',Number\.isFinite\(count\)&&count===0\)/);
   assert.match(css,/\.tower-review-due\.is-empty \.tower-review-due-list\{display:none\}/);
 });
+
+test('notice operations are handed to the authenticated public user surface',async()=>{
+  const [home,board,adminNotices,redirects]=await Promise.all([
+    fs.readFile(new URL('./index.html',import.meta.url),'utf8'),
+    fs.readFile(new URL('./notice-board-v2.js',import.meta.url),'utf8'),
+    fs.readFile(new URL('./admin-notices.js',import.meta.url),'utf8'),
+    fs.readFile(new URL('./_redirects',import.meta.url),'utf8')
+  ]);
+  assert.match(home,/notice-board-v2\.js/);
+  assert.match(home,/name="id"/);
+  for(const marker of ['data-board-edit','data-board-delete',"method:id?'PUT':'POST'",'/api/admin-session'])assert.ok(board.includes(marker),marker);
+  assert.match(board,/toggle\.hidden=!canManage/);
+  assert.match(adminNotices,/실제 사용자 화면/);
+  assert.doesNotMatch(adminNotices,/method:'PUT'|method:'POST'|method:'DELETE'/);
+  assert.match(redirects,/\/notices\/\*\s+\/index\.html\s+200/);
+});

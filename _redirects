@@ -8,3 +8,5 @@
 /member-admin  /member-admin/index.html  200
 /payment-success  /payment-success.html  200
 /payment-fail  /payment-fail.html  200
+
+/notices/*  /index.html  200
