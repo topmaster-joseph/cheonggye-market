@@ -45,3 +45,10 @@ test('notice operations are handed to the authenticated public user surface',asy
   assert.doesNotMatch(adminNotices,/method:'PUT'|method:'POST'|method:'DELETE'/);
   assert.match(redirects,/\/notices\/\*\s+\/index\.html\s+200/);
 });
+
+
+test('notice permalink shell preserves canonical asset and link base',async()=>{
+  const home=await fs.readFile(new URL('./index.html',import.meta.url),'utf8');
+  assert.match(home,/location\.hostname==='ekodi\.kr'\?'\/cgma\/':'\/'/);
+  assert.doesNotMatch(home,/<\/script>\\n\s*<script src="notice-board-v2\.js/);
+});
