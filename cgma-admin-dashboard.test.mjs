@@ -6,11 +6,14 @@ const html=await fs.readFile(new URL('./admin/index.html',import.meta.url),'utf8
 const css=await fs.readFile(new URL('./admin-control.css',import.meta.url),'utf8');
 const js=await fs.readFile(new URL('./admin-dashboard.js',import.meta.url),'utf8');
 
-test('CGMA admin exposes four compact workspace tabs and quick actions',()=>{
+test('CGMA admin exposes four compact workspace tabs without duplicate notice CRUD quick actions',()=>{
   for(const label of ['오늘','점포·회원','콘텐츠','현장'])assert.match(html,new RegExp('>'+label+'<'));
   assert.match(html,/id="quickAddMerchant"/);
-  assert.match(html,/id="quickAddNotice"/);
+  assert.doesNotMatch(html,/id="quickAddNotice"/);
+  assert.match(html,/id="openNoticeBoard"/);
+  assert.doesNotMatch(html,/id="noticeAdminForm"|id="noticeAdminList"|id="addNoticeBtn"/);
   assert.match(html,/admin-dashboard\.js\?v=20261001-tabs-fixed-sidebar-v1/);
+  assert.doesNotMatch(js,/quickAddNotice|addNoticeBtn/);
 });
 
 test('desktop sidebar is fixed and never scrolls',()=>{
