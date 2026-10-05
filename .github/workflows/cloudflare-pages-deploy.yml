@@ -16,6 +16,8 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    outputs:
+      deployed: ${{ steps.credentials.outputs.configured }}
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -121,3 +123,22 @@ jobs:
           check_route "$BASE_URL" "/cgma-sections.css" "CGMA map + archive readability redesign"
           check_css "$BASE_URL"
           echo 'Cheonggye public, AI, member, store and admin surfaces verified with fixed mobile header contract.'
+
+
+  native_surface_verification_desktop:
+    name: EKODI Native CGMA Surface Verification · Desktop
+    needs: deploy
+    if: needs.deploy.outputs.deployed == 'true'
+    uses: topmaster-joseph/ekodi-platform/.github/workflows/ekodi-background-browser-worker.yml@main
+    with:
+      surface_paths: /cgma/,/cgma/notices/1
+      device_profile: desktop
+
+  native_surface_verification_mobile:
+    name: EKODI Native CGMA Surface Verification · Mobile
+    needs: deploy
+    if: needs.deploy.outputs.deployed == 'true'
+    uses: topmaster-joseph/ekodi-platform/.github/workflows/ekodi-background-browser-worker.yml@main
+    with:
+      surface_paths: /cgma/,/cgma/notices/1
+      device_profile: mobile-portrait
