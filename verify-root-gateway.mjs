@@ -30,10 +30,16 @@ assert.equal(isBoardPath('/cgma/boards'), false);
 
 let boardRequest='';
 const boardResponse=await gateway.fetch(new Request('https://ekodi.kr/cgma/board/api/health?probe=1'),{EKODI_SHARED:{fetch:async request=>{boardRequest=request.url;return new Response('{"ok":true}',{status:200,headers:{'content-type':'application/json','x-ekodi-board-independent':'true','x-ekodi-board-id':'site:cgma:main'}});}}});
-assert.equal(boardRequest,'https://ekodi.kr/cgma/board/api/health?probe=1');
+assert.equal(boardRequest,'https://board.internal.ekodi/cgma/board/api/health?probe=1');
 assert.equal(boardResponse.status,200);
 assert.equal(boardResponse.headers.get('x-ekodi-board-independent'),'true');
 assert.equal(boardResponse.headers.get('x-ekodi-board-id'),'site:cgma:main');
+let forwardedBoardHost='';
+await gateway.fetch(new Request('https://ekodi.kr/cgma/board'),{EKODI_SHARED:{fetch:async request=>{
+  forwardedBoardHost=request.headers.get('x-ekodi-forwarded-host')||'';
+  return new Response('BOARD',{status:200,headers:{'x-ekodi-board-independent':'true','x-ekodi-board-id':'site:cgma:main'}});
+}}});
+assert.equal(forwardedBoardHost,'ekodi.kr');
 const boardFailClosed=await gateway.fetch(new Request('https://ekodi.kr/cgma/board'),{EKODI_SHARED:{fetch:async()=>new Response('WRONG',{status:200,headers:{'x-ekodi-route':'cgma-root-gateway'}})}});
 assert.equal(boardFailClosed.status,502);
 const boardUnavailable=await gateway.fetch(new Request('https://ekodi.kr/cgma/board'),{});
@@ -48,8 +54,8 @@ assert.equal(boardFallback.status,200);
 assert.equal(boardFallback.headers.get('x-ekodi-board-independent'),'true');
 assert.equal(boardFallback.headers.get('x-ekodi-board-id'),'site:cgma:main');
 assert.deepEqual(boardFallbackCalls,[
-  'https://ekodi.kr/cgma/board/api/posts',
-  'https://ekodi.kr/cgma/board/api/health'
+  'https://board.internal.ekodi/cgma/board/api/posts',
+  'https://board.internal.ekodi/cgma/board/api/health'
 ]);
 assert.equal(await boardFallback.text(),'{"items":[]}');
 
