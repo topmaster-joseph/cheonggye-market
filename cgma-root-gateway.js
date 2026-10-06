@@ -1,4 +1,5 @@
 const PREFIX = '/cgma';
+const INTERNAL_BOARD_HOST = 'board.internal.ekodi';
 const CANONICAL_ORIGIN = 'https://ekodi.kr';
 const UPSTREAM_ORIGIN = 'https://cheonggye-market.pages.dev';
 const TENANT_READABILITY_VERSION = 'v1';
@@ -21,21 +22,41 @@ function isBoardPath(pathname) {
   return pathname === `${PREFIX}/board` || pathname.startsWith(`${PREFIX}/board/`);
 }
 
+function boardBindingRequest(request) {
+  const target = new URL(request.url);
+  target.protocol = 'https:';
+  target.hostname = INTERNAL_BOARD_HOST;
+  target.port = '';
+  const headers = new Headers(request.headers);
+  headers.set('X-EKODI-Forwarded-Host', new URL(request.url).host);
+  return new Request(target.toString(), {
+    method: request.method,
+    headers,
+    body: ['GET','HEAD'].includes(request.method) ? undefined : request.body,
+    redirect: 'manual',
+  });
+}
+
 async function delegatedBoardResponse(request, env) {
   if (!env?.EKODI_SHARED?.fetch) return new Response('CGMA board unavailable', { status: 503 });
   try {
-    const response = await env.EKODI_SHARED.fetch(request);
+    const response = await env.EKODI_SHARED.fetch(boardBindingRequest(request));
     const independent = response?.headers?.get('x-ekodi-board-independent') || '';
     const boardId = response?.headers?.get('x-ekodi-board-id') || '';
     if (independent === 'true' && boardId === 'site:cgma:main') return response;
 
     const healthUrl = new URL(request.url);
+    healthUrl.protocol = 'https:';
+    healthUrl.hostname = INTERNAL_BOARD_HOST;
+    healthUrl.port = '';
     healthUrl.pathname = `${PREFIX}/board/api/health`;
     healthUrl.search = '';
     healthUrl.hash = '';
+    const healthHeaders = new Headers(request.headers);
+    healthHeaders.set('X-EKODI-Forwarded-Host', new URL(request.url).host);
     const health = await env.EKODI_SHARED.fetch(new Request(healthUrl, {
       method:'GET',
-      headers:request.headers,
+      headers:healthHeaders,
       redirect:'manual',
     }));
     const identity = health?.status === 200 ? await health.json().catch(() => null) : null;
