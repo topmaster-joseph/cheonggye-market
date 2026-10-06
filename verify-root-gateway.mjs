@@ -38,6 +38,20 @@ const boardFailClosed=await gateway.fetch(new Request('https://ekodi.kr/cgma/boa
 assert.equal(boardFailClosed.status,502);
 const boardUnavailable=await gateway.fetch(new Request('https://ekodi.kr/cgma/board'),{});
 assert.equal(boardUnavailable.status,503);
+const boardFallbackCalls=[];
+const boardFallback=await gateway.fetch(new Request('https://ekodi.kr/cgma/board/api/posts'),{EKODI_SHARED:{fetch:async request=>{
+  boardFallbackCalls.push(request.url);
+  if(request.url.endsWith('/cgma/board/api/health')) return new Response('{"ok":true,"boardId":"site:cgma:main","siteId":"cgma","independent":true}',{status:200,headers:{'content-type':'application/json'}});
+  return new Response('{"items":[]}',{status:200,headers:{'content-type':'application/json'}});
+}}});
+assert.equal(boardFallback.status,200);
+assert.equal(boardFallback.headers.get('x-ekodi-board-independent'),'true');
+assert.equal(boardFallback.headers.get('x-ekodi-board-id'),'site:cgma:main');
+assert.deepEqual(boardFallbackCalls,[
+  'https://ekodi.kr/cgma/board/api/posts',
+  'https://ekodi.kr/cgma/board/api/health'
+]);
+assert.equal(await boardFallback.text(),'{"items":[]}');
 
 let liveRequest='';
 const liveResponse=await gateway.fetch(new Request('https://ekodi.kr/cgma/live/?room=test'),{EKODI_SHARED:{fetch:async request=>{liveRequest=request.url;return new Response('<body data-tenant="cgma">LIVE</body>',{status:200,headers:{'content-type':'text/html'}});}}});
