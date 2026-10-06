@@ -28,6 +28,24 @@ async function delegatedBoardResponse(request, env) {
     const independent = response?.headers?.get('x-ekodi-board-independent') || '';
     const boardId = response?.headers?.get('x-ekodi-board-id') || '';
     if (independent === 'true' && boardId === 'site:cgma:main') return response;
+
+    const healthUrl = new URL(request.url);
+    healthUrl.pathname = `${PREFIX}/board/api/health`;
+    healthUrl.search = '';
+    healthUrl.hash = '';
+    const health = await env.EKODI_SHARED.fetch(new Request(healthUrl, {
+      method:'GET',
+      headers:request.headers,
+      redirect:'manual',
+    }));
+    const identity = health?.status === 200 ? await health.json().catch(() => null) : null;
+    if (identity?.independent === true && identity?.boardId === 'site:cgma:main' && identity?.siteId === 'cgma') {
+      const headers = new Headers(response.headers);
+      headers.set('X-EKODI-Board-Independent', 'true');
+      headers.set('X-EKODI-Board-Id', 'site:cgma:main');
+      headers.set('X-Content-Type-Options', 'nosniff');
+      return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+    }
   } catch {}
   return new Response('CGMA board unavailable', { status: 502 });
 }
