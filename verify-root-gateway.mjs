@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import gateway, { upstreamUrl, canonicalLocation, rewriteHtml, isLivePath, isMarketingPath, isOwnerAdminPath } from './cgma-root-gateway.js';
+import gateway, { upstreamUrl, canonicalLocation, rewriteHtml, isBoardPath, isLivePath, isMarketingPath, isOwnerAdminPath } from './cgma-root-gateway.js';
 
 assert.equal(upstreamUrl('https://ekodi.kr/cgma').toString(), 'https://cheonggye-market.pages.dev/');
 assert.equal(upstreamUrl('https://ekodi.kr/cgma/admin?x=1').toString(), 'https://cheonggye-market.pages.dev/admin?x=1');
@@ -22,6 +22,22 @@ assert.equal(isLivePath('/cgma/live'), true);
 assert.equal(isLivePath('/cgma/live/'), true);
 assert.equal(isLivePath('/cgma/live/index.html'), true);
 assert.equal(isLivePath('/cgma/live/assets'), false);
+
+assert.equal(isBoardPath('/cgma/board'), true);
+assert.equal(isBoardPath('/cgma/board/'), true);
+assert.equal(isBoardPath('/cgma/board/api/health'), true);
+assert.equal(isBoardPath('/cgma/boards'), false);
+
+let boardRequest='';
+const boardResponse=await gateway.fetch(new Request('https://ekodi.kr/cgma/board/api/health?probe=1'),{EKODI_SHARED:{fetch:async request=>{boardRequest=request.url;return new Response('{"ok":true}',{status:200,headers:{'content-type':'application/json','x-ekodi-board-independent':'true','x-ekodi-board-id':'site:cgma:main'}});}}});
+assert.equal(boardRequest,'https://ekodi.kr/cgma/board/api/health?probe=1');
+assert.equal(boardResponse.status,200);
+assert.equal(boardResponse.headers.get('x-ekodi-board-independent'),'true');
+assert.equal(boardResponse.headers.get('x-ekodi-board-id'),'site:cgma:main');
+const boardFailClosed=await gateway.fetch(new Request('https://ekodi.kr/cgma/board'),{EKODI_SHARED:{fetch:async()=>new Response('WRONG',{status:200,headers:{'x-ekodi-route':'cgma-root-gateway'}})}});
+assert.equal(boardFailClosed.status,502);
+const boardUnavailable=await gateway.fetch(new Request('https://ekodi.kr/cgma/board'),{});
+assert.equal(boardUnavailable.status,503);
 
 let liveRequest='';
 const liveResponse=await gateway.fetch(new Request('https://ekodi.kr/cgma/live/?room=test'),{EKODI_SHARED:{fetch:async request=>{liveRequest=request.url;return new Response('<body data-tenant="cgma">LIVE</body>',{status:200,headers:{'content-type':'text/html'}});}}});
