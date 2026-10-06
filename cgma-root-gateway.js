@@ -17,6 +17,21 @@ function isLivePath(pathname) {
   return pathname === `${PREFIX}/live` || pathname === `${PREFIX}/live/` || pathname === `${PREFIX}/live/index.html`;
 }
 
+function isBoardPath(pathname) {
+  return pathname === `${PREFIX}/board` || pathname.startsWith(`${PREFIX}/board/`);
+}
+
+async function delegatedBoardResponse(request, env) {
+  if (!env?.EKODI_SHARED?.fetch) return new Response('CGMA board unavailable', { status: 503 });
+  try {
+    const response = await env.EKODI_SHARED.fetch(request);
+    const independent = response?.headers?.get('x-ekodi-board-independent') || '';
+    const boardId = response?.headers?.get('x-ekodi-board-id') || '';
+    if (independent === 'true' && boardId === 'site:cgma:main') return response;
+  } catch {}
+  return new Response('CGMA board unavailable', { status: 502 });
+}
+
 function isOwnerAdminPath(pathname) {
   const path = String(pathname || '');
   if (path === `${PREFIX}/admin` || path === `${PREFIX}/admin/`) return false;
@@ -134,6 +149,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (!isCgmaPath(url.pathname)) return new Response('Not Found', { status: 404 });
+    if (isBoardPath(url.pathname)) return delegatedBoardResponse(request, env);
     if (isLivePath(url.pathname)) return delegatedLiveResponse(request, env);
     if (isOwnerAdminPath(url.pathname)) return delegatedOwnerAdminResponse(request, env);
     if (isMarketingPath(url.pathname)) {
@@ -167,4 +183,4 @@ export default {
   },
 };
 
-export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml, isLivePath, delegatedLiveResponse, isMarketingPath, delegatedMarketingResponse, isOwnerAdminPath, delegatedOwnerAdminResponse };
+export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml, isBoardPath, delegatedBoardResponse, isLivePath, delegatedLiveResponse, isMarketingPath, delegatedMarketingResponse, isOwnerAdminPath, delegatedOwnerAdminResponse };
