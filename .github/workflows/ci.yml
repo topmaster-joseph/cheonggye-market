@@ -272,7 +272,7 @@ jobs:
           grep -Fq 'data-ekodi-header-home="cgma"' index.html
           grep -Fq 'data-ekodi-meeting-provider="jitsi"' index.html
           grep -Fq 'data-ekodi-media-provider="youtube"' index.html
-          grep -Fq 'data-ekodi-channel-handle="@cgma"' index.html
+          grep -Fq 'data-ekodi-channel-handle="@cgma4989"' index.html
           grep -Fq 'data-ekodi-channel-id="UC001JT9opxVBt9z_h-tsx8A"' index.html
           grep -Fq 'media-meeting-adapter.js?v=3-locale-priority' index.html
           grep -Fq 'media-meeting-adapter.js' index.html
