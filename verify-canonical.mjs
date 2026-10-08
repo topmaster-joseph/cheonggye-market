@@ -32,8 +32,8 @@ console.log(`CGMA canonical contract OK: ${canonical}, ${pages.length} surfaces 
 
 
 // Official CGMA YouTube channel must use a single canonical identity across iframe and fallback link.
-assert.match(home,/data-ekodi-channel-handle="@cgma"/);
+assert.match(home,/data-ekodi-channel-handle="@cgma4989"/);
 assert.match(home,/data-ekodi-channel-id="UC001JT9opxVBt9z_h-tsx8A"/);
-assert.match(home,/data-ekodi-channel-url="https:\/\/www\.youtube\.com\/@cgma\/live"/);
-assert.match(home,/href="https:\/\/www\.youtube\.com\/@cgma\/live"/);
-assert.doesNotMatch(home,/@cgma4989\/live/);
+assert.match(home,/data-ekodi-channel-url="https:\/\/www\.youtube\.com\/@cgma4989\/live"/);
+assert.match(home,/href="https:\/\/www\.youtube\.com\/@cgma4989\/live"/);
+assert.doesNotMatch(home,/@cgma\/live/);
