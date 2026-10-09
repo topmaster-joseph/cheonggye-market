@@ -59,6 +59,28 @@ assert.deepEqual(boardFallbackCalls,[
 ]);
 assert.equal(await boardFallback.text(),'{"items":[]}');
 
+// Read-only recovery uses a second host INSIDE the same Service Binding, never the public network.
+const hostRecoveryCalls=[];
+const hostRecovery=await gateway.fetch(new Request('https://ekodi.kr/cgma/board'), {EKODI_SHARED:{fetch:async request=>{
+  hostRecoveryCalls.push(request.url);
+  if(request.url.startsWith('https://board.internal.ekodi/'))return new Response('upstream unavailable',{status:502});
+  return new Response('<title>게시판</title>',{status:200,headers:{'x-ekodi-board-independent':'true','x-ekodi-board-id':'site:cgma:main'}});
+}}});
+assert.equal(hostRecovery.status,200);
+assert.deepEqual(hostRecoveryCalls,[
+  'https://board.internal.ekodi/cgma/board',
+  'https://board.internal.ekodi/cgma/board/api/health',
+  'https://ekodi.kr/cgma/board',
+]);
+// Mutating requests must NOT be replayed to another service host.
+const mutationCalls=[];
+const blockedMutation=await gateway.fetch(new Request('https://ekodi.kr/cgma/board/api/posts',{method:'POST',body:'{}'}),{EKODI_SHARED:{fetch:async request=>{
+  mutationCalls.push(request.url);
+  return new Response('upstream unavailable',{status:502});
+}}});
+assert.equal(blockedMutation.status,502);
+assert.ok(mutationCalls.every(url=>url.startsWith('https://board.internal.ekodi/')));
+assert.equal(mutationCalls.filter(url=>url.endsWith('/api/posts')).length,1);
 let liveRequest='';
 const liveResponse=await gateway.fetch(new Request('https://ekodi.kr/cgma/live/?room=test'),{EKODI_SHARED:{fetch:async request=>{liveRequest=request.url;return new Response('<body data-tenant="cgma">LIVE</body>',{status:200,headers:{'content-type':'text/html'}});}}});
 assert.equal(liveRequest,'https://ekodi.kr/cgma/live/?room=test');
