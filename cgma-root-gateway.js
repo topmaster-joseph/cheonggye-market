@@ -41,6 +41,9 @@ function boardBindingRequest(request, host = INTERNAL_BOARD_HOST) {
 async function delegatedBoardResponse(request, env) {
   if (!env?.EKODI_SHARED?.fetch) return new Response('CGMA board unavailable', { status: 503 });
   const canonicalHost = new URL(request.url).hostname;
+  // Bounded classification only: no URL, tokens, board content or user identities.
+  const failures=[];
+  const label=host=>host===INTERNAL_BOARD_HOST?'internal':'canonical';
   // Retry only read-only board requests through the canonical host inside the
   // SAME Service Binding. Never re-send POST/PUT/DELETE or use a public fetch.
   const hosts = [INTERNAL_BOARD_HOST];
@@ -50,6 +53,7 @@ async function delegatedBoardResponse(request, env) {
       const response = await env.EKODI_SHARED.fetch(boardBindingRequest(request, host));
       const independent = response?.headers?.get('x-ekodi-board-independent') || '';
       const boardId = response?.headers?.get('x-ekodi-board-id') || '';
+      failures.push(`${label(host)}:upstream-${Number(response?.status||0)}:${independent==='true'&&boardId==='site:cgma:main'?'id-ok':'id-missing'}`);
       if (independent === 'true' && boardId === 'site:cgma:main' && response.status < 500) return response;
       const healthUrl = new URL(request.url);
       healthUrl.protocol = 'https:';
@@ -62,6 +66,7 @@ async function delegatedBoardResponse(request, env) {
       healthHeaders.set('X-EKODI-Forwarded-Host', new URL(request.url).host);
       const health = await env.EKODI_SHARED.fetch(new Request(healthUrl, { method:'GET', headers:healthHeaders, redirect:'manual' }));
       const identity = health?.status === 200 ? await health.json().catch(() => null) : null;
+      failures.push(`${label(host)}:health-${Number(health?.status||0)}:${identity?.independent===true&&identity?.boardId==='site:cgma:main'&&identity?.siteId==='cgma'?'id-ok':'id-missing'}`);
       if (response.status < 500 && identity?.independent === true && identity?.boardId === 'site:cgma:main' && identity?.siteId === 'cgma') {
         const headers = new Headers(response.headers);
         headers.set('X-EKODI-Board-Independent', 'true');
@@ -71,10 +76,15 @@ async function delegatedBoardResponse(request, env) {
       }
     } catch (error) {
       // Do not expose request URLs, Authorization headers, or private board data.
-      console.warn('CGMA board service binding unavailable', host === INTERNAL_BOARD_HOST ? 'internal' : 'canonical');
+      failures.push(`${label(host)}:binding-exception`);
+      console.warn('CGMA board service binding unavailable', label(host));
     }
   }
-  return new Response('CGMA board unavailable', { status: 502 });
+  return new Response('CGMA board unavailable', { status: 502, headers: {
+    'cache-control':'no-store',
+    'x-content-type-options':'nosniff',
+    'x-ekodi-cgma-board-diagnostic':failures.join(';').slice(0,192)||'unknown',
+  } });
 }
 
 function isOwnerAdminPath(pathname) {
