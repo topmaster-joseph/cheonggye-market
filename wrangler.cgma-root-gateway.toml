@@ -10,3 +10,8 @@ routes = [
 [[services]]
 binding = "EKODI_SHARED"
 service = "shy-thunder-39a4"
+
+# Board requests use their own route-less Worker; live/admin stay on Shared Site.
+[[services]]
+binding = "EKODI_BOARD"
+service = "ekodi-cgma-board-internal"
