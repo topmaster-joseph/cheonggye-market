@@ -39,7 +39,7 @@ function boardBindingRequest(request, host = INTERNAL_BOARD_HOST) {
 }
 
 async function delegatedBoardResponse(request, env) {
-  if (!env?.EKODI_SHARED?.fetch) return new Response('CGMA board unavailable', { status: 503 });
+  if (!env?.EKODI_BOARD?.fetch) return new Response('CGMA board unavailable', { status: 503 });
   const canonicalHost = new URL(request.url).hostname;
   // Bounded classification only: no URL, tokens, board content or user identities.
   const failures=[];
@@ -50,7 +50,7 @@ async function delegatedBoardResponse(request, env) {
   if (['GET','HEAD'].includes(request.method.toUpperCase()) && canonicalHost !== INTERNAL_BOARD_HOST) hosts.push(canonicalHost);
   for (const host of hosts) {
     try {
-      const response = await env.EKODI_SHARED.fetch(boardBindingRequest(request, host));
+      const response = await env.EKODI_BOARD.fetch(boardBindingRequest(request, host));
       const independent = response?.headers?.get('x-ekodi-board-independent') || '';
       const boardId = response?.headers?.get('x-ekodi-board-id') || '';
       failures.push(`${label(host)}:upstream-${Number(response?.status||0)}:${independent==='true'&&boardId==='site:cgma:main'?'id-ok':'id-missing'}`);
@@ -64,7 +64,7 @@ async function delegatedBoardResponse(request, env) {
       healthUrl.hash = '';
       const healthHeaders = new Headers(request.headers);
       healthHeaders.set('X-EKODI-Forwarded-Host', new URL(request.url).host);
-      const health = await env.EKODI_SHARED.fetch(new Request(healthUrl, { method:'GET', headers:healthHeaders, redirect:'manual' }));
+      const health = await env.EKODI_BOARD.fetch(new Request(healthUrl, { method:'GET', headers:healthHeaders, redirect:'manual' }));
       const identity = health?.status === 200 ? await health.json().catch(() => null) : null;
       failures.push(`${label(host)}:health-${Number(health?.status||0)}:${identity?.independent===true&&identity?.boardId==='site:cgma:main'&&identity?.siteId==='cgma'?'id-ok':'id-missing'}`);
       if (response.status < 500 && identity?.independent === true && identity?.boardId === 'site:cgma:main' && identity?.siteId === 'cgma') {

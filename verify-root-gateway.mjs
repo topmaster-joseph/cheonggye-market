@@ -29,18 +29,18 @@ assert.equal(isBoardPath('/cgma/board/api/health'), true);
 assert.equal(isBoardPath('/cgma/boards'), false);
 
 let boardRequest='';
-const boardResponse=await gateway.fetch(new Request('https://ekodi.kr/cgma/board/api/health?probe=1'),{EKODI_SHARED:{fetch:async request=>{boardRequest=request.url;return new Response('{"ok":true}',{status:200,headers:{'content-type':'application/json','x-ekodi-board-independent':'true','x-ekodi-board-id':'site:cgma:main'}});}}});
+const boardResponse=await gateway.fetch(new Request('https://ekodi.kr/cgma/board/api/health?probe=1'),{EKODI_BOARD:{fetch:async request=>{boardRequest=request.url;return new Response('{"ok":true}',{status:200,headers:{'content-type':'application/json','x-ekodi-board-independent':'true','x-ekodi-board-id':'site:cgma:main'}});}}});
 assert.equal(boardRequest,'https://board.internal.ekodi/cgma/board/api/health?probe=1');
 assert.equal(boardResponse.status,200);
 assert.equal(boardResponse.headers.get('x-ekodi-board-independent'),'true');
 assert.equal(boardResponse.headers.get('x-ekodi-board-id'),'site:cgma:main');
 let forwardedBoardHost='';
-await gateway.fetch(new Request('https://ekodi.kr/cgma/board'),{EKODI_SHARED:{fetch:async request=>{
+await gateway.fetch(new Request('https://ekodi.kr/cgma/board'),{EKODI_BOARD:{fetch:async request=>{
   forwardedBoardHost=request.headers.get('x-ekodi-forwarded-host')||'';
   return new Response('BOARD',{status:200,headers:{'x-ekodi-board-independent':'true','x-ekodi-board-id':'site:cgma:main'}});
 }}});
 assert.equal(forwardedBoardHost,'ekodi.kr');
-const boardFailClosed=await gateway.fetch(new Request('https://ekodi.kr/cgma/board'),{EKODI_SHARED:{fetch:async()=>new Response('WRONG',{status:200,headers:{'x-ekodi-route':'cgma-root-gateway'}})}});
+const boardFailClosed=await gateway.fetch(new Request('https://ekodi.kr/cgma/board'),{EKODI_BOARD:{fetch:async()=>new Response('WRONG',{status:200,headers:{'x-ekodi-route':'cgma-root-gateway'}})}});
 assert.equal(boardFailClosed.status,502);
 assert.match(boardFailClosed.headers.get('x-ekodi-cgma-board-diagnostic')||'',/internal:upstream-200:id-missing/);
 assert.equal(boardFailClosed.headers.get('cache-control'),'no-store');
@@ -48,7 +48,7 @@ assert.doesNotMatch(boardFailClosed.headers.get('x-ekodi-cgma-board-diagnostic')
 const boardUnavailable=await gateway.fetch(new Request('https://ekodi.kr/cgma/board'),{});
 assert.equal(boardUnavailable.status,503);
 const boardFallbackCalls=[];
-const boardFallback=await gateway.fetch(new Request('https://ekodi.kr/cgma/board/api/posts'),{EKODI_SHARED:{fetch:async request=>{
+const boardFallback=await gateway.fetch(new Request('https://ekodi.kr/cgma/board/api/posts'),{EKODI_BOARD:{fetch:async request=>{
   boardFallbackCalls.push(request.url);
   if(request.url.endsWith('/cgma/board/api/health')) return new Response('{"ok":true,"boardId":"site:cgma:main","siteId":"cgma","independent":true}',{status:200,headers:{'content-type':'application/json'}});
   return new Response('{"items":[]}',{status:200,headers:{'content-type':'application/json'}});
@@ -64,7 +64,7 @@ assert.equal(await boardFallback.text(),'{"items":[]}');
 
 // Read-only recovery uses a second host INSIDE the same Service Binding, never the public network.
 const hostRecoveryCalls=[];
-const hostRecovery=await gateway.fetch(new Request('https://ekodi.kr/cgma/board'), {EKODI_SHARED:{fetch:async request=>{
+const hostRecovery=await gateway.fetch(new Request('https://ekodi.kr/cgma/board'), {EKODI_BOARD:{fetch:async request=>{
   hostRecoveryCalls.push(request.url);
   if(request.url.startsWith('https://board.internal.ekodi/'))return new Response('upstream unavailable',{status:502});
   return new Response('<title>게시판</title>',{status:200,headers:{'x-ekodi-board-independent':'true','x-ekodi-board-id':'site:cgma:main'}});
@@ -77,7 +77,7 @@ assert.deepEqual(hostRecoveryCalls,[
 ]);
 // Mutating requests must NOT be replayed to another service host.
 const mutationCalls=[];
-const blockedMutation=await gateway.fetch(new Request('https://ekodi.kr/cgma/board/api/posts',{method:'POST',body:'{}'}),{EKODI_SHARED:{fetch:async request=>{
+const blockedMutation=await gateway.fetch(new Request('https://ekodi.kr/cgma/board/api/posts',{method:'POST',body:'{}'}),{EKODI_BOARD:{fetch:async request=>{
   mutationCalls.push(request.url);
   return new Response('upstream unavailable',{status:502});
 }}});
@@ -166,3 +166,6 @@ assert.equal(redirectResponse.headers.get('location'), 'https://ekodi.kr/cgma/ad
 
 globalThis.fetch = originalFetch;
 console.log('CGMA root gateway contract OK');
+
+// Board-only binding must not accidentally replace live, admin, or marketing.
+assert.match(await (await import('node:fs/promises')).readFile(new URL('./cgma-root-gateway.js',import.meta.url),'utf8'),/async function delegatedBoardResponse[\s\S]*?env\.EKODI_BOARD\.fetch/);
