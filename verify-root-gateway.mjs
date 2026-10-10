@@ -42,6 +42,9 @@ await gateway.fetch(new Request('https://ekodi.kr/cgma/board'),{EKODI_SHARED:{fe
 assert.equal(forwardedBoardHost,'ekodi.kr');
 const boardFailClosed=await gateway.fetch(new Request('https://ekodi.kr/cgma/board'),{EKODI_SHARED:{fetch:async()=>new Response('WRONG',{status:200,headers:{'x-ekodi-route':'cgma-root-gateway'}})}});
 assert.equal(boardFailClosed.status,502);
+assert.match(boardFailClosed.headers.get('x-ekodi-cgma-board-diagnostic')||'',/internal:upstream-200:id-missing/);
+assert.equal(boardFailClosed.headers.get('cache-control'),'no-store');
+assert.doesNotMatch(boardFailClosed.headers.get('x-ekodi-cgma-board-diagnostic')||'',/Authorization|Bearer|board\.internal\.ekodi/);
 const boardUnavailable=await gateway.fetch(new Request('https://ekodi.kr/cgma/board'),{});
 assert.equal(boardUnavailable.status,503);
 const boardFallbackCalls=[];
