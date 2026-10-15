@@ -2,8 +2,9 @@ import {EVENT_ID,json,clean,database,sameOrigin,parseJson,intakeStatus,ensureFes
 export async function onRequestGet({env}){
   const db=database(env);
   if(!db)return json({ok:false,error:'intake_unavailable'},503);
+  try{await ensureFestivalSchema(db);}catch{return json({ok:false,error:'schema_not_ready'},503);}
   try{return json({ok:true,open:await intakeStatus(db),eventId:EVENT_ID,capacity:5,deadline:null});}
-  catch{return json({ok:false,error:'intake_unavailable'},503);}
+  catch{return json({ok:false,error:'settings_not_ready'},503);}
 }
 export async function onRequestPost({request,env}){
   if(!sameOrigin(request))return json({ok:false,error:'origin_invalid'},403);
