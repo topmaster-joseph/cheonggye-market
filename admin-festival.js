@@ -6,14 +6,19 @@ const labels={regular:'기존 정회원',joining:'정회원 가입 신청',pendi
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 async function api(payload){
  const token=session?.access_token;if(!token)throw Error('로그인 세션이 만료되었습니다.');
- const res=await fetch(route('/api/festival-booths-admin'),{
- method:payload?'POST':'GET',
- headers:{Authorization:'Bearer '+token,...(payload?{'Content-Type':'application/json'}:{})},
- ...(payload?{body:JSON.stringify(payload)}:{}) ,
- cache:'no-store'
+ const wire=payload?{
+  kind:'booth',action:payload.action,
+  ...(payload.action==='set_intake'?{open:payload.open}:{receipt:payload.receipt,
+  ...(payload.action==='select'?{state:payload.state}:{value:payload.action==='verify_member'?payload.verified:payload.selected})})
+ }:null;
+ const url='https://renzehysxirjilvdxacv.supabase.co/functions/v1/cgma-festival-intake/'+(wire?'admin/action':'admin/booth');
+ const res=await fetch(url,{
+  method:wire?'POST':'GET',
+  headers:{authorization:'Bearer '+token,apikey:'sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_',...(wire?{'content-type':'application/json'}:{})},
+  ...(wire?{body:JSON.stringify(wire)}:{}),cache:'no-store'
  });
  const data=await res.json().catch(()=>({}));
- if(!res.ok||data.ok!==true)throw Error(({selection_limit_or_membership:'정회원 자격이 미확인 상태이거나 선정 부스 5개가 찼습니다.',intake_unavailable:'접수 DB가 준비되지 않았습니다.',tenant_admin_required:'관리자 권한이 없습니다.'})[data.error]||data.error||'처리 실패');
+ if(!res.ok||data.ok!==true)throw Error(({selection_limit:'선정 가능한 부스 5개가 찼습니다.',membership_not_verified:'정회원 자격을 먼저 확인해 주세요.',backend_unavailable:'접수 서버가 준비되지 않았습니다.',tenant_admin_required:'관리자 권한이 없습니다.'})[data.error]||data.error||'처리 실패');
  return data;
 }
 function row(item){

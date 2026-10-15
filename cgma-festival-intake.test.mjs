@@ -74,3 +74,17 @@ test('site menus link both standalone paths, admin restricts PII',()=>{
  assert.match(coupon,/5천원 쿠폰/);
  assert.match(coupon,/privacyConsent/);
 });
+
+
+test('both live forms and admin consoles use the verified same EKODI Edge endpoint',()=>{
+ const booth=readFileSync('festival/2026/apply/index.html','utf8');
+ const coupon=readFileSync('festival/2026/coupon/index.html','utf8');
+ const adminBooth=readFileSync('admin-festival.js','utf8');
+ const adminCoupon=readFileSync('admin-coupon.js','utf8');
+ for(const content of [booth,coupon,adminBooth,adminCoupon])
+  assert.match(content,/\/functions\/v1\/cgma-festival-intake/);
+ assert.match(booth,/data\.boothOpen===true/);
+ assert.match(coupon,/v\.couponOpen===true/);
+ assert.match(adminBooth,/admin\/booth/);
+ assert.match(adminCoupon,/admin\/coupon/);
+});
