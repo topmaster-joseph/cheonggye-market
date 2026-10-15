@@ -29,3 +29,5 @@ jobs:
           node-version: '24'
       - name: Verify canonical production matrix
         run: node verify-canonical-production.mjs
+      - name: Verify 2026 festival and coupon canonical signup readiness
+        run: node verify-festival-production.mjs

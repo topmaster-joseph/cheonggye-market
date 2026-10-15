@@ -30,6 +30,21 @@ try{
  const forbidden=denied.status===403&&deniedBody.error==='tenant_admin_required';
  console.log((forbidden?'PASS ':'FAIL ')+'admin denied without valid session: HTTP '+denied.status);
  if(!forbidden)failed++;
+ const invalid=await fetch(edge+'/apply/coupon',{
+  method:'POST',headers:{...headers,'content-type':'application/json'},
+  body:'{}',signal:AbortSignal.timeout(15000)
+ });
+ const invalidBody=await invalid.json().catch(()=>({}));
+ const validationDenied=invalid.status===400&&invalidBody.error==='required_fields';
+ console.log((validationDenied?'PASS ':'FAIL ')+'coupon validation rejects empty form: HTTP '+invalid.status);
+ if(!validationDenied)failed++;
+ const crossOrigin=await fetch(edge+'/apply/booth',{
+  method:'POST',headers:{...headers,origin:'https://untrusted.example','content-type':'application/json'},
+  body:'{}',signal:AbortSignal.timeout(15000)
+ });
+ const originDenied=crossOrigin.status===403;
+ console.log((originDenied?'PASS ':'FAIL ')+'booth origin anti-spam guard: HTTP '+crossOrigin.status);
+ if(!originDenied)failed++;
  const cors=await fetch(edge+'/apply/coupon',{method:'OPTIONS',headers:{...headers,'access-control-request-method':'POST','access-control-request-headers':'apikey,content-type'},signal:AbortSignal.timeout(15000)});
  const corsOK=cors.status===204&&cors.headers.get('access-control-allow-origin')==='https://cgma.or.kr';
  console.log((corsOK?'PASS ':'FAIL ')+'coupon CORS preflight status='+cors.status);
