@@ -36,25 +36,5 @@ try{
  if(!corsOK)failed++;
 }catch(error){failed++;console.error('FAIL Edge '+error.message)}
 
-if(process.env.CGMA_ONE_TIME_WRITE_SMOKE==='1'){
- const tag='__EKODI_E2E_20261016_'+String(process.env.GITHUB_RUN_ID||'manual').slice(0,22)+'__';
- const cases=[
-  ['booth',{shop:tag,phone:'01000000000',items:'실증 검사용 가상 품목',membership:'regular',privacyConsent:true,website:''}],
-  ['coupon',{shop:tag,phone:'01000000000',location:'실증 검사용 가상 상가, 실제 쿠폰 사용 불가',items:'실증 검사용 가상 품목',couponAcceptance:true,privacyConsent:true,website:''}]
- ];
- for(const [kind,payload] of cases){
-  try{
-   const response=await fetch(edge+'/apply/'+kind,{
-    method:'POST',headers:{...headers,'content-type':'application/json'},
-    body:JSON.stringify(payload),signal:AbortSignal.timeout(16000)
-   });
-   const data=await response.json().catch(()=>({}));
-   const ok=response.status===201&&data.ok===true&&typeof data.receipt==='string';
-   console.log((ok?'PASS ':'FAIL ')+kind+' live POST status='+response.status+' error='+(data.error||'none')+' testTag='+tag);
-   if(!ok)failed++;
-  }catch(error){failed++;console.error('FAIL '+kind+' live POST '+error.message)}
- }
-}
-
 console.log('FESTIVAL_PRODUCTION_SMOKE '+(failed?'FAILURES='+failed:'ALL_PASS'));
 if(failed)process.exitCode=1;
