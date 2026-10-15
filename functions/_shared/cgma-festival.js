@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS cgma_festival2026_applications(
  UNIQUE(event_id,shop_name,phone)
 );
 CREATE INDEX IF NOT EXISTS idx_cgma_festival2026_review ON cgma_festival2026_applications(event_id,selection_state,created_at);
+DELETE FROM cgma_festival2026_applications WHERE date('now') >= '2027-01-28' AND event_id='cgma-du-dream-2026';
 `;
 const schemaCache=new WeakMap();
 export async function ensureFestivalSchema(db){
