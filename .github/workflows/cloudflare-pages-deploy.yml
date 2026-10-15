@@ -78,6 +78,13 @@ jobs:
           command: pages deploy . --project-name=cheonggye-market --branch=main --commit-hash=${{ github.sha }} --commit-dirty=true
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Diagnose public festival readiness without exposing applicant data
+        if: steps.credentials.outputs.configured == 'true'
+        run: |
+          set -euo pipefail
+          echo 'Public festival API status (no private records):'
+          curl -sS --max-time 15 -w '\\nHTTP_STATUS=%{http_code}\\n' https://cheonggye-market.pages.dev/api/festival-booths | head -c 650
+          echo
       - name: Verify deployed routes and mobile fixed headers
         if: steps.credentials.outputs.configured == 'true'
         env:
