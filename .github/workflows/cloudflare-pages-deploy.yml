@@ -59,8 +59,9 @@ jobs:
             } >> "$GITHUB_STEP_SUMMARY"
           fi
 
-      - name: Migrate isolated 2026 festival intake tables (idempotent D1)
+      - name: Attempt D1 migration with limited Cloudflare credentials (fallback to bound runtime)
         if: steps.credentials.outputs.configured == 'true'
+        continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

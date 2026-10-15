@@ -1,5 +1,5 @@
 import { cgmaAdmin } from '../_shared/cgma-admin.js';
-import {EVENT_ID,json,clean,database,sameOrigin,parseJson,intakeStatus} from '../_shared/cgma-festival.js';
+import {EVENT_ID,json,clean,database,sameOrigin,parseJson,intakeStatus,ensureFestivalSchema} from '../_shared/cgma-festival.js';
 async function authorized(request){
   try{return await cgmaAdmin(request)}catch{return {allowed:false,status:503,reason:'auth_unavailable'}}
 }
@@ -25,6 +25,7 @@ export async function onRequestPost({request,env}){
   const body=await parseJson(request);
   if(!body)return json({ok:false,error:'invalid_json'},400);
   try{
+    await ensureFestivalSchema(db);
     if(body.action==='set_intake'&&typeof body.open==='boolean'){
       await db.prepare('UPDATE cgma_festival2026_settings SET intake_open=?,updated_at=CURRENT_TIMESTAMP WHERE event_id=?')
         .bind(body.open?1:0,EVENT_ID).run();
