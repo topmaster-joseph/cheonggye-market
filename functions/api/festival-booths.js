@@ -1,4 +1,4 @@
-import {EVENT_ID,json,clean,database,sameOrigin,parseJson,intakeStatus,normalizePhone} from '../_shared/cgma-festival.js';
+import {EVENT_ID,json,clean,database,sameOrigin,parseJson,intakeStatus,ensureFestivalSchema,normalizePhone} from '../_shared/cgma-festival.js';
 export async function onRequestGet({env}){
   const db=database(env);
   if(!db)return json({ok:false,error:'intake_unavailable'},503);
@@ -18,6 +18,7 @@ export async function onRequestPost({request,env}){
     return json({ok:false,error:'required_fields'},400);
   const receipt=crypto.randomUUID();
   try{
+    await ensureFestivalSchema(db);
     const result=await db.prepare(`INSERT OR IGNORE INTO cgma_festival2026_applications
     (receipt,event_id,shop_name,phone,item_description,membership_choice,privacy_consented_at)
     SELECT ?,?,?,?,?,?,CURRENT_TIMESTAMP
