@@ -137,6 +137,7 @@ function upstreamRequest(request) {
     method: request.method,
     headers,
     body: ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
+    ...(!['GET','HEAD'].includes(request.method) && request.body ? { duplex: 'half' } : {}),
     redirect: 'manual',
   });
 }
