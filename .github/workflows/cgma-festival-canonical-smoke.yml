@@ -22,4 +22,6 @@ jobs:
         with:
           node-version: '24'
       - name: Smoke-test both official canonical domains without submitting personal data
+        env:
+          CGMA_ONE_TIME_WRITE_SMOKE: '1'
         run: node verify-festival-production.mjs
