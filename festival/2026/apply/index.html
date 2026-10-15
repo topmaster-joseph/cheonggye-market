@@ -45,6 +45,9 @@ fieldset{border:1px solid #cbdad6;border-radius:12px;padding:15px 18px;margin:15
 <article class="card"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=700&q=75" alt="사람들이 함께하는 모습 연출 사진"><div class="body"><span class="no">07 / 08</span><h3>온라인 간편 접수</h3><p>상호, 연락처, 품목을 입력하고 접수번호를 발급받습니다.</p></div></article>
 <article class="card"><img src="https://i.ytimg.com/vi/aF9hOSdgXSA/maxresdefault.jpg" alt="청계면상인회 지역축제 공식 영상"><div class="body"><span class="no">08 / 08</span><h3>문의·안내</h3><p>010-3501-8542 · cgma.or.kr · 모집 마감일 미정.</p></div></article>
 </div></section>
+<nav style="display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 28px">
+ <a id="couponLink" href="../coupon/" style="display:inline-flex;align-items:center;padding:14px 18px;border-radius:12px;background:#e7f4eb;font-weight:850;text-decoration:none;color:#087252">별도 신청 · 5천원 쿠폰 사용 가능 상가 모집 →</a>
+ </nav>
 <section id="apply" class="pane" aria-label="참여부스 신청서"><h2>참여부스 온라인 신청</h2>
 <p>모집 규모 5개 · 신청 마감일 미지정 · 현재 상태: <span id="intakeState">조회 중</span></p>
 <div class="notice">신청 접수는 부스 선정 확정이 아닙니다. 내부 검토를 거쳐 5개 부스를 선정하며, 다른 지원사업에 이미 선정된 경우 후순위로 선정될 수 있습니다.</div>
@@ -67,6 +70,7 @@ fieldset{border:1px solid #cbdad6;border-radius:12px;padding:15px 18px;margin:15
 const prefix=location.pathname.startsWith('/cgma/')?'/cgma':'';
 const api=prefix+'/api/festival-booths';
 document.getElementById('home').href=prefix+'/';
+document.getElementById('couponLink').href=prefix+'/festival/2026/coupon/';
 const button=document.getElementById('submit'),state=document.getElementById('intakeState'),result=document.getElementById('result'),form=document.getElementById('application');
 let open=false;
 async function refresh(){
