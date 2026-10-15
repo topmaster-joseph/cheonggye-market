@@ -17,7 +17,7 @@ async function api(payload){
  return data;
 }
 function row(item){
- const support=support=Boolean(item.other_support_selected),verified=Boolean(item.membership_verified);
+ const support=Boolean(item.other_support_selected),verified=Boolean(item.membership_verified);
  return `<tr><td><small>${esc(item.created_at)}</small><br><b>${esc(item.shop_name)}</b><br><span class="muted">${esc(item.receipt)}</span></td>
  <td><a href="tel:${esc(item.phone)}">${esc(item.phone)}</a><br>${esc(item.items)}</td>
  <td>${esc(labels[item.membership_choice])}<br><button type="button" data-action="verify_member" data-value="${verified?'false':'true'}" data-receipt="${esc(item.receipt)}">${verified?'정회원 확인 완료 ✓':'정회원 확인 필요'}</button></td>
