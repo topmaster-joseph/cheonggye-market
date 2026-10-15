@@ -148,7 +148,7 @@ jobs:
     if: needs.deploy.outputs.deployed == 'true'
     uses: topmaster-joseph/ekodi-platform/.github/workflows/ekodi-background-browser-worker.yml@main
     with:
-      surface_paths: /cgma/,/cgma/notices/1
+      surface_paths: /cgma/,/cgma/notices/1,/cgma/festival/2026/apply/,/cgma/festival/2026/coupon/
       device_profile: desktop
 
   native_surface_verification_mobile:
@@ -157,5 +157,5 @@ jobs:
     if: needs.deploy.outputs.deployed == 'true'
     uses: topmaster-joseph/ekodi-platform/.github/workflows/ekodi-background-browser-worker.yml@main
     with:
-      surface_paths: /cgma/,/cgma/notices/1
+      surface_paths: /cgma/,/cgma/notices/1,/cgma/festival/2026/apply/,/cgma/festival/2026/coupon/
       device_profile: mobile-portrait
