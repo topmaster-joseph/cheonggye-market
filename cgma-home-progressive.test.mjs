@@ -53,7 +53,8 @@ test('human-centered homepage keeps legacy identity and sends pass to Cheonggye 
   assert.match(index,/cgma-photo-hero/);
   assert.match(index,/cgma-legacy-art/);
   assert.match(index,/cgma-legacy-banner\.webp/);
-  assert.match(index,/청계패스 이용하기/);
+  assert.match(index,/청계패스 안내/);
+  assert.match(index,/서비스 준비 중/);
   assert.match(index,/https:\/\/ekodi\.kr\/cheonggye\/pass/);
   assert.match(index,/cgma-home-redesign\.css\?v=20261015-human-home-v1/);
   assert.match(index,/data-home-only/);
