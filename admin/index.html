@@ -10,7 +10,13 @@
   <link rel="stylesheet" href="../admin-control.css?v=20260908-review-due-queue-v16">
   <link rel="stylesheet" href="../admin-resources.css?v=20260906-control-plane">
   <style>[hidden]{display:none!important}@media(max-width:800px){.admin-side{position:fixed;top:0;left:0;right:0;padding-top:calc(10px + env(safe-area-inset-top,0px))}}</style>
-</head>
+<style>
+#festivalManager .festival-table{width:100%;min-width:850px;border-collapse:collapse;font-size:13px;text-align:left}
+#festivalManager .festival-table th,#festivalManager .festival-table td{border-bottom:1px solid #dae6e1;padding:10px 8px;vertical-align:top}
+#festivalManager .festival-table button,#festivalManager .festival-table select{max-width:230px;font:inherit;padding:7px;border-radius:8px;margin:4px 0;border:1px solid #a7bdb5;background:#fff;color:#234}
+#festivalManager .festival-table button{cursor:pointer}
+#festivalManager .festival-table .muted{font-size:10px;overflow-wrap:anywhere}
+</style></head>
 <body>
   <div id="adminLoading" class="denied"><h1>권한 확인 중</h1><p>EKODI 로그인과 청계면상인회 관리자 권한을 확인하고 있습니다.</p></div>
   <div id="adminDenied" class="denied" hidden><h1>관리자 전용 페이지입니다</h1><p id="deniedMessage">청계면상인회 관리자로 지정된 계정만 사용할 수 있습니다.</p><a id="adminLoginLink" href="https://ekodi.kr/auth/">EKODI 로그인</a></div>
@@ -26,6 +32,7 @@
         <a href="#memberReview" data-admin-group="members">정회원 신청 승인</a>
         <span class="admin-nav-label">CONTENT</span>
         <a href="#noticeManager" data-admin-group="content">공지·행사 관리</a>
+        <a href="#festivalManager" data-admin-group="content">2026 축제 참여부스 접수</a>
         <a href="#resourceManager" data-admin-group="content">공식 자료실</a>
         <a href="#siteModeManager" data-admin-group="content">홈페이지 첫화면</a>
         <a href="#languageManager" data-admin-group="content">다국어 번역·게시</a>
@@ -93,6 +100,15 @@
         <p class="admin-resource-status" id="merchantAdminStatus" role="status"></p>
         <div class="admin-resource-list" id="merchantAdminList"></div>
       </section>
+      <section class="admin-resource-panel" id="festivalManager" hidden>
+        <header class="admin-resource-head"><div><small>2026 CHEONGGYE DU:DREAM FESTIVAL</small><h2>축제 참여부스 접수·선정</h2><p>신청 내역은 관리자에게만 표시됩니다. 중복 지원사업 선정 여부를 고려하여 5개 부스를 선정하세요.</p></div>
+        <a class="admin-action" href="../festival/2026/apply/" target="_blank" rel="noopener">공개 신청 화면 ↗</a></header>
+        <p class="admin-resource-status" id="festivalAdminStatus" role="status"></p>
+        <p id="festivalAdminSummary" aria-live="polite"></p>
+        <div class="admin-quick-actions"><button type="button" id="festivalAdminRefresh">새로고침</button> <button type="button" id="festivalAdminToggle" data-open="false">접수 마감하기</button></div>
+        <div id="festivalAdminList" style="max-height:68vh;overflow:auto"></div>
+        <p class="admin-resource-status">기존 정회원 확인 또는 신규 가입 승인·회비 납부 확인 후에만 '선정'으로 변경할 수 있습니다. 최종 선정은 최대 5개 부스입니다.</p>
+      </section>
       <section class="admin-resource-panel" id="noticeManager" hidden>
         <header class="admin-resource-head"><div><small>NOTICE &amp; EVENT</small><h2>공지·행사 운영</h2><p>공지 작성·수정·삭제는 실제 사용자 화면에서 권한에 따라 수행합니다.</p></div><a class="admin-action" id="openNoticeBoard" href="../#news" target="_blank" rel="noopener">상인회 공지 게시판 열기 ↗</a></header>
         <p class="admin-resource-status" id="noticeAdminStatus" role="status">사용자 화면의 공지 카드에서 직접 관리합니다.</p>
@@ -152,6 +168,7 @@
   <script src="../admin-control-tower.js?v=20260908-review-due-queue-v16"></script>
   <script src="../admin-merchants.js?v=20260906-control-plane"></script>
   <script src="../admin-notices.js?v=20260906-control-plane"></script>
+  <script src="../admin-festival.js?v=20261016-intake-v1"></script>
   <script src="../admin-site-mode.js?v=20260907-maintenance-preview"></script>
   <script src="../admin-language-management.js?v=20260912-language-publication-v1"></script>
   <script src="../admin-resources.js?v=20260906-control-plane"></script>
@@ -187,6 +204,7 @@
         window.CGMA_CONTROL_TOWER?.start(session);
         window.CGMA_MERCHANT_ADMIN?.start(session);
         window.CGMA_NOTICE_ADMIN?.start(session);
+        window.CGMA_FESTIVAL_ADMIN?.start(session);
         window.CGMA_SITE_MODE_ADMIN?.start(session);
         window.CGMA_LANGUAGE_ADMIN?.start(session,result);
         window.CGMA_RESOURCE_ADMIN?.start(session);
