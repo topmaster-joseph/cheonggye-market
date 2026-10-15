@@ -5,7 +5,10 @@ export const clean=(value,max)=>typeof value==='string'?value.trim().slice(0,max
 export const database=env=>env?.[DB_BINDING]||null;
 export function sameOrigin(request){
   const origin=request.headers.get('origin');
-  return !!origin&&origin===new URL(request.url).origin;
+  const url=new URL(request.url);
+  if(origin===url.origin)return true;
+  // The canonical /cgma gateway forwards to the owned Pages upstream.
+  return url.hostname==='cheonggye-market.pages.dev' && (origin==='https://ekodi.kr'||origin==='https://cgma.or.kr');
 }
 export async function parseJson(request){
   if(!/^application\/json(?:;|$)/i.test(request.headers.get('content-type')||''))return null;
