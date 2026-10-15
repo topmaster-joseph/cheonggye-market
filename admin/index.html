@@ -33,6 +33,7 @@
         <span class="admin-nav-label">CONTENT</span>
         <a href="#noticeManager" data-admin-group="content">공지·행사 관리</a>
         <a href="#festivalManager" data-admin-group="content">2026 축제 참여부스 접수</a>
+        <a href="#couponManager" data-admin-group="content">5천원 쿠폰 사용 가능 상가</a>
         <a href="#resourceManager" data-admin-group="content">공식 자료실</a>
         <a href="#siteModeManager" data-admin-group="content">홈페이지 첫화면</a>
         <a href="#languageManager" data-admin-group="content">다국어 번역·게시</a>
@@ -109,6 +110,13 @@
         <div id="festivalAdminList" style="max-height:68vh;overflow:auto"></div>
         <p class="admin-resource-status">기존 정회원 확인 또는 신규 가입 승인·회비 납부 확인 후에만 '선정'으로 변경할 수 있습니다. 최종 선정은 최대 5개 부스입니다.</p>
       </section>
+      <section class="admin-resource-panel" id="couponManager" hidden>
+        <header class="admin-resource-head"><div><small>COUPON MERCHANTS · ₩5,000</small><h2>축제 쿠폰 사용 가능 상가 신청 관리</h2><p>참여 상점 신청·검토·승인·마감을 관리합니다. 쿠폰 정산·사용 조건은 확정 후 별도 안내합니다.</p></div>
+        <a class="admin-action" href="../festival/2026/coupon/" target="_blank" rel="noopener noreferrer">공개 신청 페이지 ↗</a></header>
+        <p id="couponAdminStatus" class="admin-resource-status" role="status"></p><p id="couponAdminSummary" aria-live="polite"></p>
+        <div class="admin-quick-actions"><button id="couponAdminRefresh" type="button">새로고침</button><button id="couponAdminToggle" type="button">신청 마감</button></div>
+        <div id="couponAdminList" style="max-height:68vh;overflow:auto"></div>
+      </section>
       <section class="admin-resource-panel" id="noticeManager" hidden>
         <header class="admin-resource-head"><div><small>NOTICE &amp; EVENT</small><h2>공지·행사 운영</h2><p>공지 작성·수정·삭제는 실제 사용자 화면에서 권한에 따라 수행합니다.</p></div><a class="admin-action" id="openNoticeBoard" href="../#news" target="_blank" rel="noopener">상인회 공지 게시판 열기 ↗</a></header>
         <p class="admin-resource-status" id="noticeAdminStatus" role="status">사용자 화면의 공지 카드에서 직접 관리합니다.</p>
@@ -169,6 +177,7 @@
   <script src="../admin-merchants.js?v=20260906-control-plane"></script>
   <script src="../admin-notices.js?v=20260906-control-plane"></script>
   <script src="../admin-festival.js?v=20261016-intake-v1"></script>
+  <script src="../admin-coupon.js?v=20261016-coupon-v1"></script>
   <script src="../admin-site-mode.js?v=20260907-maintenance-preview"></script>
   <script src="../admin-language-management.js?v=20260912-language-publication-v1"></script>
   <script src="../admin-resources.js?v=20260906-control-plane"></script>
@@ -205,6 +214,7 @@
         window.CGMA_MERCHANT_ADMIN?.start(session);
         window.CGMA_NOTICE_ADMIN?.start(session);
         window.CGMA_FESTIVAL_ADMIN?.start(session);
+        window.CGMA_COUPON_ADMIN?.start(session);
         window.CGMA_SITE_MODE_ADMIN?.start(session);
         window.CGMA_LANGUAGE_ADMIN?.start(session,result);
         window.CGMA_RESOURCE_ADMIN?.start(session);

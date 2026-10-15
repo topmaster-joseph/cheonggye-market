@@ -2,10 +2,10 @@
   const groups=Object.freeze({
     today:{panels:['controlTower'],metrics:['merchant','regular','pending','notice'],showCommands:true},
     members:{panels:['merchantManager','memberReview'],metrics:['merchant','regular','pending'],showCommands:false},
-    content:{panels:['noticeManager','festivalManager','resourceManager','siteModeManager','languageManager'],metrics:['notice','resource'],showCommands:false},
+    content:{panels:['noticeManager','festivalManager','couponManager','resourceManager','siteModeManager','languageManager'],metrics:['notice','resource'],showCommands:false},
     field:{panels:['petitionManager'],metrics:['petition'],showCommands:false}
   });
-  const panelIds=['controlTower','merchantManager','memberReview','noticeManager','festivalManager','resourceManager','siteModeManager','languageManager','petitionManager'];
+  const panelIds=['controlTower','merchantManager','memberReview','noticeManager','festivalManager','couponManager','resourceManager','siteModeManager','languageManager','petitionManager'];
   const groupForTarget=id=>Object.entries(groups).find(([,cfg])=>cfg.panels.includes(id))?.[0]||(id==='dashboard'?'today':null);
   const setTab=group=>{
     const cfg=groups[group]||groups.today;

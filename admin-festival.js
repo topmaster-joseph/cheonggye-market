@@ -17,9 +17,9 @@ async function api(payload){
  return data;
 }
 function row(item){
- const support=item.other_support_selected===1,verified=item.membership_verified===1;
+ const support=Boolean(item.other_support_selected),verified=Boolean(item.membership_verified);
  return `<tr><td><small>${esc(item.created_at)}</small><br><b>${esc(item.shop_name)}</b><br><span class="muted">${esc(item.receipt)}</span></td>
- <td><a href="tel:${esc(item.phone)}">${esc(item.phone)}</a><br>${esc(item.item_description)}</td>
+ <td><a href="tel:${esc(item.phone)}">${esc(item.phone)}</a><br>${esc(item.items)}</td>
  <td>${esc(labels[item.membership_choice])}<br><button type="button" data-action="verify_member" data-value="${verified?'false':'true'}" data-receipt="${esc(item.receipt)}">${verified?'정회원 확인 완료 ✓':'정회원 확인 필요'}</button></td>
  <td><button type="button" data-action="other_support" data-value="${support?'false':'true'}" data-receipt="${esc(item.receipt)}">${support?'다른 사업 선정됨 · 후순위 참고':'다른 사업 선정 여부: 미표시'}</button></td>
  <td><select data-choice="${esc(item.receipt)}" aria-label="부스 선정 상태">
