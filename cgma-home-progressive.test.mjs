@@ -13,7 +13,7 @@ test('homepage exposes compact progressive services',()=>{
   assert.ok(services);
   assert.equal(services.includes('<p'),false);
   assert.equal(index.includes('quick-start'),false);
-  assert.ok(index.includes('cgma-home-nav.js?v=20260915-progressive-v1'));
+  assert.ok(index.includes('cgma-home-nav.js?v=20261015-progressive-nav-v2'));
 });
 
 test('language picker is icon-free and pill-shaped',()=>{
@@ -37,4 +37,14 @@ test('menu navigation reveals only the selected content group',()=>{
   assert.ok(homeNav.includes("'market-map':['market-map','registered-market']"));
   assert.ok(homeNav.includes("member:['login','member-notice','join','join-form']"));
   assert.ok(homeNav.includes("event.target.closest('a[href^=\"#\"]')"));
+});
+
+test('progressive navigation has hidden-state, deep-link and accessibility guards',()=>{
+  assert.match(css,/body\.cgma-user-page main > section\[hidden\]\{display:none!important\}/);
+  assert.match(css,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(homeNav,/function hashTargetId\(/);
+  assert.match(homeNav,/catch\{return '';\}/);
+  assert.match(homeNav,/window\.addEventListener\('hashchange'/);
+  assert.match(homeNav,/link\.setAttribute\('aria-current','location'\)/);
+  assert.match(homeNav,/link\.removeAttribute\('aria-current'\)/);
 });
