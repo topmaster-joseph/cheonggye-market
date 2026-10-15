@@ -88,7 +88,7 @@ jobs:
             for attempt in $(seq 1 20); do
               sep="?"; [[ "$path" == *"?"* ]] && sep="&"
               body="$(curl -fsSL --max-time 15 "${base}${path}${sep}release=${GITHUB_SHA}" 2>/dev/null || true)"
-              if printf '%s' "$body" | grep -Fq "$expected"; then
+              if grep -Fq "$expected" <<< "$body"; then
                 echo "OK ${base}${path}"
                 return 0
               fi
@@ -101,9 +101,9 @@ jobs:
             local base="$1"
             for attempt in $(seq 1 20); do
               body="$(curl -fsSL --max-time 15 "${base}/responsive.css?release=${GITHUB_SHA}" 2>/dev/null || true)"
-              if printf '%s' "$body" | grep -Fq 'position:fixed!important' \
-                && printf '%s' "$body" | grep -Fq 'body:has(>.topbar),body:has(>.top)' \
-                && printf '%s' "$body" | grep -Fq 'safe-area-inset-top'; then
+              if grep -Fq 'position:fixed!important' <<< "$body" \
+                && grep -Fq 'body:has(>.topbar),body:has(>.top)' <<< "$body" \
+                && grep -Fq 'safe-area-inset-top' <<< "$body"; then
                 echo "OK ${base}/responsive.css fixed-header contract"
                 return 0
               fi
@@ -129,13 +129,13 @@ jobs:
           check_route "$BASE_URL" "/festival/2026/apply/" "cgma-festival-intake"
           check_route "$BASE_URL" "/festival/2026/coupon/" "cgma-festival-intake"
           edge_status="$(curl -fsS --max-time 15 -H 'Origin: https://cgma.or.kr' -H 'apikey: sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_' 'https://renzehysxirjilvdxacv.supabase.co/functions/v1/cgma-festival-intake/status')"
-          printf '%s' "$edge_status" | grep -Fq '"ok":true'
-          printf '%s' "$edge_status" | grep -Fq '"couponValue":5000'
+          grep -Fq '"ok":true' <<< "$edge_status"
+          grep -Fq '"couponValue":5000' <<< "$edge_status"
           echo 'OK EKODI production festival and coupon Edge backend'
 
           check_route "$BASE_URL" "/admin" "festivalManager"
           public_resources="$(curl -fsSL --max-time 15 "${BASE_URL}/api/resources?release=${GITHUB_SHA}")"
-          if printf '%s' "$public_resources" | grep -Eq 'drive\.google\.com|docs\.google\.com'; then echo 'Public Google source URL leaked'; exit 1; fi
+          if grep -Eq 'drive\.google\.com|docs\.google\.com' <<< "$public_resources"; then echo 'Public Google source URL leaked'; exit 1; fi
           check_route "$BASE_URL" "/" "OFFICIAL ARCHIVE"
           check_route "$BASE_URL" "/cgma-sections.css" "CGMA map + archive readability redesign"
           check_css "$BASE_URL"

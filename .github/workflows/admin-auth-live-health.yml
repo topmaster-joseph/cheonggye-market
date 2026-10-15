@@ -25,12 +25,12 @@ jobs:
             local url="$1"
             local body
             body="$(curl -fsSL --max-time 20 "${url}?health=${GITHUB_RUN_ID}")"
-            printf '%s' "$body" | grep -Fq '[hidden]{display:none!important}'
-            printf '%s' "$body" | grep -Fq 'id="adminApp" class="admin-shell" hidden'
-            printf '%s' "$body" | grep -Fq 'id="adminLoginLink"'
-            printf '%s' "$body" | grep -Fq 'https://ekodi.kr/auth/'
-            printf '%s' "$body" | grep -Fq "hash.get('ekodi_token')"
-            printf '%s' "$body" | grep -Fq 'verifyOtp({token_hash:tokenHash'
+            grep -Fq '[hidden]{display:none!important}' <<< "$body"
+            grep -Fq 'id="adminApp" class="admin-shell" hidden' <<< "$body"
+            grep -Fq 'id="adminLoginLink"' <<< "$body"
+            grep -Fq 'https://ekodi.kr/auth/' <<< "$body"
+            grep -Fq "hash.get('ekodi_token')" <<< "$body"
+            grep -Fq 'verifyOtp({token_hash:tokenHash' <<< "$body"
             echo "OK $url"
           }
           check_gate 'https://cheonggye-market.pages.dev/admin/'
