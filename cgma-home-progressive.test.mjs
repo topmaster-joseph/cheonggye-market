@@ -65,3 +65,10 @@ test('human-centered homepage keeps legacy identity and sends pass to Cheonggye 
   assert.match(index,/loading="lazy" decoding="async"/);
   assert.match(index,/href="member"/);
 });
+
+test('portrait source photos cannot stretch the hero height',()=>{
+ const photoCss=readFileSync(new URL('./cgma-home-redesign.css',import.meta.url),'utf8');
+ assert.match(photoCss,/cgma-hero-people\{position:relative;height:clamp\(340px,34vw,490px\)/);
+ assert.match(photoCss,/cgma-hero-people img\{position:absolute;inset:0;/);
+ assert.match(photoCss,/object-fit:cover;object-position:center 48%/);
+});
