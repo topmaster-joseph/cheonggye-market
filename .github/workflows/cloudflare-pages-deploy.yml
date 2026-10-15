@@ -126,8 +126,13 @@ jobs:
           check_route "$BASE_URL" "/api/parking-petition" "count"
           check_route "$BASE_URL" "/festival/2026/apply/" "참여부스 온라인 신청"
           check_route "$BASE_URL" "/festival/2026/coupon/" "쿠폰 사용 가능 상가 참여 신청서"
-          check_route "$BASE_URL" "/api/festival-booths" '"ok":true'
-          check_route "$BASE_URL" "/api/festival-coupon-merchants" '"ok":true'
+          check_route "$BASE_URL" "/festival/2026/apply/" "cgma-festival-intake"
+          check_route "$BASE_URL" "/festival/2026/coupon/" "cgma-festival-intake"
+          edge_status="$(curl -fsS --max-time 15 -H 'Origin: https://cgma.or.kr' -H 'apikey: sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_' 'https://renzehysxirjilvdxacv.supabase.co/functions/v1/cgma-festival-intake/status')"
+          printf '%s' "$edge_status" | grep -Fq '"ok":true'
+          printf '%s' "$edge_status" | grep -Fq '"couponValue":5000'
+          echo 'OK EKODI production festival and coupon Edge backend'
+
           check_route "$BASE_URL" "/admin" "festivalManager"
           public_resources="$(curl -fsSL --max-time 15 "${BASE_URL}/api/resources?release=${GITHUB_SHA}")"
           if printf '%s' "$public_resources" | grep -Eq 'drive\.google\.com|docs\.google\.com'; then echo 'Public Google source URL leaked'; exit 1; fi
