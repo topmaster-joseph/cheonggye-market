@@ -7,7 +7,7 @@ import {onRequestGet as adminGet,onRequestPost as adminPost} from './functions/a
 const ORIGIN='https://cgma.or.kr';
 const input={shop:'청계 테스트 상점',phone:'010-1234-5678',items:'지역 특산품',membership:'regular',privacyConsent:true,website:''};
 function db(open=true,changed=1){
- return {prepare(query){
+ return {async exec(sql){assert.match(sql,/CREATE TABLE IF NOT EXISTS cgma_festival2026_settings/);return [];},prepare(query){
   return {bind(...args){
    return {
     async first(){return {intake_open:open?1:0}},
