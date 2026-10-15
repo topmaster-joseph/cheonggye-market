@@ -18,7 +18,7 @@ export async function forwardFestival(route,request,{body,auth=false,env={}}={})
   if(body!==undefined)headers['content-type']='application/json';
   if(auth){
     const authorization=request.headers.get('authorization')||'';
-    if(!/^Bearer\\s+\\S+$/i.test(authorization))return apiReply({ok:false,error:'login_required'},401);
+    if(!/^Bearer\s+\S+$/i.test(authorization))return apiReply({ok:false,error:'login_required'},401);
     headers['authorization']=authorization;
   }
   try{
@@ -37,7 +37,7 @@ export async function forwardFestival(route,request,{body,auth=false,env={}}={})
 }
 export async function requestBody(request){
   const contentType=request.headers.get('content-type')||'';
-  if(!/^application\\/json(?:;|$)/i.test(contentType))return null;
+  if(!/^application\/json(?:;|$)/i.test(contentType))return null;
   if(Number(request.headers.get('content-length')||0)>8192)return null;
   const raw=await request.text();
   if(raw.length>8192)return null;
