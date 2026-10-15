@@ -6,9 +6,12 @@ let session=null,entries=[],open=false;
 const labels={pending:'검토 대기',approved:'참여 승인',rejected:'미승인'};
 async function api(body){
  const token=session?.access_token;if(!token)throw Error('인증 세션이 없습니다.');
- const response=await fetch(route('/api/festival-coupon-merchants-admin'),{
-  method:body?'POST':'GET',headers:{authorization:'Bearer '+token,...(body?{'content-type':'application/json'}:{})},
-  ...(body?{body:JSON.stringify(body)}:{}),cache:'no-store'
+ const wire=body?{kind:'coupon',action:body.action,...(body.action==='set_intake'?{open:body.open}:{receipt:body.receipt,state:body.state})}:null;
+ const url='https://renzehysxirjilvdxacv.supabase.co/functions/v1/cgma-festival-intake/'+(wire?'admin/action':'admin/coupon');
+ const response=await fetch(url,{
+  method:wire?'POST':'GET',
+  headers:{authorization:'Bearer '+token,apikey:'sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_',...(wire?{'content-type':'application/json'}:{})},
+  ...(wire?{body:JSON.stringify(wire)}:{}),cache:'no-store'
  });
  const result=await response.json().catch(()=>null);
  if(!response.ok||!result?.ok)throw Error(result?.error||'서버 연결 실패');
