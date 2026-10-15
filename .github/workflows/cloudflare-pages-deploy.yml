@@ -127,7 +127,7 @@ jobs:
           check_route "$BASE_URL" "/api/resources?id=urban-brief-2024" "312억원"
           check_route "$BASE_URL" "/api/parking-petition" "count"
           check_route "$BASE_URL" "/festival/2026/apply/" "참여부스 온라인 신청"
-          check_route "$BASE_URL" "/api/festival-booths" '"open":true'
+          check_route "$BASE_URL" "/api/festival-booths" '"ok":true'
           check_route "$BASE_URL" "/admin" "festivalManager"
           public_resources="$(curl -fsSL --max-time 15 "${BASE_URL}/api/resources?release=${GITHUB_SHA}")"
           if printf '%s' "$public_resources" | grep -Eq 'drive\.google\.com|docs\.google\.com'; then echo 'Public Google source URL leaked'; exit 1; fi
