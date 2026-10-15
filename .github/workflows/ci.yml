@@ -55,6 +55,10 @@ jobs:
           node --check functions/api/notices.js
           node --check functions/api/festival-booths.js
           node --check functions/api/festival-booths-admin.js
+          node --check functions/api/festival-coupon-merchants.js
+          node --check functions/api/festival-coupon-merchants-admin.js
+          node --check functions/_shared/cgma-festival-supabase.js
+          node --check admin-coupon.js
           node --check functions/_shared/cgma-festival.js
           node --check admin-festival.js
           node --check functions/api/site-mode.js
@@ -82,6 +86,13 @@ jobs:
 
       - name: Test 2026 CGMA festival intake security and selection rules
         run: node --test cgma-festival-intake.test.mjs
+      - name: Verify production EKODI festival Edge status without applicant data
+        shell: bash
+        run: |
+          set -euo pipefail
+          body="$(curl -fsS --max-time 15 -H 'Origin: https://cgma.or.kr' -H 'apikey: sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_' 'https://renzehysxirjilvdxacv.supabase.co/functions/v1/cgma-festival-intake/status')"
+          echo "$body" | grep -Fq '"ok":true'
+          echo "$body" | grep -Fq '"couponValue":5000'
       - name: Verify canonical CGMA root contract
         run: |
           node verify-canonical.mjs
