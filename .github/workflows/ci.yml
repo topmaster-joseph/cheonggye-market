@@ -24,6 +24,7 @@ jobs:
           node --check central-auth-bridge.js
           node --check site-shell.js
           node --check cgma-i18n.js
+          node --check cgma-home-nav.js
           node --check store-insight-model.mjs
           node --check store-action-model.mjs
           node --check store-experiment-model.mjs
@@ -62,6 +63,8 @@ jobs:
         run: node --test store-action-model.test.mjs
       - name: Test merchant experiment model
         run: node --test store-experiment-model.test.mjs
+      - name: Test CGMA progressive homepage and navigation
+        run: node --test cgma-home-progressive.test.mjs
       - name: Test compact admin dashboard contract
         run: node --test cgma-admin-dashboard.test.mjs
       - name: Test public-surface notice board contract
