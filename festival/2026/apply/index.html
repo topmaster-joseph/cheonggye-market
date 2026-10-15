@@ -68,15 +68,17 @@ fieldset{border:1px solid #cbdad6;border-radius:12px;padding:15px 18px;margin:15
 <script>
 (()=>{
 const prefix=location.pathname.startsWith('/cgma/')?'/cgma':'';
-const api=prefix+'/api/festival-booths';
+const edge='https://renzehysxirjilvdxacv.supabase.co/functions/v1/cgma-festival-intake';
+const edgeKey='sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_';
+const api=edge+'/status',submitApi=edge+'/apply/booth';
 document.getElementById('home').href=prefix+'/';
 document.getElementById('couponLink').href=prefix+'/festival/2026/coupon/';
 const button=document.getElementById('submit'),state=document.getElementById('intakeState'),result=document.getElementById('result'),form=document.getElementById('application');
 let open=false;
 async function refresh(){
- try{const res=await fetch(api,{cache:'no-store',headers:{accept:'application/json'}}),data=await res.json();
+ try{const res=await fetch(api,{cache:'no-store',headers:{accept:'application/json',apikey:edgeKey}}),data=await res.json();
  if(!res.ok||data.ok!==true)throw Error('unavailable');
- open=data.open===true;state.textContent=open?'접수 중':'접수 마감';state.className=open?'open':'open closed';button.disabled=!open;button.textContent=open?'신청서 제출하기':'현재 접수가 마감되었습니다';
+ open=data.boothOpen===true;state.textContent=open?'접수 중':'접수 마감';state.className=open?'open':'open closed';button.disabled=!open;button.textContent=open?'신청서 제출하기':'현재 접수가 마감되었습니다';
  }catch{open=false;state.textContent='접수 서버 확인 필요';state.className='open closed';button.disabled=true;button.textContent='접수 불가 · 서버 확인 중';}
 }
 form.addEventListener('submit',async event=>{
@@ -84,7 +86,7 @@ form.addEventListener('submit',async event=>{
  if(!form.reportValidity())return;
  const fd=new FormData(form);const payload={shop:fd.get('shop'),phone:fd.get('phone'),items:fd.get('items'),membership:fd.get('membership'),privacyConsent:fd.has('privacyConsent'),website:fd.get('website')||''};
  button.disabled=true;result.textContent='신청서를 접수하는 중입니다.';
- try{const r=await fetch(api,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)}),data=await r.json();
+ try{const r=await fetch(submitApi,{method:'POST',headers:{'content-type':'application/json',apikey:edgeKey},body:JSON.stringify(payload)}),data=await r.json();
  if(!r.ok||!data.ok)throw Error(({intake_closed:'접수가 마감되었습니다.',duplicate_application:'동일한 상호·연락처로 이미 신청하셨습니다.',required_fields:'필수 항목을 확인해 주세요.'})[data.error]||'접수 서버 오류입니다.');
  result.textContent='신청이 접수되었습니다. 접수번호: '+data.receipt+'\n접수 자체가 참여 선정 또는 정회원 승인을 의미하지 않습니다.';
  if(data.membershipApplicationRequired){
