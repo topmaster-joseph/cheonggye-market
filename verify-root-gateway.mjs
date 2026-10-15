@@ -164,6 +164,21 @@ const redirectResponse = await gateway.fetch(new Request('https://ekodi.kr/cgma/
 assert.equal(redirectResponse.status, 308);
 assert.equal(redirectResponse.headers.get('location'), 'https://ekodi.kr/cgma/admin/');
 
+let forwardedFestivalUrl='',forwardedFestivalBody='',forwardedFestivalOrigin='';
+globalThis.fetch = async request => {
+  forwardedFestivalUrl=request.url;
+  forwardedFestivalBody=await request.text();
+  forwardedFestivalOrigin=request.headers.get('origin');
+  return Response.json({ok:true,receipt:'test-only'});
+};
+const festivalPost=await gateway.fetch(new Request('https://ekodi.kr/cgma/api/festival-booths',{
+  method:'POST',headers:{origin:'https://ekodi.kr','content-type':'application/json'},
+  body:JSON.stringify({shop:'test'})
+}));
+assert.equal(festivalPost.status,200);
+assert.equal(forwardedFestivalUrl,'https://cheonggye-market.pages.dev/api/festival-booths');
+assert.equal(forwardedFestivalOrigin,'https://ekodi.kr');
+assert.equal(forwardedFestivalBody,'{"shop":"test"}');
 globalThis.fetch = originalFetch;
 console.log('CGMA root gateway contract OK');
 
