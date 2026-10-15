@@ -1,0 +1,74 @@
+/* CGMA human-centered homepage · 2026-10-15 · no animation-dependent layout */
+/* Photographs are representative atmosphere images; local store data remains unchanged. */
+body.cgma-user-page{background:#fff;color:#193348}
+body.cgma-user-page .header{background:rgba(255,255,255,.97);border-bottom:1px solid #e8edf2;box-shadow:0 3px 14px rgba(17,51,83,.05)}
+body.cgma-user-page .header .brand{color:#12569c}
+body.cgma-user-page .header .brand-mark{display:grid;place-items:center;background:transparent;color:#145e45;font-size:1.65rem;box-shadow:none}
+body.cgma-user-page .header nav>a:not(.nav-cta){color:#233547;font-weight:750}
+body.cgma-user-page .header nav>a:not(.nav-cta):hover{color:#075aa9;background:#eff6ff}
+body.cgma-user-page .header .nav-cta{border-color:#12569c;color:#12569c}
+body.cgma-user-page .header .nav-cta:hover{background:#12569c;color:#fff}
+body.cgma-user-page .hero.cgma-photo-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-height:390px;background:#fff;position:relative;overflow:hidden;border:0}
+.cgma-banner-copy{padding:clamp(28px,4vw,60px) clamp(22px,4.7vw,84px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:15px;background:linear-gradient(120deg,#fafcff 0%,#f0f8ff 100%)}
+.cgma-community-label{margin:0;padding:9px 16px;border-radius:99px;background:#11589d;color:#fff;font-size:clamp(.7rem,1vw,.85rem);font-weight:800;letter-spacing:-.015em}
+.cgma-legacy-art{position:relative;width:min(100%,620px);padding:12px 38px 2px;min-height:122px;display:flex;align-items:center;justify-content:center}
+.cgma-legacy-type{display:flex;flex-direction:column;gap:8px;min-width:0}
+.cgma-legacy-type strong{display:block;font-size:clamp(1.8rem,3.3vw,3.7rem);line-height:1.1;letter-spacing:-.075em;color:#207bc5;white-space:nowrap;text-shadow:-2px 2px 0 #164c98}
+.cgma-legacy-type strong em{font-style:normal;color:#2ca4af}
+.cgma-legacy-type b{font-size:clamp(1.45rem,2.3vw,2.6rem);color:#0f4598;letter-spacing:-.045em}
+.cgma-frog{position:absolute;bottom:5px;font-size:clamp(1.9rem,3.4vw,3.7rem)}.cgma-frog-left{left:0}.cgma-frog-right{right:0}
+.cgma-hero-message{margin:0;color:#1164af;font-weight:850;font-size:clamp(.96rem,1.55vw,1.25rem)}
+.cgma-hero-desc{margin:0;color:#516676;font-size:.95rem;line-height:1.7;max-width:470px}
+.cgma-hero-people{position:relative;min-height:390px;background:#e6ecef}
+.cgma-hero-people img{display:block;width:100%;height:100%;min-height:390px;object-fit:cover;object-position:center 54%}
+.cgma-hero-people:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.2),transparent 32%),linear-gradient(0deg,rgba(14,38,45,.48),transparent 40%);pointer-events:none}
+.cgma-hero-photo-note{position:absolute;bottom:18px;right:26px;margin:0;color:#fff;font-size:.91rem;line-height:1.45;text-align:right;z-index:1;text-shadow:0 1px 7px #1237}
+.cgma-home-quick,.cgma-community-story,.cgma-member-benefits,.cgma-market-facts{max-width:1480px;margin:0 auto}
+.cgma-home-quick{padding:24px 4vw 14px}
+body.cgma-user-page .home-services{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));max-width:none;margin:0;gap:12px}
+body.cgma-user-page .home-services .cgma-quick-link{background:#edf6ff;display:flex;align-items:center;gap:13px;padding:17px 15px;min-height:99px;border:0;border-radius:14px;text-decoration:none;transition:transform .16s ease,box-shadow .16s ease;box-shadow:0 4px 16px rgba(22,67,105,.04)}
+body.cgma-user-page .home-services .cgma-quick-link:nth-child(2){background:#edf8f1}
+body.cgma-user-page .home-services .cgma-quick-link:nth-child(3){background:#fff7ed}
+body.cgma-user-page .home-services .cgma-quick-link:nth-child(4){background:#eff2ff}
+body.cgma-user-page .home-services .cgma-quick-link:nth-child(5){background:#edf7f4}
+body.cgma-user-page .home-services .cgma-quick-link:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(22,67,105,.11)}
+body.cgma-user-page .home-services .cgma-quick-link>span{flex:0 0 44px;width:44px;height:44px;display:grid;place-items:center;background:rgba(255,255,255,.85);border-radius:12px;color:#1162b4;font-size:1.7rem}
+body.cgma-user-page .home-services .cgma-quick-link b{font-size:clamp(.85rem,1.08vw,1rem);color:#15374e;line-height:1.4;min-width:0}
+body.cgma-user-page .home-services .cgma-quick-link b small{display:block;font-size:.7rem;color:#677b89;font-weight:550;margin-top:6px}
+body.cgma-user-page .home-services .cgma-quick-link i{margin-left:auto;font-style:normal;background:#145ba9;color:white;border-radius:50%;width:24px;height:24px;display:grid;place-items:center;flex:0 0 24px}
+body.cgma-user-page .home-services .cgma-quick-link:nth-child(2) i,body.cgma-user-page .home-services .cgma-quick-link:nth-child(5) i{background:#16865d}
+.cgma-community-story{padding:25px 4vw 36px;display:grid;grid-template-columns:minmax(260px,.85fr) minmax(0,1.6fr);gap:34px;align-items:center}
+.cgma-story-eyebrow{margin:0 0 20px;font-size:.68rem;font-weight:900;letter-spacing:.1em;color:#6992b8}
+.cgma-story-copy h2{font-size:clamp(1.9rem,2.9vw,3.1rem);line-height:1.25;letter-spacing:-.045em;margin:0 0 16px;color:#12334b}
+.cgma-story-copy h2 em{font-style:normal;color:#2178c0}
+.cgma-story-copy>p:not(.cgma-story-eyebrow){color:#5f6f79;line-height:1.8;margin:0 0 14px}
+.cgma-story-copy>a{color:#1366a4;font-weight:800;text-decoration:none}
+.cgma-story-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.cgma-story-card{position:relative;min-width:0;height:245px;border-radius:13px;overflow:hidden;background:#e8eeef}
+.cgma-story-card img{width:100%;height:100%;object-fit:cover;display:block}
+.cgma-story-card:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,29,41,.78),transparent 55%);pointer-events:none}
+.cgma-story-card>div{position:absolute;z-index:1;bottom:18px;left:17px;right:12px;color:#fff}
+.cgma-story-card strong{display:block;font-size:1.06rem;line-height:1.35}
+.cgma-story-card span{display:block;font-size:.72rem;margin-top:7px;line-height:1.45;color:#e5edf0}
+.cgma-member-benefits{display:grid;grid-template-columns:minmax(245px,1.1fr) minmax(0,2fr) minmax(150px,.65fr);align-items:center;gap:18px;padding:28px 4vw;margin-bottom:16px;border-radius:20px;background:#edf8fd}
+.cgma-benefits-title small{color:#1683bd;font-weight:900}.cgma-benefits-title h2{font-size:clamp(1.14rem,1.55vw,1.6rem);color:#183b54;line-height:1.45;margin:8px 0 0}
+.cgma-benefits-links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.cgma-benefits-links a{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;color:#254359;text-decoration:none;font-size:.8rem;font-weight:800;border-right:1px solid #cadfeb;padding:8px 3px}
+.cgma-benefits-links a:last-child{border-right:0}.cgma-benefits-links span{font-size:1.6rem}
+.cgma-benefits-action{text-align:center}.cgma-benefits-action a{display:block;background:#1357a5;border-radius:99px;color:#fff;text-decoration:none;font-size:.84rem;font-weight:900;padding:13px 12px}
+.cgma-benefits-action small{color:#647785;display:block;margin-top:9px;font-size:.67rem;line-height:1.5}
+.cgma-market-facts{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:13px 4vw 28px;color:#5c7080}
+.cgma-market-facts .hero-stats{display:flex;gap:22px;margin:0;padding:0;border:0}
+.cgma-market-facts .hero-stats div{display:flex;gap:7px;align-items:baseline;flex-direction:row}
+.cgma-market-facts .hero-stats strong{font-size:1.14rem;color:#174978}.cgma-market-facts .hero-stats span{font-size:.77rem;margin:0}
+.cgma-market-facts p{font-size:.75rem;margin:0}.cgma-market-facts a{font-weight:800;color:#145ca3}
+body.cgma-user-page main>section[hidden]{display:none!important}
+@media(max-width:1150px){body.cgma-user-page .home-services{grid-template-columns:repeat(3,minmax(0,1fr))}.cgma-community-story{grid-template-columns:1fr}.cgma-story-copy h2 br:nth-child(2){display:none}.cgma-member-benefits{grid-template-columns:1fr 2fr}.cgma-benefits-action{grid-column:1/-1;max-width:260px;justify-self:center}}
+@media(max-width:900px){body.cgma-user-page .hero.cgma-photo-hero{grid-template-columns:1fr}.cgma-banner-copy{padding:44px 18px 30px}.cgma-hero-people,.cgma-hero-people img{min-height:240px;max-height:330px}.cgma-community-story{padding:22px 20px}}
+@media(max-width:720px){body.cgma-user-page .cgma-hero .hero-art{display:none}body.cgma-user-page .home-services{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}body.cgma-user-page .home-services .cgma-quick-link{min-height:84px;padding:12px 10px;gap:8px}body.cgma-user-page .home-services .cgma-quick-link>span{width:34px;height:34px;flex-basis:34px;font-size:1.25rem}body.cgma-user-page .home-services .cgma-quick-link i{display:none}.cgma-home-quick{padding:14px}.cgma-story-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.cgma-story-card{height:195px}.cgma-story-card>div{bottom:10px;left:9px}.cgma-story-card strong{font-size:.82rem}.cgma-story-card span{font-size:.61rem}.cgma-member-benefits{grid-template-columns:1fr;margin:0 13px 15px;padding:20px}.cgma-benefits-links a{font-size:.68rem}.cgma-market-facts{padding:18px;flex-direction:column;align-items:flex-start}.cgma-market-facts .hero-stats{gap:14px}.cgma-market-facts .hero-stats div{display:grid;gap:3px}.cgma-legacy-type strong{font-size:clamp(1.7rem,8vw,2.5rem)}}
+@media(max-width:420px){.cgma-legacy-art{padding-left:25px;padding-right:25px}.cgma-legacy-type strong{font-size:1.5rem}.cgma-story-cards{grid-template-columns:1fr}.cgma-story-card{height:170px}.cgma-story-card strong{font-size:1.1rem}.cgma-benefits-links{grid-template-columns:repeat(2,minmax(0,1fr))}.cgma-market-facts .hero-stats{gap:10px}}
+@media(prefers-reduced-motion:reduce){body.cgma-user-page .home-services .cgma-quick-link{transition:none}}
+
+/* Preserve the historic Littly banner as an optimized local WebP; original was supplied as a screenshot. */
+.cgma-legacy-art{padding:0;min-height:0}
+.cgma-historic-banner{display:block;width:min(100%,430px);height:auto;object-fit:contain;aspect-ratio:2/1}

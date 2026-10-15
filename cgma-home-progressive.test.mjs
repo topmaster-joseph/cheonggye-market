@@ -8,7 +8,7 @@ const auth=readFileSync(new URL('./central-auth-bridge.js',import.meta.url),'utf
 const homeNav=readFileSync(new URL('./cgma-home-nav.js',import.meta.url),'utf8');
 
 test('homepage exposes compact progressive services',()=>{
-  assert.equal((index.match(/data-home-section=/g)||[]).length,6);
+  assert.equal((index.match(/data-home-section=/g)||[]).length,3);
   const services=index.match(/<div class="home-services"[\s\S]*?<\/div>/)?.[0]||'';
   assert.ok(services);
   assert.equal(services.includes('<p'),false);
@@ -47,4 +47,20 @@ test('progressive navigation has hidden-state, deep-link and accessibility guard
   assert.match(homeNav,/window\.addEventListener\('hashchange'/);
   assert.match(homeNav,/link\.setAttribute\('aria-current','location'\)/);
   assert.match(homeNav,/link\.removeAttribute\('aria-current'\)/);
+});
+
+test('human-centered homepage keeps legacy identity and sends pass to Cheonggye platform',()=>{
+  assert.match(index,/cgma-photo-hero/);
+  assert.match(index,/cgma-legacy-art/);
+  assert.match(index,/cgma-legacy-banner\.webp/);
+  assert.match(index,/청계패스 이용하기/);
+  assert.match(index,/https:\/\/ekodi\.kr\/cheonggye\/pass/);
+  assert.match(index,/cgma-home-redesign\.css\?v=20261015-human-home-v1/);
+  assert.match(index,/data-home-only/);
+  assert.match(index,/id="heroAll"/);
+  assert.match(index,/id="heroBenefits"/);
+  assert.match(homeNav,/homeOnlySections\.forEach\(section=>\{section\.hidden=true;/);
+  assert.match(homeNav,/homeOnlySections\.forEach\(section=>\{section\.hidden=false;/);
+  assert.match(index,/loading="lazy" decoding="async"/);
+  assert.match(index,/href="member"/);
 });

@@ -12,6 +12,7 @@ const homeRoot={
 const managedIds=[...new Set(Object.values(homeGroups).flat())];
 const serviceLinks=[...document.querySelectorAll('[data-home-section]')];
 const ticker=document.querySelector('.ticker');
+const homeOnlySections=[...document.querySelectorAll('[data-home-only]')];
 
 function groupForTarget(target){
   if(!target)return null;
@@ -29,6 +30,7 @@ function hashTargetId(rawHash=location.hash){
 function setCollapsed(){
   managedIds.forEach(id=>{const section=document.getElementById(id);if(section)section.hidden=true;});
   if(ticker)ticker.hidden=true;
+  homeOnlySections.forEach(section=>{section.hidden=false;});
   serviceLinks.forEach(link=>{
     link.classList.remove('active');
     link.removeAttribute('aria-current');
@@ -39,6 +41,7 @@ function setCollapsed(){
 function activateHomeGroup(group,target,{scroll=true,history=true}={}){
   if(!homeGroups[group])return false;
   setCollapsed();
+  homeOnlySections.forEach(section=>{section.hidden=true;});
   homeGroups[group].forEach(id=>{const section=document.getElementById(id);if(section)section.hidden=false;});
   serviceLinks.forEach(link=>{
     const active=link.dataset.homeSection===group;
