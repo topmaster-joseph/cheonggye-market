@@ -72,3 +72,13 @@ test('portrait source photos cannot stretch the hero height',()=>{
  assert.match(photoCss,/cgma-hero-people img\{position:absolute;inset:0;/);
  assert.match(photoCss,/object-fit:cover;object-position:center 48%/);
 });
+
+test('official merchants festival hero uses real event footage and source credit',()=>{
+ assert.match(index,/cgma-festival-hero/);
+ assert.match(index,/2024 청계면상인회 가을 골목축제/);
+ assert.match(index,/i\.ytimg\.com\/vi\/aF9hOSdgXSA\/maxresdefault\.jpg/);
+ assert.match(index,/href="https:\/\/www\.youtube\.com\/watch\?v=aF9hOSdgXSA"/);
+ assert.doesNotMatch(index,/photo-1733563549086-ab04a49181a5/);
+ assert.match(index,/fetchpriority="high"/);
+ assert.match(index,/sizes="\(max-width: 900px\) 100vw, 50vw"/);
+});
