@@ -1,3 +1,4 @@
+import './verify-ai-education-survey-privacy.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
@@ -175,4 +176,29 @@ test('admin integration and canonical route contain actual stats and share contr
   assert.match(admin,/id="educationSurveyManager" hidden/);
   assert.ok(adminJs.includes('root().hidden=false'));
   for(const term of ['/api/responses','/api/stats','/api/share','questions.mjs','report/app.js'])assert.ok(gateway.includes(term));
+});
+
+test('optional education announcements require separate consent and are not shared with anonymous survey analytics',async()=>{
+  const db=memoryDB();try{
+    await ensureSurveyTables(db);
+    const entry=payload(51);entry.notice={key:'f'.repeat(32),opt_in:true,consent:true,phone:'010-9876-5432'};
+    const checked=validateSurvey(entry);
+    assert.equal(checked.error,undefined);
+    await saveSurvey(db,checked);
+    const {saveNoticeContact,listNoticeContacts}=await import('./functions/_shared/ai-education-store.js');
+    await saveNoticeContact(db,checked.notice);
+    const contacts=await listNoticeContacts(db);
+    assert.equal(contacts.length,1);
+    assert.equal(contacts[0].phone,'01098765432');
+    const anonymous=await aggregateSurvey(db,{shared:true});
+    assert.equal(JSON.stringify(anonymous).includes('01098765432'),false);
+    const adminAggregate=await aggregateSurvey(db);
+    assert.equal(JSON.stringify(adminAggregate).includes('01098765432'),false);
+    const answered=db.prepare('SELECT answers_json FROM cgma_ai_education_responses').first().answers_json;
+    assert.equal(answered.includes('01098765432'),false);
+    const optout=validateSurvey({...entry,notice:{key:'f'.repeat(32),opt_in:false}});
+    assert.equal(optout.error,undefined);
+    await saveNoticeContact(db,optout.notice);
+    assert.equal((await listNoticeContacts(db)).length,0);
+  }finally{db.close()}
 });
