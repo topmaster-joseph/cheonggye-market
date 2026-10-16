@@ -119,6 +119,9 @@ async function makeShare(){
 function start(session){
   token=String(session?.access_token||'');
   if(!token||!root())return;
+  // The panel is hidden in public HTML until the existing server-verified
+  // CGMA admin session calls start(). Dashboard tabs then control visibility.
+  root().hidden=false;
   const style=document.createElement('style');
   style.textContent='.survey-stat-columns{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:12px}.survey-stat-section{border:1px solid #ccc;border-radius:8px;padding:12px;background:#fff}.survey-stat-section h3{margin:0;font-size:1rem}.survey-stat-hint{font-size:.76rem;color:#555;margin:4px 0}.survey-stat-option{margin:9px 0}.survey-stat-label{display:flex;justify-content:space-between;gap:8px;font-size:.83rem}.survey-stat-label strong{white-space:nowrap}.survey-stat-track{height:7px;background:#eee;border-radius:9px;overflow:hidden}.survey-stat-fill{height:7px;background:#111}.survey-share-row{display:flex;gap:12px;align-items:center;justify-content:space-between;border-bottom:1px solid #ddd;padding:8px 0}.survey-share-row span{font-size:.85rem}.survey-secondary{padding:6px 10px;background:white;border:1px solid #111;border-radius:6px;color:#111}.survey-feedback{border-bottom:1px solid #ddd;padding:6px 0;white-space:pre-wrap}#educationSurveyShareLink{width:100%;padding:10px}';
   document.head.append(style);
