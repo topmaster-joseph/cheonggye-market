@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 const checks=[
  ['Pages coupon','https://cheonggye-market.pages.dev/festival/2026/coupon/','쿠폰 사용 가능 상가 참여 신청서'],
@@ -50,6 +51,30 @@ try{
  console.log((corsOK?'PASS ':'FAIL ')+'coupon CORS preflight status='+cors.status);
  if(!corsOK)failed++;
 }catch(error){failed++;console.error('FAIL Edge '+error.message)}
+
+
+if(process.env.CGMA_VERIFY_OFFICIAL_IMAGES==='1'){
+ const checks=[
+  ['du-dream-2026-official-poster.webp','4cd6eab680f3e8b887e009737661c6f6493fe8347a8c731eb7450d545bd95336'],
+  ['du-dream-2026-traffic-overview.webp','07bd92387a4a98119a7e561c58d0e8e7b85387b7276f10e509ecf78375853077'],
+  ['du-dream-2026-traffic-detail.webp','39eb2ac7b9a47cbdb9855685c74b62353827e1b146ec7d739bcab59df3ff651b']
+ ];
+ const origins=['https://cheonggye-market.pages.dev','https://ekodi.kr/cgma','https://cgma.or.kr'];
+ for(const origin of origins){
+  for(const [name,sha] of checks){
+   try{
+    const target=origin+'/festival/2026/assets/'+name;
+    const response=await fetch(target,{cache:'no-store',redirect:'follow',signal:AbortSignal.timeout(18000)});
+    const body=await response.arrayBuffer();
+    const digest=createHash('sha256').update(Buffer.from(body)).digest('hex');
+    const type=response.headers.get('content-type')||'';
+    const ok=response.status===200&&type.includes('image/webp')&&digest===sha;
+    console.log((ok?'PASS ':'FAIL ')+'Official image '+origin+' '+name+' http='+response.status+' type='+type+' bytes='+body.byteLength);
+    if(!ok)failed++;
+   }catch(error){failed++;console.error('FAIL Official image '+origin+' '+name+' '+error.message);}
+  }
+ }
+}
 
 console.log('FESTIVAL_PRODUCTION_SMOKE '+(failed?'FAILURES='+failed:'ALL_PASS'));
 if(failed)process.exitCode=1;
