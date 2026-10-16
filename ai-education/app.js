@@ -16,9 +16,11 @@ noticeOptIn.addEventListener('change',()=>{
   if(!noticeOptIn.checked){noticePhone.value='';noticeConsent.checked=false;}
 });
 if(location.hostname==='cheonggye-market.pages.dev'){
-  document.querySelector('header a[href="/cgma/"]').href='/';
-  document.getElementById('adminStatsLink').href='/admin/#educationSurveyManager';
+  const homepage=document.querySelector('header a');
+  if(homepage)homepage.href='../';
 }
+const adminStatsLink=document.getElementById('adminStatsLink');
+if(adminStatsLink)adminStatsLink.href='?manage=educationSurveyManager';
 const topicCategories=[
   ['AI 기초·활용',['ChatGPT·생성형 AI 기초','휴대폰 AI 활용','ChatGPT 질문법·실무 활용']],
   ['홍보·마케팅',['SNS·블로그·지도 홍보','AI 상품 소개·홍보문구 작성','네이버플레이스·지도 관리','블로그 글쓰기·검색 노출','인스타그램·페이스북 홍보']],
