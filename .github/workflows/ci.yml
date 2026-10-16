@@ -168,11 +168,13 @@ jobs:
           grep -Fq 'cgma_store_experiments' functions/api/store-experiments.js
           grep -Fq 'canonicalStoreKey' functions/api/store-experiments.js
           grep -Fq 'id="controlTower"' admin/index.html
-          grep -Fq 'data-admin-tab="today"' admin/index.html
-          grep -Fq 'data-admin-tab="members"' admin/index.html
-          grep -Fq 'data-admin-tab="content"' admin/index.html
-          grep -Fq 'data-admin-tab="field"' admin/index.html
-          grep -Fq 'admin-dashboard.js?v=20261001-tabs-fixed-sidebar-v1' admin/index.html
+          grep -Fq 'data-admin-tab="review"' admin/index.html
+          grep -Fq 'data-admin-tab="oversight"' admin/index.html
+          grep -Fq 'data-admin-tab="settings"' admin/index.html
+          grep -Fq 'admin-dashboard.js?v=20261017-user-first-v1' admin/index.html
+          grep -Fq 'cgma-embedded-workbench' admin/index.html
+          grep -Fq 'api/admin-session' cgma-inline-management.js
+          grep -Fq 'res.ok&&grant.allowed===true' cgma-inline-management.js
           grep -Fq 'position:fixed!important' admin-control.css
           grep -Fq '.admin-side nav{overflow:hidden!important}' admin-control.css
           grep -Fq 'admin-control-tower.js?v=20260908-review-due-queue-v16' admin/index.html
