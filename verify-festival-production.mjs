@@ -79,11 +79,14 @@ if(process.env.CGMA_VERIFY_OFFICIAL_IMAGES==='1'){
 
 // Source image publication is checked by inspecting bytes, not merely HTTP 200.
 // Cloudflare rewrites must never serve the fallback HTML document for .webp.
-const sourceImages=['poster','booth','ramen','tile','dalgona','dalgona-glyphs','acrostic','showcase','program-strip'];
+const sourceImages=['poster','booth','ramen','tile','dalgona','dalgona-glyphs','acrostic','showcase','program-strip','cardnews-booth','cardnews-program','cardnews-coupon'];
+const cardnewsSha={
+ 'cardnews-booth':'9d54177fc4b67a3a7d9a9b4a8a8fbbe9ab9b0ca23e80e37fb2599d31965f34a1',
+ 'cardnews-program':'c826d74fa199e8031ffd6eb2b4c4aa05edd6a559d8587c975869de63d60601e9',
+ 'cardnews-coupon':'53049b3d821e230c41df1e710e7af174590f049692d5c61222c2d35f499a9783'
+};
 const imageChecks=[
- ...sourceImages.map(name=>['https://cheonggye-market.pages.dev',name]),
- ['https://cgma.or.kr','poster'],['https://ekodi.kr/cgma','poster'],
- ['https://cgma.or.kr','ramen'],['https://ekodi.kr/cgma','ramen']
+ ...['https://cheonggye-market.pages.dev','https://cgma.or.kr','https://ekodi.kr/cgma'].flatMap(origin=>sourceImages.map(name=>[origin,name]))
 ];
 for(const [origin,name] of imageChecks){
  const url=origin+'/festival/2026/assets/'+name+'.webp';
@@ -92,7 +95,8 @@ for(const [origin,name] of imageChecks){
   const bytes=Buffer.from(await reply.arrayBuffer());
   const correct=reply.status===200 && bytes.length>3000 &&
    bytes.subarray(0,4).toString('ascii')==='RIFF' &&
-   bytes.subarray(8,12).toString('ascii')==='WEBP';
+   bytes.subarray(8,12).toString('ascii')==='WEBP' &&
+   (!cardnewsSha[name] || createHash('sha256').update(bytes).digest('hex')===cardnewsSha[name]);
   console.log((correct?'PASS ':'FAIL ')+'original PDF WebP '+origin+' '+name+' status='+reply.status+' bytes='+bytes.length);
   if(!correct)failed++;
  }catch(error){failed++;console.error('FAIL original PDF WebP '+origin+' '+name+' '+error.message)}
