@@ -36,20 +36,75 @@ button:disabled{cursor:not-allowed;background:#9bb5ac}
 .links a{background:#fff;border:1px solid #cae2d4;border-radius:12px;padding:12px 19px;text-decoration:none;font-weight:800}
 footer{text-align:center;font-size:13px;color:#60716b;padding:20px}
 @media(max-width:720px){.grid,.fields{grid-template-columns:1fr}.wide{grid-column:auto}.hero{min-height:290px}.hero .copy{padding:23px}.hero h1{font-size:38px}form{padding:20px}.info{padding:16px}}
+
+/* Official festival posters/maps, never cropped or replaced with third-party stock photos. */
+.hero.official-coupon-hero{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:22px;align-items:center;background:#fff4ec;min-height:0;color:#263d38;padding:18px;border:1px solid #ead7cc}
+.hero.official-coupon-hero::after{display:none}
+.hero.official-coupon-hero .coupon-poster{display:block;max-width:390px;border-radius:12px;overflow:hidden;box-shadow:0 12px 30px #5d28242a;background:#fff}
+.hero.official-coupon-hero img{position:static;display:block;width:100%;height:auto;object-fit:contain}
+.hero.official-coupon-hero .copy{padding:clamp(10px,2.5vw,25px);position:relative;color:#243c36}
+.hero.official-coupon-hero .copy small{color:#b04437;font-weight:850;letter-spacing:.05em}
+.hero.official-coupon-hero h1{font-size:clamp(27px,4.1vw,46px);line-height:1.18;margin:13px 0 20px;color:#9f302c}
+.hero.official-coupon-hero p{line-height:1.75;color:#4e5d56}
+.hero.official-coupon-hero .coupon-event{background:#fff;border-radius:12px;padding:14px 16px;font-size:16px;color:#1e5245}
+.hero.official-coupon-hero .coupon-apply-link{display:block;border-radius:11px;text-align:center;background:#0a7053;color:white;padding:14px 17px;text-decoration:none;font-weight:850;margin:20px 0 10px}
+.hero.official-coupon-hero .coupon-qr-note{font-size:12px;line-height:1.6;color:#6a635f}
+.grid{margin-top:25px}
+.coupon-traffic{margin:22px 0 34px;scroll-margin-top:82px}
+.coupon-traffic .traffic-header{position:static;display:block;background:transparent;box-shadow:none;padding:0;margin:0 0 16px}
+.coupon-traffic .traffic-header small{font-size:13px;letter-spacing:.08em;font-weight:850;color:#bd4937}
+.coupon-traffic .traffic-header h2{font-size:clamp(22px,3vw,30px);margin:8px 0}
+.coupon-traffic .traffic-header p{font-size:14px;line-height:1.7;color:#516b65}
+.coupon-traffic .traffic-pictures{display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:18px}
+.coupon-traffic figure{margin:0;background:white;border:1px solid #dde6e2;border-radius:14px;overflow:hidden;box-shadow:0 6px 20px #20362c12}
+.coupon-traffic figure>a{display:block}.coupon-traffic figure img{display:block;width:100%;height:auto;object-fit:contain}
+.coupon-traffic figcaption{font-size:14px;padding:13px 15px;font-weight:780}.coupon-traffic figcaption span{display:block;font-size:12px;color:#0b7857;margin-top:4px}
+#apply{scroll-margin-top:82px}
+@media(max-width:720px){.hero.official-coupon-hero{grid-template-columns:1fr}.hero.official-coupon-hero .coupon-poster{max-width:500px;margin:0 auto}.coupon-traffic .traffic-pictures{grid-template-columns:1fr}.hero.official-coupon-hero .copy{padding:12px}}
 </style>
 </head><body>
 <header><a id="home" href="/">청계면상인회</a><a class="pill" href="#apply">사용 가능 상가 신청 ↓</a></header>
 <main>
-<section class="hero">
-<img src="https://i.ytimg.com/vi/aF9hOSdgXSA/maxresdefault.jpg" alt="2024년 청계면상인회 골목축제 공식 행사 영상 대표 화면">
-<div class="copy"><small>2026 청계 누구나 두:드림 축제</small><h1>5천원 쿠폰<br>사용 가능 상가 모집</h1><p>우리 동네 가게에서 축제 쿠폰을 쓸 수 있도록<br>참여할 상가의 신청을 받습니다.</p></div>
+<section class="hero official-coupon-hero" aria-labelledby="coupon-headline">
+ <a href="../assets/du-dream-2026-official-poster.webp" class="coupon-poster" target="_blank" rel="noopener" aria-label="2026 누구나 두:드림 축제 공식 포스터 크게 보기">
+  <img src="../assets/du-dream-2026-official-poster.webp" width="1191" height="1500" fetchpriority="high" decoding="async" alt="2026 누구나 두:드림 축제 공식 포스터, 10월 28일 수요일 11시~17시, 국립목포대학교 후문 일원">
+ </a>
+ <div class="copy">
+  <small>공식 행사 포스터 · 청계면상인회 안내</small>
+  <h1 id="coupon-headline">5천원 쿠폰<br>사용 가능 상가 모집</h1>
+  <p>2026 청계 누구나 두:드림 축제<br>참여 쿠폰 취급 상가를 별도로 신청받습니다.</p>
+  <p class="coupon-event"><strong>2026. 10. 28.(수)</strong> 11:00~17:00<br>국립목포대학교 후문 및 누구나 상점</p>
+  <a class="coupon-apply-link" href="#apply">쿠폰 사용 상가 신청서 작성 →</a>
+  <p class="coupon-qr-note">포스터 인쇄 QR은 이번 온라인 신청 링크로 검증되지 않았습니다. 아래 신청서에서 직접 접수하세요.</p>
+ </div>
 </section>
-<p class="credit">배경 사진은 2024년 청계면상인회 공식 골목축제 자료입니다. 2026년 행사 현장 사진은 아닙니다.</p>
 <div class="grid" aria-label="쿠폰 안내 카드">
-<article class="info"><span>01 · 행사</span><strong>10월 28일(수)</strong><p>11:00~17:00 · 목포대학교 후문 상권 일원</p></article>
-<article class="info"><span>02 · 쿠폰 금액</span><strong>1장 5,000원</strong><p>축제에서 사용할 쿠폰 취급 상점을 사전 모집합니다.</p></article>
-<article class="info"><span>03 · 운영안</span><strong>사전 신청·협의</strong><p>확정된 상가는 식별 안내물을 표시할 예정입니다. 운영·정산 조건은 별도 안내합니다.</p></article>
+ <article class="info"><span>01 · 행사</span><strong>10월 28일(수)</strong><p>11:00~17:00 · 국립목포대학교 후문 및 누구나 상점 일원</p></article>
+ <article class="info"><span>02 · 쿠폰 금액</span><strong>1장 5,000원</strong><p>축제에서 사용할 쿠폰 취급 상점을 사전 모집합니다.</p></article>
+ <article class="info"><span>03 · 운영 안내</span><strong>사전 신청·협의</strong><p>확정된 상가는 식별 안내물을 표시할 예정입니다. 사용·정산 조건은 별도로 안내합니다.</p></article>
 </div>
+<section class="coupon-traffic" id="traffic" aria-labelledby="traffic-title">
+ <header class="traffic-header">
+  <small>2026 공식 안내도</small>
+  <h2 id="traffic-title">도로 통제 및 우회도로 안내</h2>
+  <p>청계면 도림리 315-8 일원 · 차량 통제구간 약 98m, 도림길 경유 우회도로를 확인해 주세요. 이미지 누르면 확대됩니다.</p>
+ </header>
+ <div class="traffic-pictures">
+  <figure>
+   <a href="../assets/du-dream-2026-traffic-overview.webp" target="_blank" rel="noopener" aria-label="도로 통제 및 우회도로 전체 안내도 크게 보기">
+    <img src="../assets/du-dream-2026-traffic-overview.webp" width="1280" height="773" loading="lazy" decoding="async" alt="2026 두:드림 축제 개최에 따른 청계면 도림리 315-8 일원 도로 통제 및 우회도로 전체 안내도">
+   </a>
+   <figcaption>전체 안내도 <span>원본 크게 보기 ↗</span></figcaption>
+  </figure>
+  <figure>
+   <a href="../assets/du-dream-2026-traffic-detail.webp" target="_blank" rel="noopener" aria-label="차량 통제구간 98m 상세 안내도 크게 보기">
+    <img src="../assets/du-dream-2026-traffic-detail.webp" width="1280" height="923" loading="lazy" decoding="async" alt="차량 통제구간 98m와 우회도로 도림길 경유를 표시한 행사 교통 상세 안내도">
+   </a>
+   <figcaption>상세 안내도 · 통제구간 98m <span>원본 크게 보기 ↗</span></figcaption>
+  </figure>
+ </div>
+ <p class="credit">※ 제공 안내도는 계획 기준입니다. 현장 통행 여건 및 관계기관 협의에 따라 조정될 수 있습니다.</p>
+</section>
 <form id="couponForm">
 <h2 id="apply">쿠폰 사용 가능 상가 참여 신청서</h2>
 <p>접수 상태: <span id="status" class="status">연결 확인 중</span> · 마감일 미지정</p>
