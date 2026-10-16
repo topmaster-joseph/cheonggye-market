@@ -33,6 +33,7 @@
         <span class="admin-nav-label">CONTENT</span>
         <a href="#noticeManager" data-admin-group="content">공지·행사 관리</a>
         <a href="#festivalManager" data-admin-group="content">2026 축제 참여부스 접수</a>
+        <a href="#educationSurveyManager" data-admin-group="content">AI 교육 수요조사 통계</a>
         <a href="#couponManager" data-admin-group="content">5천원 쿠폰 사용 가능 상가</a>
         <a href="#resourceManager" data-admin-group="content">공식 자료실</a>
         <a href="#siteModeManager" data-admin-group="content">홈페이지 첫화면</a>
@@ -121,6 +122,27 @@
         <header class="admin-resource-head"><div><small>NOTICE &amp; EVENT</small><h2>공지·행사 운영</h2><p>공지 작성·수정·삭제는 실제 사용자 화면에서 권한에 따라 수행합니다.</p></div><a class="admin-action" id="openNoticeBoard" href="../#news" target="_blank" rel="noopener">상인회 공지 게시판 열기 ↗</a></header>
         <p class="admin-resource-status" id="noticeAdminStatus" role="status">사용자 화면의 공지 카드에서 직접 관리합니다.</p>
       </section>
+      <section class="admin-resource-panel" id="educationSurveyManager" hidden>
+        <header class="admin-resource-head">
+          <div><small>AI EDUCATION · SURVEY ANALYTICS</small><h2>AI 교육 수요조사 통계</h2><p>서버에 실제로 저장된 청계면상인회 익명 설문 응답을 조회하고 공유합니다.</p></div>
+          <a class="admin-action" href="../ai-education/" target="_blank" rel="noopener">공개 설문 열기 ↗</a>
+        </header>
+        <div class="admin-member-summary"><strong id="educationSurveyCount">—</strong><span>실제 수집된 유효 응답</span></div>
+        <p id="educationSurveyUpdated" class="admin-section-note"></p>
+        <p id="educationSurveyStatus" class="admin-resource-status" role="status">통계를 확인하고 있습니다.</p>
+        <div class="admin-quick-actions">
+          <button id="educationSurveyRefresh" type="button">통계 새로고침</button>
+          <button id="educationSurveyCsv" type="button">집계 CSV 내보내기</button>
+          <button id="educationSurveyCopy" type="button">통계 요약 복사</button>
+          <button id="educationSurveyShare" type="button">7일 공유 링크 생성</button>
+        </div>
+        <label style="display:block">가장 최근 발급한 공유 링크 <input id="educationSurveyShareLink" type="url" readonly hidden style="width:100%;padding:10px"></label>
+        <div id="educationSurveyShares" class="admin-resource-list"></div>
+        <div id="educationSurveyCharts" class="survey-stat-columns"></div>
+        <div id="educationSurveyDaily" class="admin-resource-list"></div>
+        <div id="educationSurveyNotes" class="admin-resource-list"></div>
+        <p class="admin-section-note">공유 링크에는 집계 수치만 포함합니다. 응답이 5건 미만이면 세부 결과가 공개되지 않으며, 자유 의견은 공유하지 않습니다. 개별 응답 키도 노출하지 않습니다.</p>
+      </section>
       <section class="admin-resource-panel" id="siteModeManager" hidden>
         <header class="admin-resource-head"><div><small>SITE PRESENTATION</small><h2>홈페이지 첫화면</h2><p>정상 홈페이지, 공사중 화면, 중요한 안내 첫화면을 선택합니다.</p></div><button class="admin-action" id="siteModeAdminPreview" type="button">관리자 미리보기 ↗</button></header>
         <form class="admin-resource-form" id="siteModeForm">
@@ -182,6 +204,7 @@
   <script src="../admin-language-management.js?v=20260912-language-publication-v1"></script>
   <script src="../admin-resources.js?v=20260906-control-plane"></script>
   <script src="../admin-petition.js?v=20260906-control-plane"></script>
+  <script src="../admin-education-survey.js?v=20261017-d1-aggregate-v2"></script>
   <script src="../admin-dashboard.js?v=20261001-tabs-fixed-sidebar-v1"></script>
   <script>
     const client=window.supabase.createClient('https://renzehysxirjilvdxacv.supabase.co','sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_');
@@ -219,6 +242,7 @@
         window.CGMA_LANGUAGE_ADMIN?.start(session,result);
         window.CGMA_RESOURCE_ADMIN?.start(session);
         window.CGMA_PETITION_ADMIN?.start(session);
+        window.CGMA_EDUCATION_SURVEY_ADMIN?.start(session);
         import('../member-admin.js?v=20260906-unified-admin-shell-v1').then(()=>{
           window.CGMA_MEMBER_REVIEW?.start(session,result);
           const requestedSection=new URL(location.href).searchParams.get('section');

@@ -28,52 +28,92 @@ assert.equal(isBoardPath('/cgma/board/'), true);
 assert.equal(isBoardPath('/cgma/board/api/health'), true);
 assert.equal(isBoardPath('/cgma/boards'), false);
 
-// The survey is an independently hosted, public, read-only CGMA Pages surface.
-assert.equal(isAiEducationPath('/cgma/ai-education'),true);
-assert.equal(isAiEducationPath('/cgma/ai-education/'),true);
-assert.equal(isAiEducationPath('/cgma/ai-education/app.js'),true);
+// AI education is scoped to CGMA Pages assets and explicit API paths.
+for(const url of ['/cgma/ai-education','/cgma/ai-education/','/cgma/ai-education/app.js',
+  '/cgma/ai-education/questions.mjs','/cgma/ai-education/report/','/cgma/ai-education/api/responses'])
+  assert.equal(isAiEducationPath(url),true);
 assert.equal(isAiEducationPath('/cgma/ai-education-other'),false);
-assert.equal(isAiEducationPath('/cgma/member'),false);
+assert.equal(isAiEducationPath('/cgma/admin'),false);
 const originalSurveyFetch=globalThis.fetch;
-let surveyUpstream='',surveyFetchCount=0;
+let surveyUpstream='',surveyCalls=[],forwardedCookie='',forwardedAuth='';
 globalThis.fetch=async request=>{
-  surveyFetchCount++;
+  const url=new URL(request.url);
   surveyUpstream=request.url;
-  if (request.url.includes('/app.js')) {
-    return new Response("const questions = []; document.getElementById('survey');",{headers:{'content-type':'application/javascript'}});
+  surveyCalls.push({path:url.pathname,method:request.method});
+  forwardedAuth=request.headers.get('authorization');
+  forwardedCookie=request.headers.get('cookie');
+  if(url.pathname==='/ai-education/'){
+    return new Response('<title>상인 AI 교육 수요조사</title><form id="survey"></form><script src="./app.js"></script>',{headers:{'content-type':'text/html'}});
   }
-  return new Response('<title>상인 AI 교육 수요조사</title><form id="survey"></form><script src="./app.js"></script>',{headers:{'content-type':'text/html'}});
+  if(url.pathname==='/ai-education/app.js'){
+    return new Response("const questions = []; document.getElementById('survey')",{headers:{'content-type':'application/javascript'}});
+  }
+  if(url.pathname==='/ai-education/questions.mjs'){
+    return new Response('export const SURVEY_QUESTIONS = []; // 교육 희망 기기 교육 희망 장소',{headers:{'content-type':'text/javascript'}});
+  }
+  if(url.pathname==='/ai-education/report/'){
+    return new Response('<title>AI 교육 수요조사 통계</title><div id="charts"></div><script src="./app.js"></script>',{headers:{'content-type':'text/html'}});
+  }
+  if(url.pathname==='/ai-education/report/app.js'){
+    return new Response("document.getElementById('charts'); const z=stats.sections;",{headers:{'content-type':'application/javascript'}});
+  }
+  if(url.pathname.startsWith('/api/ai-education-')){
+    return Response.json({ok:true,saved:true,total:4},{status:request.method==='POST'?201:200});
+  }
+  return new Response('<title>청계면상인회 홈페이지</title>',{headers:{'content-type':'text/html'}});
 };
 const surveyResponse=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/?source=cgma'),{});
 assert.equal(surveyUpstream,'https://cheonggye-market.pages.dev/ai-education/?source=cgma');
-assert.equal(surveyFetchCount,1);
 assert.equal(surveyResponse.status,200);
 assert.equal(surveyResponse.headers.get('x-ekodi-route'),'cgma-ai-education-survey');
-assert.equal(surveyResponse.headers.get('cache-control'),'no-store');
-assert.match(surveyResponse.headers.get('content-security-policy'),/script-src 'self'/);
+assert.match(surveyResponse.headers.get('content-security-policy'),/connect-src 'self'/);
 assert.match(await surveyResponse.text(),/수요조사/);
 const surveyScript=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/app.js'));
 assert.equal(surveyScript.status,200);
-assert.equal(surveyUpstream,'https://cheonggye-market.pages.dev/ai-education/app.js');
 assert.match(surveyScript.headers.get('content-type'),/javascript/);
-assert.equal(surveyScript.headers.get('x-ekodi-route'),'cgma-ai-education-survey');
-const surveyRedirect=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education?ref=1'));
-assert.equal(surveyRedirect.status,308);
-assert.equal(surveyRedirect.headers.get('location'),'https://ekodi.kr/cgma/ai-education/?ref=1');
-const surveyIndexRedirect=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/index.html'));
-assert.equal(surveyIndexRedirect.status,308);
-const surveyInvalidPath=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/unknown'));
-assert.equal(surveyInvalidPath.status,404);
+const schemaScript=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/questions.mjs'));
+assert.equal(schemaScript.status,200);
+assert.match(await schemaScript.text(),/교육 희망 장소/);
+const sharedReport=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/report/'));
+assert.equal(sharedReport.status,200);
+assert.match(await sharedReport.text(),/통계/);
+const reportJs=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/report/app.js'));
+assert.equal(reportJs.status,200);
+const redirect=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education?ref=1'));
+assert.equal(redirect.status,308);
+assert.equal(redirect.headers.get('location'),'https://ekodi.kr/cgma/ai-education/?ref=1');
+const reportRedirect=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/report?token=abc'));
+assert.equal(reportRedirect.status,308);
+assert.equal(reportRedirect.headers.get('location'),'https://ekodi.kr/cgma/ai-education/report/?token=abc');
+const surveyApiRequest=new Request('https://ekodi.kr/cgma/ai-education/api/responses',{
+  method:'POST',headers:{'content-type':'application/json','origin':'https://ekodi.kr','cookie':'private_session=do-not-forward'},
+  body:'{"answers":{}}'
+});
+const surveyApiResponse=await gateway.fetch(surveyApiRequest);
+assert.equal(surveyApiResponse.status,201);
+assert.equal(surveyApiResponse.headers.get('x-ekodi-route'),'cgma-ai-education-api');
+assert.equal(surveyApiResponse.headers.get('cache-control'),'private, no-store, max-age=0');
+assert.equal(surveyUpstream,'https://cheonggye-market.pages.dev/api/ai-education-responses');
+assert.equal(forwardedCookie,null);
+const privateStats=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/api/stats',{headers:{authorization:'Bearer sample-test-value'}}));
+assert.equal(privateStats.status,200);
+assert.equal(forwardedAuth,'Bearer sample-test-value');
+assert.equal(surveyUpstream,'https://cheonggye-market.pages.dev/api/ai-education-stats');
+const sharedApi=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/api/share?token=sample'));
+assert.equal(sharedApi.status,200);
+assert.equal(surveyUpstream,'https://cheonggye-market.pages.dev/api/ai-education-share?token=sample');
+const surveyInvalid=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/unknown'));
+assert.equal(surveyInvalid.status,404);
 const surveyWrite=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/',{method:'POST',body:'{}'}));
 assert.equal(surveyWrite.status,405);
+const surveyStatsWrite=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/api/stats',{method:'POST',body:'{}'}));
+assert.equal(surveyStatsWrite.status,405);
 globalThis.fetch=async()=>new Response('<title>청계면상인회</title>',{headers:{'content-type':'text/html'}});
 const surveyWrongContent=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/'));
 assert.equal(surveyWrongContent.status,503);
-assert.equal(surveyWrongContent.headers.get('x-ekodi-cgma-delegation'),'ai-education');
-globalThis.fetch=async()=>new Response('Not found',{status:404});
-const surveyMissing=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/'));
-assert.equal(surveyMissing.status,503);
-globalThis.fetch=async()=>{throw new Error('Pages down')};
+const surveyWrongApi=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/api/stats'));
+assert.equal(surveyWrongApi.status,502);
+globalThis.fetch=async()=>{throw Error('upstream unavailable')};
 const surveyException=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/'));
 assert.equal(surveyException.status,502);
 globalThis.fetch=originalSurveyFetch;
