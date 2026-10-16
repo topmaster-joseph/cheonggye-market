@@ -45,3 +45,21 @@
 .pdf-plan .coupon-amount strong{font-size:30px;font-weight:950}
 .pdf-plan .coupon-amount span{font-size:12px;font-weight:800}
 .pdf-plan .pdf-head h2{margin-bottom:10px}
+
+/* Shareable raster cardnews: source photographs and exact text remain inside WebP bytes. */
+.pdf-cardnews{margin:36px 0;padding:clamp(17px,3vw,26px);background:#fff9f4;border:1px solid #eacfc3;border-radius:20px;scroll-margin-top:90px}
+.pdf-cardnews *{box-sizing:border-box}
+.pdf-cardnews-title{margin-bottom:20px}.pdf-cardnews-title span{display:block;color:#ad342a;font-size:12px;font-weight:900;letter-spacing:.065em;margin-bottom:7px}
+.pdf-cardnews-title h2{font-size:clamp(23px,3vw,32px);letter-spacing:-.055em;margin:0 0 7px;color:#35251f}
+.pdf-cardnews-title p{font-size:14px;color:#6c5d56;line-height:1.75;margin:0}
+.pdf-cardnews-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.pdf-cardnews-card{min-width:0;overflow:hidden;background:white;border:1px solid #ead8cc;border-radius:15px;box-shadow:0 6px 19px #6d302317}
+.pdf-cardnews-card img{width:100%;height:auto;display:block;aspect-ratio:4/5;object-fit:contain;background:#fff4e9}
+.pdf-cardnews-actions{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:14px}
+.pdf-cardnews-actions strong{font-size:15px;line-height:1.5;color:#322420}
+.pdf-cardnews-actions p{color:#685d58;font-size:12px;line-height:1.55;margin:3px 0 0}
+.pdf-cardnews-actions a{display:inline-flex;padding:9px 14px;border:1px solid #bb4a3b;border-radius:10px;color:#a43428;text-decoration:none;font-weight:850;font-size:12px}
+.pdf-cardnews-actions a:focus-visible{outline:3px solid #2465be;outline-offset:2px}
+.pdf-cardnews-note{margin:16px 0 0;font-size:12px;line-height:1.7;color:#6b625a}
+@media(max-width:850px){.pdf-cardnews-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){.pdf-cardnews-grid{grid-template-columns:1fr}.pdf-cardnews-card{display:grid;grid-template-columns:minmax(130px,43%) 1fr}.pdf-cardnews-card img{height:100%;object-fit:cover}.pdf-cardnews-actions{justify-content:center;padding:12px}.pdf-cardnews-actions strong{font-size:14px}}
