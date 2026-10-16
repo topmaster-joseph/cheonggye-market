@@ -5,6 +5,16 @@ const questions = [...SURVEY_QUESTIONS];
 const form=document.getElementById('survey'),container=document.getElementById('questions');
 const result=document.getElementById('result'),saveButton=document.getElementById('submit'),exportButton=document.getElementById('export');
 const responses={};let last=null;
+const noticeOptIn=document.getElementById('noticeOptIn');
+const noticeDetails=document.getElementById('noticeDetails');
+const noticePhone=document.getElementById('noticePhone');
+const noticeConsent=document.getElementById('noticeConsent');
+noticeOptIn.addEventListener('change',()=>{
+  noticeDetails.hidden=!noticeOptIn.checked;
+  noticePhone.required=noticeOptIn.checked;
+  noticeConsent.required=noticeOptIn.checked;
+  if(!noticeOptIn.checked){noticePhone.value='';noticeConsent.checked=false;}
+});
 if(location.hostname==='cheonggye-market.pages.dev'){
   document.querySelector('header a[href="/cgma/"]').href='/';
   document.getElementById('adminStatsLink').href='/admin/#educationSurveyManager';
@@ -32,7 +42,13 @@ let responseKey;
 try{
   responseKey=localStorage.getItem(keyName);
   if(!/^[a-f0-9]{32}$/.test(responseKey||'')){responseKey=randomResponseKey();localStorage.setItem(keyName,responseKey)}
-}catch{responseKey=randomResponseKey()}
+ }catch{responseKey=randomResponseKey()}
+const noticeKeyName='cgma_ai_education_notice_key_v1';
+let noticeKey;
+try{
+  noticeKey=localStorage.getItem(noticeKeyName);
+  if(!/^[a-f0-9]{32}$/.test(noticeKey||'')){noticeKey=randomResponseKey();localStorage.setItem(noticeKeyName,noticeKey)}
+}catch{noticeKey=randomResponseKey()}
 function show(text,error=false){
   result.hidden=false;result.dataset.state=error?'error':'success';result.textContent=text;
   result.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -72,18 +88,23 @@ form.addEventListener('submit',async event=>{
   if(!document.getElementById('privacyAck').checked)return show('익명 응답 저장·통계 활용 동의가 필요합니다.',true);
   const feedback=document.getElementById('comment').value.trim();
   if(feedback.length>500)return show('추가 의견은 500자 이내로 입력해주세요.',true);
+  const optedIn=noticeOptIn.checked;
+  const phone=noticePhone.value.replace(/[^0-9]/g,'');
+  if(optedIn&&(!/^01[016789][0-9]{7,8}$/.test(phone)))return show('안내 신청 시 올바른 휴대전화 번호를 입력해주세요.',true);
+  if(optedIn&&!noticeConsent.checked)return show('교육정보 안내용 연락처 수집·이용에 동의해주세요.',true);
   saveButton.disabled=true;saveButton.textContent='응답을 저장하고 있습니다...';
   try{
     const path=location.hostname==='cheonggye-market.pages.dev'?'/api/ai-education-responses':'./api/responses';
     const response=await fetch(path,{method:'POST',cache:'no-store',
       headers:{'content-type':'application/json'},
       body:JSON.stringify({version:SURVEY_VERSION,response_key:responseKey,answers:parsed.answers,feedback,
-        privacy_ack:true,website:document.getElementById('website').value})});
+        privacy_ack:true,website:document.getElementById('website').value,
+        notice:{opt_in:optedIn,consent:optedIn&&noticeConsent.checked,key:noticeKey,...(optedIn?{phone}:{})}})});
     const outcome=await response.json().catch(()=>({}));
     if(!response.ok||outcome.saved!==true)throw new Error(response.status===503?'서버 저장소가 일시적으로 사용할 수 없습니다.':'접수가 완료되지 않았습니다.');
     last={answers:parsed.answers,feedback};
     const recommendations=recommendedCourses(parsed.answers);
-    show('설문 응답이 실제 통계에 저장되었습니다. 감사합니다.\n\n추천 교육과정\n'+recommendations.map((value,i)=>(i+1)+'. '+value).join('\n')+'\n\n다시 제출하면 같은 브라우저의 기존 응답이 갱신됩니다.');
+    show('설문 응답이 실제 통계에 저장되었습니다. 감사합니다.\n'+(optedIn?'교육정보 안내 신청도 접수되었습니다.\n':'')+'\n추천 교육과정\n'+recommendations.map((value,i)=>(i+1)+'. '+value).join('\n')+'\n\n다시 제출하면 같은 브라우저의 기존 응답이 갱신됩니다.');
     exportButton.hidden=false;
   }catch(error){show('응답을 저장하지 못했습니다. '+(error.message||'네트워크 연결을 확인해주세요.')+' 입력 내용은 화면에 남아 있습니다.',true)}
   finally{saveButton.disabled=false;saveButton.textContent='설문 응답 저장 및 추천 보기'}
