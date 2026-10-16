@@ -282,3 +282,89 @@ test('rank 1→2→3, fourth-choice rejection and sequential re-ranking are dete
   assert.equal(choose('네이버플레이스·지도 관리'),null);
   assert.deepEqual(state,['매출 분석·판매 예측','숏폼·홍보영상','네이버플레이스·지도 관리'],'reselected topic goes to final rank');
 });
+
+
+test('HTTP submit -> D1-like persistence -> admin ranks -> restricted shared report, without production writes',async()=>{
+  const env=store();
+  const db=env.cheonggye_market_notices;
+  try{
+    const fresh=payload(201);
+    fresh.answers.respondent_type='지역 주민';
+    fresh.answers.topics=['ChatGPT·생성형 AI 기초','네이버플레이스·지도 관리','매출 분석·판매 예측'];
+    fresh.feedback='교육 실습 중심';
+    fresh.notice={key:'e'.repeat(32),opt_in:true,consent:true,phone:'010-5555-7777'};
+    const firstResponse=await onRequestPost({request:request('POST',fresh),env});
+    assert.equal(firstResponse.status,201,'real POST handler should create survey row');
+    assert.equal(firstResponse.headers.get('cache-control'),'private, no-store, max-age=0');
+    assert.equal((await firstResponse.json()).saved,true);
+    assert.equal(db.prepare('SELECT COUNT(*) AS n FROM cgma_ai_education_responses').first().n,1);
+    assert.equal(db.prepare('SELECT COUNT(*) AS n FROM cgma_ai_education_contacts').first().n,1);
+    const stored=db.prepare('SELECT answers_json,survey_version FROM cgma_ai_education_responses').first();
+    assert.equal(stored.survey_version,3);
+    assert.equal(JSON.parse(stored.answers_json).respondent_type,'지역 주민');
+    assert.equal(stored.answers_json.includes('01055557777'),false);
+    const statsBefore=await aggregateSurvey(db);
+    assert.equal(statsBefore.ranked_sections[0].options.find(v=>v.answer==='ChatGPT·생성형 AI 기초').count,1);
+    assert.equal(statsBefore.ranked_sections[1].options.find(v=>v.answer==='네이버플레이스·지도 관리').count,1);
+
+    // Same anonymous browser key corrects its original response, without incrementing totals.
+    const revised={...fresh,answers:{...fresh.answers,respondent_type:'소상공인·자영업자(대표)',topics:['정부지원사업 검색·신청','AI 자동화·챗봇']},
+      notice:{key:'e'.repeat(32),opt_in:false}};
+    const updateResponse=await onRequestPost({request:request('POST',revised),env});
+    assert.equal(updateResponse.status,201);
+    assert.equal((await updateResponse.json()).updated_existing_or_new,true);
+    assert.equal(db.prepare('SELECT COUNT(*) AS n FROM cgma_ai_education_responses').first().n,1);
+    assert.equal(db.prepare('SELECT COUNT(*) AS n FROM cgma_ai_education_contacts').first().n,0,'opt-out deletes separately stored contact');
+    const stats=await aggregateSurvey(db);
+    assert.equal(stats.ranked_sections[0].options.find(v=>v.answer==='정부지원사업 검색·신청').count,1);
+    assert.equal(stats.ranked_sections[1].options.find(v=>v.answer==='AI 자동화·챗봇').count,1);
+    assert.equal(stats.ranked_sections[2].options.reduce((n,v)=>n+v.count,0),0,'dropped rank 3 is not counted');
+
+    const badConsent={...fresh,response_key:'d'.repeat(32),notice:{...fresh.notice,consent:false}};
+    assert.equal((await onRequestPost({request:request('POST',badConsent),env})).status,400);
+    const badRank={...fresh,response_key:'c'.repeat(32),answers:{...fresh.answers,topics:SURVEY_QUESTIONS.find(q=>q.key==='topics').options.slice(0,4)}};
+    assert.equal((await onRequestPost({request:request('POST',badRank),env})).status,400);
+    assert.equal((await onRequestPost({request:request('POST',payload(206),{origin:'https://attacker.invalid'}),env})).status,403);
+    assert.equal(db.prepare('SELECT COUNT(*) AS n FROM cgma_ai_education_responses').first().n,1,'rejected entries must not pollute analytics');
+
+    const share=await newShare(db);
+    const checkShare=async()=>{
+      const response=await getShare({request:new Request('https://ekodi.kr/cgma/ai-education/api/share?token='+share.token),env});
+      assert.equal(response.status,200);
+      return response.json();
+    };
+    let publicStats=await checkShare();
+    assert.equal(publicStats.suppressed,true);
+    assert.equal(publicStats.ranked_sections,undefined);
+    for(let seed=202;seed<=205;seed++){
+      const response=await onRequestPost({request:request('POST',payload(seed)),env});
+      assert.equal(response.status,201);
+    }
+    publicStats=await checkShare();
+    assert.equal(publicStats.total,5);
+    assert.equal(publicStats.suppressed,false);
+    assert.equal(publicStats.ranked_sections.length,3);
+    const publicText=JSON.stringify(publicStats);
+    for(const forbidden of ['01055557777','contact_key_hash','contacts','response_key','feedback','notes','consent_at']){
+      assert.equal(publicText.includes('"'+forbidden+'"'),false,'public share must not disclose '+forbidden);
+    }
+    assert.equal((await getStats({request:new Request('https://cheonggye-market.pages.dev/api/ai-education-stats'),env})).status,401);
+    const fetchBefore=globalThis.fetch;
+    globalThis.fetch=async url=>{
+      if(String(url).endsWith('/auth/v1/user'))return Response.json({id:'simulated-admin'});
+      if(String(url).includes('/membership-api/pending'))return Response.json({reviewer:{authority:'tenant'}});
+      return new Response(null,{status:403});
+    };
+    try{
+      const admin=await getStats({request:new Request('https://cheonggye-market.pages.dev/api/ai-education-stats',{
+        headers:{authorization:'Bearer simulated-token'}}),env});
+      assert.equal(admin.status,200);
+      const adminStats=await admin.json();
+      assert.equal(adminStats.total,5);
+      assert.equal(adminStats.ranked_sections[0].options.find(v=>v.answer==='정부지원사업 검색·신청').count,1);
+      assert.equal(adminStats.sections.find(v=>v.key==='respondent_type').options.find(v=>v.answer==='소상공인·자영업자(대표)').count,
+        1+[202,203,204,205].filter(seed=>payload(seed).answers.respondent_type==='소상공인·자영업자(대표)').length);
+      assert.equal(JSON.stringify(adminStats).includes('01055557777'),false);
+    }finally{globalThis.fetch=fetchBefore}
+  }finally{db.close()}
+});

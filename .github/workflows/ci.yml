@@ -96,6 +96,8 @@ jobs:
 
       - name: Test persisted CGMA AI education responses, admin analytics, privacy and share links
         run: node --test cgma-ai-education-survey.test.mjs
+      - name: Verify both deployed CGMA AI survey gateways read-only (no synthetic submissions)
+        run: node verify-cgma-ai-education-live.mjs
       - name: Test 2026 CGMA festival intake security and selection rules
         run: node --test cgma-festival-intake.test.mjs
       - name: Diagnose published official festival images read-only
