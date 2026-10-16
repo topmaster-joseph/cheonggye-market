@@ -6,14 +6,38 @@ const html=await fs.readFile(new URL('./admin/index.html',import.meta.url),'utf8
 const css=await fs.readFile(new URL('./admin-control.css',import.meta.url),'utf8');
 const js=await fs.readFile(new URL('./admin-dashboard.js',import.meta.url),'utf8');
 
-test('CGMA admin exposes four compact workspace tabs without duplicate notice CRUD quick actions',()=>{
-  for(const label of ['오늘','점포·회원','콘텐츠','현장'])assert.match(html,new RegExp('>'+label+'<'));
-  assert.match(html,/id="quickAddMerchant"/);
-  assert.doesNotMatch(html,/id="quickAddNotice"/);
+test('CGMA retains only three administrator oversight groups and delegates daily edits to the public page',()=>{
+  for(const label of ['심사·승인','운영 감독','제한 설정'])assert.match(html,new RegExp('>'+label+'<'));
+  for(const group of ['review','oversight','settings'])assert.match(html,new RegExp('data-admin-tab="'+group+'"'));
+  assert.doesNotMatch(html,/id="quickAddMerchant"|id="quickAddNotice"|id="addNoticeBtn"/);
   assert.match(html,/id="openNoticeBoard"/);
-  assert.doesNotMatch(html,/id="noticeAdminForm"|id="noticeAdminList"|id="addNoticeBtn"/);
+  assert.doesNotMatch(html,/id="noticeAdminForm"|id="noticeAdminList"/);
+  assert.match(html,/cgma-embedded-workbench/);
   assert.match(html,/admin-dashboard\.js\?v=20261001-tabs-fixed-sidebar-v1/);
   assert.doesNotMatch(js,/quickAddNotice|addNoticeBtn/);
+  assert.match(js,/setTab\('inline',embeddedId\)/);
+});
+
+test('public content sections authenticate via the current server gate before displaying management actions',async()=>{
+  const [home,inline,style,survey,festival,coupon]=await Promise.all([
+    fs.readFile(new URL('./index.html',import.meta.url),'utf8'),
+    fs.readFile(new URL('./cgma-inline-management.js',import.meta.url),'utf8'),
+    fs.readFile(new URL('./cgma-inline-management.css',import.meta.url),'utf8'),
+    fs.readFile(new URL('./ai-education/index.html',import.meta.url),'utf8'),
+    fs.readFile(new URL('./festival/2026/apply/index.html',import.meta.url),'utf8'),
+    fs.readFile(new URL('./festival/2026/coupon/index.html',import.meta.url),'utf8')
+  ]);
+  assert.match(inline,/api\/admin-session/);
+  assert.match(inline,/res\.ok&&grant\.allowed===true/);
+  assert.match(inline,/if\(permitted\)render\(\)/);
+  assert.match(inline,/cgma-management-overlay/);
+  assert.match(style,/\.cgma-management-overlay\[hidden\]\{display:none!important\}/);
+  assert.match(home,/id="adminNav" href="\?manage=resourceManager#resources"/);
+  for(const page of [home,survey,festival,coupon]){
+    assert.match(page,/cgma-inline-management\.js/);
+    assert.match(page,/cgma-inline-management\.css/);
+    assert.ok(page.indexOf('@supabase/supabase-js@2')<page.indexOf('cgma-inline-management.js'));
+  }
 });
 
 test('desktop sidebar is fixed and never scrolls',()=>{
