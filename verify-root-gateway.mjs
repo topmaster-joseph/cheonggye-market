@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import gateway, { upstreamUrl, canonicalLocation, rewriteHtml, isBoardPath, isLivePath, isMarketingPath, isOwnerAdminPath } from './cgma-root-gateway.js';
+import gateway, { upstreamUrl, canonicalLocation, rewriteHtml, isAiEducationPath, isBoardPath, isLivePath, isMarketingPath, isOwnerAdminPath } from './cgma-root-gateway.js';
 
 assert.equal(upstreamUrl('https://ekodi.kr/cgma').toString(), 'https://cheonggye-market.pages.dev/');
 assert.equal(upstreamUrl('https://ekodi.kr/cgma/admin?x=1').toString(), 'https://cheonggye-market.pages.dev/admin?x=1');
@@ -27,6 +27,38 @@ assert.equal(isBoardPath('/cgma/board'), true);
 assert.equal(isBoardPath('/cgma/board/'), true);
 assert.equal(isBoardPath('/cgma/board/api/health'), true);
 assert.equal(isBoardPath('/cgma/boards'), false);
+
+// AI education paths are owned by the internal Shared Site, not CGMA Pages.
+assert.equal(isAiEducationPath('/cgma/ai-education'),true);
+assert.equal(isAiEducationPath('/cgma/ai-education/'),true);
+assert.equal(isAiEducationPath('/cgma/ai-education/app.js'),true);
+assert.equal(isAiEducationPath('/cgma/ai-education-other'),false);
+assert.equal(isAiEducationPath('/cgma/member'),false);
+let surveyUpstream='',surveyFetchCount=0;
+const surveyResponse=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/?source=cgma'),{EKODI_SHARED:{fetch:async request=>{
+  surveyFetchCount++;
+  surveyUpstream=request.url;
+  return new Response('<title>상인 AI 교육 수요조사</title>',{status:200,headers:{'content-type':'text/html','x-ekodi-route':'cgma-ai-education-survey'}});
+}}});
+assert.equal(surveyUpstream,'https://ekodi.kr/cgma/ai-education/?source=cgma');
+assert.equal(surveyFetchCount,1);
+assert.equal(surveyResponse.status,200);
+assert.equal(surveyResponse.headers.get('x-ekodi-route'),'cgma-ai-education-survey');
+assert.match(await surveyResponse.text(),/수요조사/);
+const surveyScript=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/app.js'),{EKODI_SHARED:{fetch:async()=>new Response('console.log(1)',{headers:{'content-type':'application/javascript','x-ekodi-route':'cgma-ai-education-survey'}})}});
+assert.equal(surveyScript.status,200);
+assert.match(surveyScript.headers.get('content-type'),/javascript/);
+const surveyRedirect=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education?ref=1'),{EKODI_SHARED:{fetch:async()=>new Response(null,{status:308,headers:{'location':'https://ekodi.kr/cgma/ai-education/?ref=1','x-ekodi-route':'cgma-ai-education-survey'}})}});
+assert.equal(surveyRedirect.status,308);
+assert.equal(surveyRedirect.headers.get('location'),'https://ekodi.kr/cgma/ai-education/?ref=1');
+const surveyUnavailable=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/'),{});
+assert.equal(surveyUnavailable.status,503);
+assert.equal(surveyUnavailable.headers.get('cache-control'),'no-store');
+const surveyWrongRoute=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/'),{EKODI_SHARED:{fetch:async()=>new Response('<title>청계면상인회</title>',{headers:{'x-ekodi-route':'cgma-root-gateway'}})}});
+assert.equal(surveyWrongRoute.status,502);
+assert.equal(surveyWrongRoute.headers.get('x-ekodi-cgma-delegation'),'ai-education');
+const surveyException=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/'),{EKODI_SHARED:{fetch:async()=>{throw Error('service unavailable')}}});
+assert.equal(surveyException.status,502);
 
 let boardRequest='';
 const boardResponse=await gateway.fetch(new Request('https://ekodi.kr/cgma/board/api/health?probe=1'),{EKODI_BOARD:{fetch:async request=>{boardRequest=request.url;return new Response('{"ok":true}',{status:200,headers:{'content-type':'application/json','x-ekodi-board-independent':'true','x-ekodi-board-id':'site:cgma:main'}});}}});
