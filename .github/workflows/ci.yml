@@ -86,6 +86,8 @@ jobs:
 
       - name: Test 2026 CGMA festival intake security and selection rules
         run: node --test cgma-festival-intake.test.mjs
+      - name: Diagnose published official festival images read-only
+        run: node diagnose-festival-images.mjs
       - name: Verify official 2026 festival poster and road maps in both forms
         run: node --test verify-festival-official-assets.test.mjs
       - name: Verify production EKODI festival Edge status without applicant data
