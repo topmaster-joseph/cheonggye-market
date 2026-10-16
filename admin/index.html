@@ -18,6 +18,7 @@
 #festivalManager .festival-table .muted{font-size:10px;overflow-wrap:anywhere}
 </style><style>
 /* The same privileged modules are reused inside the public page. No duplicate write path. */
+.admin-user-first-note{font-size:14px;margin:0 0 12px;color:#153e35}.admin-user-first-note a{color:inherit;font-weight:800}
 html.cgma-embedded-workbench,html.cgma-embedded-workbench body{background:#fff;min-height:0}
 html.cgma-embedded-workbench .admin-shell{display:block;min-height:0}
 html.cgma-embedded-workbench .admin-side,
@@ -25,7 +26,8 @@ html.cgma-embedded-workbench .admin-title-row,
 html.cgma-embedded-workbench .admin-toolbar,
 html.cgma-embedded-workbench .admin-metrics,
 html.cgma-embedded-workbench .admin-command-grid,
-html.cgma-embedded-workbench #accessState{display:none!important}
+html.cgma-embedded-workbench #accessState,
+html.cgma-embedded-workbench .admin-user-first-note{display:none!important}
 html.cgma-embedded-workbench .admin-main{margin:0!important;padding:12px 14px 30px;max-width:none;width:100%}
 html.cgma-embedded-workbench .admin-resource-panel,
 html.cgma-embedded-workbench .admin-control-tower{margin:0 0 10px}
@@ -54,6 +56,7 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
     </aside>
     <main class="admin-main" id="dashboard">
       <div class="admin-title-row"><div><span class="admin-kicker">CHEONGGYE MERCHANT ASSOCIATION</span><h1>승인·운영 감독</h1></div><div class="admin-title-actions"><span id="adminGlobalPeriod"></span><a class="admin-view-link" href="../">사용자 화면에서 관리 ↗</a></div></div>
+      <p class="admin-user-first-note">일상적인 점포·공지·자료·설문 관리는 <a href="../">상인회 사용자 화면</a>에서 직접 처리합니다. 이 화면은 승인과 운영 감독에 집중합니다.</p>
       <p class="access-state" id="accessState"></p>
       <div class="admin-toolbar">
         <div class="admin-workspace-tabs" role="tablist" aria-label="관리자 전용 영역">
