@@ -48,24 +48,33 @@ export async function sha256(value){
 }
 export const makeToken=()=>Array.from(crypto.getRandomValues(new Uint8Array(32)),x=>x.toString(16).padStart(2,'0')).join('');
 const isRecord=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
+// Continue to accept v2 requests during a bounded browser cache transition; do not
+// reinterpret historical non-ranked topic choices as 2nd/3rd priorities.
+const LEGACY_SURVEY_VERSION=2;
+const legacyQuestions=SURVEY_QUESTIONS.flatMap(q=>
+  q.key==='respondent_type'?[]:q.key==='topics'?[q,{key:'priority',title:'가장 먼저 배우고 싶은 교육',options:q.options}]:[q]
+);
 export function validateSurvey(body){
-  if(!isRecord(body)||body.version!==SURVEY_VERSION||body.privacy_ack!==true)return {error:'survey_version_or_consent_required'};
+  if(!isRecord(body)||![SURVEY_VERSION,LEGACY_SURVEY_VERSION].includes(body.version)||body.privacy_ack!==true)return {error:'survey_version_or_consent_required'};
+  const legacy=body.version===LEGACY_SURVEY_VERSION;
   if(typeof body.response_key!=='string'||!/^[a-f0-9]{32}$/.test(body.response_key))return {error:'invalid_response_key'};
   if(!isRecord(body.answers))return {error:'invalid_answers'};
   const answers={};
-  for(const question of SURVEY_QUESTIONS){
+  for(const question of legacy?legacyQuestions:SURVEY_QUESTIONS){
     const submitted=body.answers[question.key];
     if(question.multiple){
       if(!Array.isArray(submitted)||submitted.length===0||submitted.length>question.options.length)return {error:'missing_or_invalid_'+question.key};
       if(submitted.some(v=>typeof v!=='string'||!question.options.includes(v))||new Set(submitted).size!==submitted.length)return {error:'invalid_'+question.key};
       if(question.key==='available_devices'&&submitted.includes('사용 가능한 기기 없음')&&submitted.length>1)return {error:'invalid_available_devices'};
+      if(question.key==='difficulties'&&submitted.includes('해당 없음')&&submitted.length>1)return {error:'invalid_difficulties'};
+      if(question.key==='topics'&&!legacy&&submitted.length>3)return {error:'max_three_ranked_topics'};
       answers[question.key]=[...submitted];
     }else{
       if(typeof submitted!=='string'||!question.options.includes(submitted))return {error:'missing_or_invalid_'+question.key};
       answers[question.key]=submitted;
     }
   }
-  if(!answers.topics.includes(answers.priority))return {error:'priority_must_be_in_topics'};
+  if(legacy&&!answers.topics.includes(answers.priority))return {error:'priority_must_be_in_topics'};
   if(typeof body.feedback!=='string'&&body.feedback!==undefined)return {error:'invalid_feedback'};
   const feedback=String(body.feedback||'').trim();
   if(feedback.length>500)return {error:'feedback_too_long'};
@@ -85,7 +94,7 @@ export function validateSurvey(body){
       notice={key:n.key,optIn:false};
     }
   }
-  return {answers,feedback,responseKey:body.response_key,version:SURVEY_VERSION,notice};
+  return {answers,feedback,responseKey:body.response_key,version:body.version,notice};
 }
 export const sameSiteOrigin=request=>{
   const origin=request.headers.get('origin');
@@ -159,9 +168,27 @@ export async function aggregateSurvey(db,{shared=false}={}){
       options:question.options.map(answer=>({answer,count:counts.get(answer)||0,percent:total?Math.round((counts.get(answer)||0)*1000/total)/10:0}))
     });
   }
+  // Explicitly ranked choices: for historical v2 entries only the former
+  // "priority" field is an actual rank. Prior unordered selections are not.
+  const ranked_sections=[];
+  for(let rank=0;rank<3;rank++){
+    const expression=rank===0
+      ?`CASE WHEN survey_version>=3 THEN json_extract(answers_json,'$.topics[0]') ELSE json_extract(answers_json,'$.priority') END`
+      :`CASE WHEN survey_version>=3 THEN json_extract(answers_json,'$.topics[${rank}]') ELSE NULL END`;
+    const rows=await db.prepare(`SELECT chosen AS answer, COUNT(*) AS count
+      FROM (SELECT ${expression} AS chosen FROM ${table})
+      WHERE chosen IS NOT NULL GROUP BY chosen`).all();
+    const counts=new Map((rows.results||[]).map(item=>[String(item.answer),Number(item.count||0)]));
+    const topicOptions=SURVEY_QUESTIONS.find(q=>q.key==='topics').options;
+    ranked_sections.push({
+      key:'topics_rank_'+(rank+1),title:'교육 희망 '+(rank+1)+'순위',multiple:false,
+      options:topicOptions.map(answer=>({answer,count:counts.get(answer)||0,
+        percent:total?Math.round((counts.get(answer)||0)*1000/total)/10:0}))
+    });
+  }
   const daily=await db.prepare(`SELECT substr(created_at,1,10) AS day,COUNT(*) AS count FROM ${table} WHERE created_at>=datetime('now','-30 days') GROUP BY day ORDER BY day DESC`).all();
   const stats={total,survey_version:SURVEY_VERSION,minimum_public_responses:MIN_PUBLIC_RESPONSES,
-    suppressed:false,sections,daily:(daily.results||[]).map(x=>({day:String(x.day),count:Number(x.count||0)})),
+    suppressed:false,sections,ranked_sections,daily:(daily.results||[]).map(x=>({day:String(x.day),count:Number(x.count||0)})),
     calculated_at:new Date().toISOString()};
   if(!shared){
     const notes=await db.prepare(`SELECT feedback,created_at FROM ${table} WHERE feedback<>'' ORDER BY updated_at DESC LIMIT 30`).all();
