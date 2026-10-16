@@ -2,7 +2,9 @@
 'use strict';
 const el=id=>document.getElementById(id),api=value=>{
   if(location.hostname==='cheonggye-market.pages.dev'){
-    return {'/ai-education/api/stats':'/api/ai-education-stats','/ai-education/api/share':'/api/ai-education-share'}[value]||value;
+    const url=new URL(value,'https://ekodi.kr');
+    const mapped={'/ai-education/api/stats':'/api/ai-education-stats','/ai-education/api/share':'/api/ai-education-share'}[url.pathname];
+    return mapped?mapped+url.search:value;
   }
   return window.CGMA_ROUTE?.route(value)||value;
 };
@@ -75,6 +77,24 @@ function copySummary(){
   )].join('\n');
   navigator.clipboard.writeText(content).then(()=>say('익명 통계 요약을 복사했습니다.')).catch(()=>say('복사 권한이 없습니다. CSV로 내보내 주세요.'));
 }
+async function toggleContacts(){
+  const area=el('educationSurveyContacts');
+  if(!area)return;
+  if(!area.hidden){area.hidden=true;area.replaceChildren();return}
+  area.hidden=false;
+  area.textContent='안내 신청 연락처를 조회하고 있습니다.';
+  try{
+    const data=await request('/ai-education/api/stats?contacts=1');
+    area.replaceChildren();
+    area.append(div('strong','','교육정보 안내를 별도로 신청한 연락처 (최대 300건)'));
+    if(!data.contacts?.length){area.append(div('p','','교육정보 안내 신청자가 없습니다.'));return}
+    for(const item of data.contacts){
+      const line=div('p','survey-feedback');
+      line.append(div('strong','',item.phone),div('span','', ' · 동의: '+item.consent_at+' · 보관 기한: '+item.expires_at));
+      area.append(line);
+    }
+  }catch(error){area.textContent='연락처 조회 실패: '+error.message}
+}
 async function loadShares(){
   const data=await request('/ai-education/api/share');const area=el('educationSurveyShares');area.replaceChildren();
   const active=data.items||[];
@@ -129,6 +149,7 @@ function start(session){
   el('educationSurveyCsv')?.addEventListener('click',exportCsv);
   el('educationSurveyCopy')?.addEventListener('click',copySummary);
   el('educationSurveyShare')?.addEventListener('click',makeShare);
+  el('educationSurveyContactsToggle')?.addEventListener('click',toggleContacts);
   load();
 }
 window.CGMA_EDUCATION_SURVEY_ADMIN=Object.freeze({start,refresh:load});

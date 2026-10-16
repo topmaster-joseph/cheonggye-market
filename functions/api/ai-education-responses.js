@@ -1,4 +1,4 @@
-import {ensureSurveyTables,readJson,reply,sameSiteOrigin,saveSurvey,validateSurvey} from '../_shared/ai-education-store.js';
+import {ensureSurveyTables,readJson,reply,sameSiteOrigin,saveSurvey,saveNoticeContact,validateSurvey} from '../_shared/ai-education-store.js';
 export async function onRequestPost({request,env}){
   if(!sameSiteOrigin(request))return reply({error:'origin_not_allowed'},403);
   const data=await readJson(request);
@@ -11,6 +11,7 @@ export async function onRequestPost({request,env}){
     const db=env.cheonggye_market_notices;
     await ensureSurveyTables(db);
     await saveSurvey(db,checked);
+    await saveNoticeContact(db,checked.notice);
     return reply({ok:true,saved:true,updated_existing_or_new:true,survey_version:checked.version},201);
   }catch(error){
     console.error('CGMA survey store unavailable',String(error?.message||'').slice(0,100));

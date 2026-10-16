@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>상인 AI 교육 수요조사 | 청계면상인회</title>
+<title>소상공인 AI 맞춤형 교육 수요조사 | EKODI</title>
+<meta name="ekodi-route-identity" content="상인 AI 교육 수요조사">
 <meta name="robots" content="noindex,nofollow">
 <style>
 :root{font-family:system-ui,"Noto Sans KR",sans-serif;color:#111;background:#fff;font-synthesis:none}
@@ -16,7 +17,7 @@ legend{font-weight:750;padding:0 4px;font-size:1.02rem}
 label.option{display:flex;align-items:center;gap:8px;min-height:43px;padding:8px;border:1px solid #ddd;border-radius:7px;cursor:pointer}
 label.option:has(input:checked){outline:2px solid #111;border-color:#111;background:#f8f8f8}
 label.option input{width:21px;height:21px;accent-color:#111;flex:none;margin:0}
-textarea{width:100%;min-height:82px;padding:10px;font:inherit;border:1px solid #999;border-radius:7px}
+textarea,input[type=tel]{width:100%;min-height:43px;padding:10px;font:inherit;border:1px solid #999;border-radius:7px}textarea{min-height:82px}
 button{padding:12px 18px;border:1px solid #111;border-radius:7px;background:#111;color:white;font:inherit;font-weight:700;cursor:pointer}
 button.secondary{background:white;color:#111}button:disabled{opacity:.55;cursor:wait}
 #result{white-space:pre-wrap;border:1px solid #aaa;padding:14px;margin-top:14px;border-radius:8px}
@@ -29,18 +30,26 @@ button.secondary{background:white;color:#111}button:disabled{opacity:.55;cursor:
 @media(max-width:620px){body{padding:10px 12px 35px}.option-grid{grid-template-columns:1fr 1fr}.option-grid .option{font-size:.94rem}.actions button{flex:1 1 100%}}
 </style>
 </head><body>
-<header><p class="muted">청계면상인회 · 교육 수요조사</p>
+<header><p class="muted">소상공인 AI 맞춤형 교육 수요조사</p>
 <h1>우리 가게에 필요한 AI 교육을 찾아보세요</h1>
 <p><a href="/cgma/">청계면상인회 홈으로</a> · <a href="/cgma/admin/#educationSurveyManager" id="adminStatsLink">관리자 통계</a></p>
 <p class="muted">약 5~7분 · 익명 응답 · 스마트폰 가능 · 실제 접수 및 통계 반영</p></header>
-<div class="summary"><b>교육 운영을 위한 수요조사</b><div>보유 기기, 교육 희망 기기(컴퓨터·노트북·태블릿·핸드폰 등), 교육 희망 장소(목포대학교·도시재생센터·상가 등), 주제와 일정에 관해 선택해주세요.</div></div>
+<div class="summary"><b>소상공인을 위한 AI 맞춤형 교육 수요조사</b><div>보유 기기, 교육 희망 기기(컴퓨터·노트북·태블릿·핸드폰 등), 교육 희망 장소(목포대학교·도시재생센터·상가 등), 주제와 일정에 관해 선택해주세요.</div></div>
 <form id="survey" novalidate>
 <div id="questions"></div>
 <fieldset><legend>추가 의견 (선택)</legend><textarea id="comment" maxlength="500" placeholder="교육에 바라는 점만 적어주세요. 이름·전화번호·가게 주소는 적지 마세요."></textarea></fieldset>
-<label class="consent"><input id="privacyAck" type="checkbox" required><span>익명 교육 수요 응답을 청계면상인회 전용 데이터베이스에 저장하고, 교육 계획 수립을 위한 통계에 활용하는 데 동의합니다. (필수)<small style="display:block">이름·연락처·상호는 받지 않습니다. 브라우저별 중복 집계를 줄이기 위한 무작위 응답 키만 사용합니다. 같은 브라우저에서 다시 제출하면 마지막 응답으로 갱신됩니다.</small></span></label>
+<fieldset id="noticeFieldset"><legend>교육 일정·신청 안내 받기 (선택)</legend>
+<label class="option"><input id="noticeOptIn" type="checkbox"><span>교육정보 안내를 희망합니다.</span></label>
+<div id="noticeDetails" hidden>
+  <p class="muted">안내받을 휴대전화 번호를 입력해 주세요. 설문 응답과 별도 보관하며 통계·외부 공유에 포함하지 않습니다.</p>
+  <label for="noticePhone">휴대전화 번호 (안내 신청 시 필수)</label>
+  <input id="noticePhone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="010-1234-5678">
+  <label class="consent"><input id="noticeConsent" type="checkbox"><span>교육 일정·신청 안내를 위해 휴대전화 번호를 수집·이용하는 데 동의합니다. (안내 신청 시 필수)<small style="display:block">수집 항목: 휴대전화 번호 / 이용 목적: 소상공인 AI 교육 안내 / 보유 기간: 동의 철회 또는 안내 종료 시 삭제, 최장 6개월. 동의를 거부해도 익명 설문에 참여할 수 있습니다. 같은 브라우저에서 안내 신청을 해제하고 재제출하면 기존 연락처가 삭제됩니다.</small></span></label>
+</div></fieldset>
+<label class="consent"><input id="privacyAck" type="checkbox" required><span>익명 교육 수요 응답을 설문 운영기관 전용 데이터베이스에 저장하고, 교육 계획 수립을 위한 통계에 활용하는 데 동의합니다. (필수)<small style="display:block">이름·상호는 받지 않으며, 안내 신청 시 연락처만 별도로 수집합니다. 브라우저별 중복 집계를 줄이기 위한 무작위 응답 키만 사용합니다. 같은 브라우저에서 다시 제출하면 마지막 응답으로 갱신됩니다.</small></span></label>
 <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">
 <div class="actions"><button id="submit" type="submit">설문 응답 저장 및 추천 보기</button><button type="button" id="export" class="secondary" hidden>내 응답 CSV 저장</button></div>
 </form>
 <section id="result" hidden role="status" aria-live="polite"></section>
-<p class="privacy muted">설문은 실명·연락처 없이 수집합니다. 자유 의견에 개인정보를 입력하지 마세요. 응답 통계는 청계면상인회 관리자만 전체 열람할 수 있습니다. 외부 공유 링크에는 5건 이상 응답이 모인 경우 집계된 수치만 표시되고 자유 의견은 공개되지 않습니다. 개인용 CSV 저장은 선택 사항입니다.</p>
+<p class="privacy muted">설문 응답은 실명 없이 수집하며, 교육정보 안내 신청자의 연락처만 별도로 수집합니다. 자유 의견에 개인정보를 입력하지 마세요. 익명 응답 통계와 별도 연락처는 권한이 확인된 설문 운영기관 관리자만 열람할 수 있습니다. 외부 공유 링크에는 5건 이상 응답이 모인 경우 집계된 수치만 표시되고 자유 의견은 공개되지 않습니다. 개인용 CSV 저장은 선택 사항입니다.</p>
 <script type="module" src="./app.js"></script></body></html>

@@ -2,6 +2,7 @@ import {SURVEY_QUESTIONS,SURVEY_VERSION} from '../../ai-education/questions.mjs'
 
 const table='cgma_ai_education_responses';
 const shareTable='cgma_ai_education_shares';
+const contactsTable='cgma_ai_education_contacts';
 export const MIN_PUBLIC_RESPONSES=5;
 const ddl=[
   `CREATE TABLE IF NOT EXISTS ${table} (
@@ -21,7 +22,15 @@ const ddl=[
     expires_at TEXT NOT NULL,
     revoked_at TEXT
   )`,
-  `CREATE INDEX IF NOT EXISTS idx_cgma_ai_education_share_expires ON ${shareTable}(expires_at)`
+  `CREATE INDEX IF NOT EXISTS idx_cgma_ai_education_share_expires ON ${shareTable}(expires_at)`,
+  `CREATE TABLE IF NOT EXISTS ${contactsTable} (
+    contact_key_hash TEXT PRIMARY KEY,
+    phone TEXT NOT NULL,
+    consent_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expires_at TEXT NOT NULL DEFAULT (datetime('now','+6 months'))
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_cgma_ai_education_contacts_expires ON ${contactsTable}(expires_at)`
 ];
 export const reply=(data,status=200)=>Response.json(data,{status,headers:{
   'cache-control':'private, no-store, max-age=0',
@@ -31,6 +40,7 @@ export const reply=(data,status=200)=>Response.json(data,{status,headers:{
 export async function ensureSurveyTables(db){
   if(!db?.prepare)throw new Error('survey_db_unavailable');
   for(const sql of ddl)await db.prepare(sql).run();
+  await db.prepare(`DELETE FROM ${contactsTable} WHERE expires_at<=CURRENT_TIMESTAMP`).run();
 }
 export async function sha256(value){
   const input=new TextEncoder().encode(String(value));
@@ -59,7 +69,23 @@ export function validateSurvey(body){
   if(typeof body.feedback!=='string'&&body.feedback!==undefined)return {error:'invalid_feedback'};
   const feedback=String(body.feedback||'').trim();
   if(feedback.length>500)return {error:'feedback_too_long'};
-  return {answers,feedback,responseKey:body.response_key,version:SURVEY_VERSION};
+  // Contact applications have an independent key and never enter answers_json or shared statistics.
+  let notice=null;
+  if(body.notice!==undefined){
+    if(!isRecord(body.notice)||typeof body.notice.opt_in!=='boolean')return {error:'invalid_notice'};
+    const n=body.notice;
+    if(typeof n.key!=='string'||!/^[a-f0-9]{32}$/.test(n.key)||n.key===body.response_key)return {error:'invalid_notice_key'};
+    if(n.opt_in){
+      if(n.consent!==true||typeof n.phone!=='string')return {error:'notice_consent_required'};
+      const phone=n.phone.replace(/[^0-9]/g,'');
+      if(!/^01[016789][0-9]{7,8}$/.test(phone))return {error:'invalid_notice_phone'};
+      notice={key:n.key,optIn:true,phone};
+    }else{
+      if(n.consent===true||n.phone)return {error:'invalid_notice_opt_out'};
+      notice={key:n.key,optIn:false};
+    }
+  }
+  return {answers,feedback,responseKey:body.response_key,version:SURVEY_VERSION,notice};
 }
 export const sameSiteOrigin=request=>{
   const origin=request.headers.get('origin');
@@ -90,6 +116,29 @@ export async function saveSurvey(db,validated){
       updated_at=CURRENT_TIMESTAMP`)
     .bind(crypto.randomUUID(),hash,validated.version,JSON.stringify(validated.answers),validated.feedback).run();
   return Boolean(result?.success!==false);
+}
+export async function saveNoticeContact(db,notice){
+  if(!notice)return;
+  const hash=await sha256(notice.key);
+  if(!notice.optIn){
+    await db.prepare(`DELETE FROM ${contactsTable} WHERE contact_key_hash=?`).bind(hash).run();
+    return;
+  }
+  await db.prepare(`INSERT INTO ${contactsTable}(contact_key_hash,phone)
+    VALUES(?,?)
+    ON CONFLICT(contact_key_hash) DO UPDATE SET
+      phone=excluded.phone,updated_at=CURRENT_TIMESTAMP,
+      expires_at=datetime('now','+6 months')`).bind(hash,notice.phone).run();
+}
+export async function listNoticeContacts(db){
+  const rows=await db.prepare(`SELECT phone,consent_at,updated_at,expires_at
+    FROM ${contactsTable} WHERE expires_at>CURRENT_TIMESTAMP ORDER BY updated_at DESC LIMIT 300`).all();
+  return (rows.results||[]).map(x=>({
+    phone:String(x.phone||''),
+    consent_at:String(x.consent_at||''),
+    updated_at:String(x.updated_at||''),
+    expires_at:String(x.expires_at||'')
+  }));
 }
 export async function aggregateSurvey(db,{shared=false}={}){
   const totalRow=await db.prepare(`SELECT COUNT(*) AS count FROM ${table}`).first();
