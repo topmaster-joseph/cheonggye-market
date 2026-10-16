@@ -104,9 +104,21 @@ async function delegatedLiveResponse(request, env) {
   catch { return new Response('CGMA live unavailable', { status: 502 }); }
 }
 
-// Survey content is CGMA-owned and served from the already registered Pages origin.
-// Only exact, verified static assets may be published through this scoped route.
-const AI_SURVEY_CSP="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'";
+// CGMA survey assets and API are owned by this tenant's existing Pages project.
+// Keep authenticated admin stats and response writes on same canonical host.
+const AI_SURVEY_CSP="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'";
+const SURVEY_ASSETS=Object.freeze({
+  '/':{upstream:'/ai-education/',html:true,needles:['상인 AI 교육 수요조사','id="survey"','src="./app.js"']},
+  '/app.js':{upstream:'/ai-education/app.js',needles:['const questions = [',"document.getElementById('survey')"]},
+  '/questions.mjs':{upstream:'/ai-education/questions.mjs',needles:['export const SURVEY_QUESTIONS','교육 희망 기기','교육 희망 장소']},
+  '/report/':{upstream:'/ai-education/report/',html:true,needles:['AI 교육 수요조사 통계','id="charts"','src="./app.js"']},
+  '/report/app.js':{upstream:'/ai-education/report/app.js',needles:["document.getElementById('charts')",'stats.sections']}
+});
+const SURVEY_API=Object.freeze({
+  '/api/responses':{upstream:'/api/ai-education-responses',methods:['POST','GET']},
+  '/api/stats':{upstream:'/api/ai-education-stats',methods:['GET']},
+  '/api/share':{upstream:'/api/ai-education-share',methods:['GET','POST','DELETE']}
+});
 function surveyHeaders(isHtml) {
   return {
     'content-type':isHtml?'text/html; charset=utf-8':'application/javascript; charset=utf-8',
@@ -114,43 +126,57 @@ function surveyHeaders(isHtml) {
     'x-ekodi-route':'cgma-ai-education-survey',
     'x-ekodi-workspace':'cgma',
     'x-content-type-options':'nosniff',
+    'referrer-policy':'no-referrer',
     'x-robots-tag':'noindex, nofollow',
     ...(isHtml?{'content-security-policy':AI_SURVEY_CSP}:{})
   };
 }
 function unavailableAiEducation(status) {
   return new Response('CGMA AI education unavailable', {status,headers:{
-    'cache-control':'no-store',
-    'x-content-type-options':'nosniff',
+    'cache-control':'no-store','x-content-type-options':'nosniff',
     'x-ekodi-cgma-delegation':'ai-education'
   }});
 }
+async function proxyAiEducationApi(request,definition){
+  let upstream;try{upstream=await fetch(upstreamRequest(request,definition.upstream))}catch{return unavailableAiEducation(502)}
+  // Protect against Cloudflare Pages serving a generic HTML fallback on /api.
+  if(!String(upstream.headers.get('content-type')||'').toLowerCase().includes('application/json'))return unavailableAiEducation(502);
+  const headers=new Headers(upstream.headers);
+  headers.delete('content-length');
+  headers.set('cache-control','private, no-store, max-age=0');
+  headers.set('referrer-policy','no-referrer');
+  headers.set('x-ekodi-route','cgma-ai-education-api');
+  headers.set('x-ekodi-workspace','cgma');
+  headers.set('x-content-type-options','nosniff');
+  return new Response(upstream.body,{status:upstream.status,statusText:upstream.statusText,headers});
+}
 async function delegatedAiEducationResponse(request) {
-  const url=new URL(request.url);
-  if (!['GET','HEAD'].includes(request.method)) {
+  const url=new URL(request.url),method=request.method.toUpperCase();
+  const relative=url.pathname.slice(AI_EDUCATION_PREFIX.length);
+  const api=SURVEY_API[relative];
+  if(api){
+    if(!api.methods.includes(method))return new Response('Method Not Allowed',{status:405,headers:{allow:api.methods.join(', '),'cache-control':'no-store'}});
+    return proxyAiEducationApi(request,api);
+  }
+  if(!['GET','HEAD'].includes(method)){
     return new Response('Method Not Allowed',{status:405,headers:{allow:'GET, HEAD','cache-control':'no-store'}});
   }
-  if (url.pathname===AI_EDUCATION_PREFIX||url.pathname===AI_EDUCATION_PREFIX+'/index.html') {
+  if(url.pathname===AI_EDUCATION_PREFIX||relative==='/index.html'||relative==='/report'||relative==='/report/index.html'){
     const destination=new URL(request.url);
-    destination.pathname=AI_EDUCATION_PREFIX+'/';
+    destination.pathname=relative==='/report'||relative==='/report/index.html'?AI_EDUCATION_PREFIX+'/report/':AI_EDUCATION_PREFIX+'/';
     return new Response(null,{status:308,headers:{location:destination.toString(),'cache-control':'no-store','x-ekodi-route':'cgma-ai-education-survey'}});
   }
-  const html=url.pathname===AI_EDUCATION_PREFIX+'/';
-  const script=url.pathname===AI_EDUCATION_PREFIX+'/app.js';
-  if (!html&&!script)return unavailableAiEducation(404);
+  const asset=SURVEY_ASSETS[relative];
+  if(!asset)return unavailableAiEducation(404);
   let response;
-  try {response=await fetch(upstreamRequest(request));} catch {return unavailableAiEducation(502);}
-  if (response.status!==200)return unavailableAiEducation(503);
+  try{response=await fetch(upstreamRequest(request,asset.upstream))}catch{return unavailableAiEducation(502)}
+  if(response.status!==200)return unavailableAiEducation(503);
   const mime=String(response.headers.get('content-type')||'').toLowerCase();
-  if (html?!mime.includes('text/html'):!mime.includes('javascript'))return unavailableAiEducation(503);
-  if (request.method==='HEAD')return new Response(null,{status:200,headers:surveyHeaders(html)});
-  let body;
-  try{body=await response.text()}catch{return unavailableAiEducation(502)}
-  const valid=html
-    ?body.includes('상인 AI 교육 수요조사')&&body.includes('id="survey"')&&body.includes('src="./app.js"')
-    :body.includes('const questions = [')&&body.includes("document.getElementById('survey')");
-  if (!valid)return unavailableAiEducation(503);
-  return new Response(body,{status:200,headers:surveyHeaders(html)});
+  if(asset.html?!mime.includes('text/html'):!mime.includes('javascript'))return unavailableAiEducation(503);
+  if(method==='HEAD')return new Response(null,{status:200,headers:surveyHeaders(asset.html)});
+  let body;try{body=await response.text()}catch{return unavailableAiEducation(502)}
+  if(!asset.needles.every(marker=>body.includes(marker)))return unavailableAiEducation(503);
+  return new Response(body,{status:200,headers:surveyHeaders(asset.html)});
 }
 
 async function delegatedOwnerAdminResponse(request, env) {
@@ -181,12 +207,14 @@ function upstreamUrl(requestUrl) {
   return target;
 }
 
-function upstreamRequest(request) {
+function upstreamRequest(request, overridePath = null) {
   const target = upstreamUrl(request.url);
+  if (overridePath) target.pathname = overridePath;
   const headers = new Headers(request.headers);
   headers.set('X-Forwarded-Host', new URL(request.url).host);
   headers.set('X-Forwarded-Prefix', PREFIX);
   headers.delete('Host');
+  if (overridePath) headers.delete('cookie');
   return new Request(target, {
     method: request.method,
     headers,
