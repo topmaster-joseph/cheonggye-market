@@ -51,6 +51,14 @@ jobs:
           node --check functions/_shared/cgma-store-identity.js
           node --check functions/_shared/cgma-intervention-playbook.js
           node --check functions/api/admin-market-interventions.js
+          node --check functions/_shared/ai-education-store.js
+          node --check functions/api/ai-education-responses.js
+          node --check functions/api/ai-education-stats.js
+          node --check functions/api/ai-education-share.js
+          node --check ai-education/app.js
+          node --check ai-education/questions.mjs
+          node --check ai-education/report/app.js
+          node --check admin-education-survey.js
           node --check functions/api/merchants.js
           node --check functions/api/notices.js
           node --check functions/api/festival-booths.js
@@ -84,6 +92,8 @@ jobs:
       - name: Test intervention playbook model
         run: node --test cgma-intervention-playbook.test.mjs
 
+      - name: Test persisted CGMA AI education responses, admin analytics, privacy and share links
+        run: node --test cgma-ai-education-survey.test.mjs
       - name: Test 2026 CGMA festival intake security and selection rules
         run: node --test cgma-festival-intake.test.mjs
       - name: Diagnose published official festival images read-only
