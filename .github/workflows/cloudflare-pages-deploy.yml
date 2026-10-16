@@ -114,6 +114,8 @@ jobs:
           }
           check_route "$BASE_URL" "/" "청계면상인회 | 오늘도 청계에서 만나요"
           check_route "$BASE_URL" "/ai-education/" "우리 가게에 필요한 AI 교육을 찾아보세요"
+          check_route "$BASE_URL" "/ai-education/" "cgma-inline-management.js"
+          check_route "$BASE_URL" "/cgma-inline-management.js" "sessionStorageKey='sb-renzehysxirjilvdxacv-auth-token'"
           check_route "$BASE_URL" "/ai-education/app.js" "const questions = ["
           check_route "$BASE_URL" "/ai-education/questions.mjs" "export const SURVEY_QUESTIONS"
           check_route "$BASE_URL" "/ai-education/report/" "AI 교육 수요조사 통계"
@@ -186,7 +188,7 @@ jobs:
     if: needs.deploy.outputs.deployed == 'true'
     uses: topmaster-joseph/ekodi-platform/.github/workflows/ekodi-background-browser-worker.yml@main
     with:
-      surface_paths: /cgma/,/cgma/notices/1,/cgma/festival/2026/apply/,/cgma/festival/2026/coupon/
+      surface_paths: /cgma/,/cgma/notices/1,/cgma/ai-education/,/cgma/festival/2026/apply/,/cgma/festival/2026/coupon/
       device_profile: desktop
 
   native_surface_verification_mobile:
@@ -195,5 +197,5 @@ jobs:
     if: needs.deploy.outputs.deployed == 'true'
     uses: topmaster-joseph/ekodi-platform/.github/workflows/ekodi-background-browser-worker.yml@main
     with:
-      surface_paths: /cgma/,/cgma/notices/1,/cgma/festival/2026/apply/,/cgma/festival/2026/coupon/
+      surface_paths: /cgma/,/cgma/notices/1,/cgma/ai-education/,/cgma/festival/2026/apply/,/cgma/festival/2026/coupon/
       device_profile: mobile-portrait
