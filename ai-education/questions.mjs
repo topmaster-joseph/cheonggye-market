@@ -18,3 +18,18 @@ export const SURVEY_QUESTIONS = Object.freeze([
   {key:'start_period',title:'교육 희망 시작 시기',options:['가능한 빨리','1개월 이내','1~3개월 이내','3개월 이후','일정 미정']},
   {key:'participation',title:'실제 교육 참여 의향',options:['적극 참여','일정이 맞으면 참여','교육 내용을 보고 결정','현재는 관심만 있음']}
 ]);
+
+/**
+ * Pure state transition for the single 1–3 priority topic question.
+ * The ordering of values is their rank; other inputs never mutate state.
+ */
+export function rankTopicSelection(current,value,checked){
+  const allowed=SURVEY_QUESTIONS.find(q=>q.key==='topics').options;
+  if(!Array.isArray(current)||typeof value!=='string'||!allowed.includes(value))
+    return {values:Array.isArray(current)?[...current]:[],reason:'invalid'};
+  const prior=[...current];
+  if(!checked)return {values:prior.filter(x=>x!==value),reason:null};
+  if(prior.includes(value))return {values:prior,reason:null};
+  if(prior.length>=3)return {values:prior,reason:'max_three'};
+  return {values:[...prior,value],reason:null};
+}

@@ -43,6 +43,6 @@ assert.match(html,/id="noticeConsent"/);
 assert.match(html,/최장 6개월/);
 assert.match(app,/notice:\{opt_in:optedIn/);
 assert.match(app,/updateTopicRanks/);
-assert.match(app,/topicRank.push/);
+assert.match(app,/rankTopicSelection/);
 assert.match(admin,/contacts=1/);
 console.log('CGMA small-business survey topic, notice consent, and storage boundary checks passed');

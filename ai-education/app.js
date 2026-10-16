@@ -1,4 +1,4 @@
-import {SURVEY_QUESTIONS,SURVEY_VERSION} from './questions.mjs?v=20261017-ranked-v3';
+import {SURVEY_QUESTIONS,SURVEY_VERSION,rankTopicSelection} from './questions.mjs?v=20261017-ranked-v3';
 'use strict';
 // Keep the existing gateway's exact script identity marker.
 const questions = [...SURVEY_QUESTIONS];
@@ -82,18 +82,12 @@ function updateTopicRanks(message=''){
 topicsFieldset.addEventListener('change',event=>{
   const input=event.target;
   if(!(input instanceof HTMLInputElement)||input.name!=='topics')return;
-  if(input.checked){
-    if(topicRank.length>=3){
-      input.checked=false;
-      updateTopicRanks('최대 3개까지 선택할 수 있습니다. 다른 분야를 선택하려면 기존 항목을 해제하세요.');
-      return;
-    }
-    if(!topicRank.includes(input.value))topicRank.push(input.value);
-  }else{
-    const index=topicRank.indexOf(input.value);
-    if(index>=0)topicRank.splice(index,1);
-  }
-  updateTopicRanks();
+  const next=rankTopicSelection(topicRank,input.value,input.checked);
+  topicRank.splice(0,topicRank.length,...next.values);
+  if(next.reason==='max_three'){
+    input.checked=false;
+    updateTopicRanks('최대 3개까지 선택할 수 있습니다. 다른 분야를 선택하려면 기존 항목을 해제하세요.');
+  }else updateTopicRanks();
 });
 updateTopicRanks();
 const keyName='cgma_ai_education_response_key_v2';

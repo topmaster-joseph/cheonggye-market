@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
 import {readFile} from 'node:fs/promises';
-import {SURVEY_QUESTIONS,SURVEY_VERSION} from './ai-education/questions.mjs';
+import {SURVEY_QUESTIONS,SURVEY_VERSION,rankTopicSelection} from './ai-education/questions.mjs';
 import {aggregateSurvey,ensureSurveyTables,validateSurvey,saveSurvey,newShare,shareActive,revokeShare,sameSiteOrigin} from './functions/_shared/ai-education-store.js';
 import {onRequestPost} from './functions/api/ai-education-responses.js';
 import {onRequestGet as getStats} from './functions/api/ai-education-stats.js';
@@ -178,7 +178,7 @@ test('admin integration and canonical route contain actual stats and share contr
   assert.match(client,/responseKey/);
   assert.match(client,/categoryForTopic/);
   assert.match(client,/updateTopicRanks/);
-  assert.match(client,/topicRank.push/);
+  assert.match(client,/rankTopicSelection\(topicRank,input.value,input.checked\)/);
   assert.doesNotMatch(client,/priorityFieldset/);
   for(const term of ['educationSurveyManager','educationSurveyShare','educationSurveyCsv','CGMA_EDUCATION_SURVEY_ADMIN'])assert.ok(admin.includes(term));
   assert.ok(adminJs.includes('CGMA_EDUCATION_SURVEY_ADMIN'));
@@ -250,4 +250,35 @@ test('real SQLite ranks 1-3 precisely while preserving legacy v2 first-choice ev
     assert.equal(refreshed.ranked_sections[0].options.find(x=>x.answer==='매출 분석·판매 예측').count,1);
     assert.equal(refreshed.ranked_sections[1].options.find(x=>x.answer==='AI 자동화·챗봇').count,0);
   }finally{db.close()}
+});
+
+test('rank 1→2→3, fourth-choice rejection and sequential re-ranking are deterministic',()=>{
+  let state=[];
+  const choose=value=>{
+    const next=rankTopicSelection(state,value,true);
+    state=next.values;
+    return next.reason;
+  };
+  const remove=value=>{
+    const next=rankTopicSelection(state,value,false);
+    state=next.values;
+    return next.reason;
+  };
+  assert.equal(choose('ChatGPT·생성형 AI 기초'),null);
+  assert.equal(choose('네이버플레이스·지도 관리'),null);
+  assert.equal(choose('매출 분석·판매 예측'),null);
+  assert.deepEqual(state,['ChatGPT·생성형 AI 기초','네이버플레이스·지도 관리','매출 분석·판매 예측']);
+  assert.equal(choose('숏폼·홍보영상'),'max_three');
+  assert.equal(state.length,3,'fourth choice cannot push out any existing rank');
+  assert.equal(choose('네이버플레이스·지도 관리'),null);
+  assert.equal(state[1],'네이버플레이스·지도 관리','re-check must not reorder a current selection');
+  assert.equal(remove('ChatGPT·생성형 AI 기초'),null);
+  assert.deepEqual(state,['네이버플레이스·지도 관리','매출 분석·판매 예측'],'rank 2 becomes rank 1 after removal');
+  assert.equal(choose('숏폼·홍보영상'),null);
+  assert.deepEqual(state,['네이버플레이스·지도 관리','매출 분석·판매 예측','숏폼·홍보영상']);
+  assert.equal(choose('nonexistent topic'),'invalid');
+  assert.equal(state.length,3);
+  assert.equal(remove('네이버플레이스·지도 관리'),null);
+  assert.equal(choose('네이버플레이스·지도 관리'),null);
+  assert.deepEqual(state,['매출 분석·판매 예측','숏폼·홍보영상','네이버플레이스·지도 관리'],'reselected topic goes to final rank');
 });
