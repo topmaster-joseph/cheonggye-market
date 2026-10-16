@@ -39,3 +39,10 @@ test('existing consent, radio selection, server submit and administrator service
  assert.doesNotMatch(booth,/images\.unsplash\.com|i\.ytimg\.com/);
  assert.doesNotMatch(coupon,/images\.unsplash\.com|i\.ytimg\.com/);
 });
+
+test('remaining original PDF 1-2 and 5-page timetable items are explicitly marked as proposals',()=>{
+ for(const exact of ['../assets/dalgona-glyphs.webp','ㅊ·ㄱ·ㄷ·ㄹ','사회자 운영 · 이벤트 진행',
+ '주민 농수산물 등 판매부스','학생회 보물찾기','15:00~18:00','교내 별도 진행 예정',
+ '점심시간 12:00~13:00','원본 PDF 1~2쪽'])assert.ok(booth.includes(exact),exact);
+ assert.match(booth,/11:00~17:00과 종료 시각이 다릅니다/);
+});
