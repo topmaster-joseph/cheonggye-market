@@ -15,7 +15,7 @@ async function load(){
     document.getElementById('updated').textContent=stats.calculated_at?'집계 기준 '+new Date(stats.calculated_at).toLocaleString('ko-KR'):'';
     if(stats.suppressed){state.textContent='집계된 응답이 5건 미만으로 세부 통계를 공개하지 않습니다.';return}
     state.textContent='개인정보 없이 합산한 선택형 통계입니다. 복수 선택 문항의 비율 합계는 100%를 넘을 수 있습니다.';
-    for(const section of stats.sections){
+    for(const section of [...stats.sections,...(stats.ranked_sections||[])]){
       const block=text('section','');block.className='report-section';block.append(text('h2',section.title));
       for(const item of section.options){
         const line=text('div','');line.className='line';
