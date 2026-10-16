@@ -35,3 +35,13 @@
 @media(max-width:850px){.pdf-plan .pdf-photo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pdf-plan .pdf-group-grid,.pdf-plan .pdf-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:580px){.pdf-plan{padding:15px;margin:20px 0}.pdf-plan .pdf-hero-card{grid-template-columns:1fr}.pdf-plan .pdf-photo-grid{grid-template-columns:1fr}.pdf-plan .pdf-photo-card{display:grid;grid-template-columns:128px 1fr}.pdf-plan .pdf-photo-card img{height:100%;min-height:140px}.pdf-plan .pdf-photo-card .pdf-card-copy{padding:12px}.pdf-plan .pdf-group-grid{grid-template-columns:1fr}.pdf-plan .pdf-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){.pdf-plan *{scroll-behavior:auto}}
+
+.pdf-plan .pdf-part{margin-top:27px}
+.pdf-plan .pdf-part>.pdf-head{margin-bottom:12px}
+.pdf-plan .pdf-part>.pdf-head .pdf-kicker{font-size:12px}
+.pdf-plan .pdf-stat-card .n{font-size:24px;color:var(--pdf-red);display:block;font-weight:900}
+.pdf-plan .pdf-part .pdf-feature a{display:inline-block;margin-top:9px;padding:9px 12px;border-radius:9px;background:#cf3b32;color:#fff;text-decoration:none;font-size:13px;font-weight:850}
+.pdf-plan .coupon-amount{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;border:2px dashed #e17b60;border-radius:12px;padding:15px 18px;margin:18px 0;background:white;color:#ac2c26}
+.pdf-plan .coupon-amount strong{font-size:30px;font-weight:950}
+.pdf-plan .coupon-amount span{font-size:12px;font-weight:800}
+.pdf-plan .pdf-head h2{margin-bottom:10px}
