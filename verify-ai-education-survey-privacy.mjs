@@ -4,13 +4,12 @@ import {SURVEY_VERSION,SURVEY_QUESTIONS} from './ai-education/questions.mjs';
 import {validateSurvey,saveNoticeContact} from './functions/_shared/ai-education-store.js';
 
 const fields=Object.fromEntries(SURVEY_QUESTIONS.map(q=>[q.key,q.multiple?[q.options[0]]:q.options[0]]));
-fields.priority=fields.topics[0];
 const base={version:SURVEY_VERSION,response_key:'a'.repeat(32),privacy_ack:true,answers:fields,feedback:''};
-assert.equal(validateSurvey(base).error,undefined,'legacy anonymous entries remain accepted');
+assert.equal(validateSurvey(base).error,undefined,'ranked survey remains anonymous');
 const options=SURVEY_QUESTIONS.find(q=>q.key==='topics').options;
-const priority=SURVEY_QUESTIONS.find(q=>q.key==='priority').options;
 assert.ok(options.length>=25,'training subjects expanded');
-assert.deepEqual(priority,options,'priority always matches topics');
+assert.equal(SURVEY_QUESTIONS.some(q=>q.key==='priority'),false,'no redundant priority question');
+assert.ok(SURVEY_QUESTIONS.find(q=>q.key==='respondent_type').options.includes('학생'));
 assert.ok(options.includes('네이버플레이스·지도 관리'));
 assert.ok(options.includes('매출 분석·판매 예측'));
 
@@ -42,6 +41,8 @@ assert.match(html,/소상공인 AI 맞춤형 교육 수요조사/);
 assert.match(html,/id="noticeOptIn"/);
 assert.match(html,/id="noticeConsent"/);
 assert.match(html,/최장 6개월/);
-assert.match(app,/notice:\{opt_in:optedIn/);
+assert.match(app,/notice:\\{opt_in:optedIn/);
+assert.match(app,/updateTopicRanks/);
+assert.match(app,/topicRank.push/);
 assert.match(admin,/contacts=1/);
 console.log('CGMA small-business survey topic, notice consent, and storage boundary checks passed');
