@@ -1,4 +1,4 @@
-import {SURVEY_QUESTIONS,SURVEY_VERSION} from './questions.mjs';
+import {SURVEY_QUESTIONS,SURVEY_VERSION} from './questions.mjs?v=20261017-ranked-v3';
 'use strict';
 // Keep the existing gateway's exact script identity marker.
 const questions = [...SURVEY_QUESTIONS];
