@@ -28,7 +28,6 @@ const responses=(seed=0)=>Object.fromEntries(SURVEY_QUESTIONS.map((q,i)=>{
 }));
 function payload(seed=0){
   const answers=responses(seed);
-  answers.priority=answers.topics[0];
   if(answers.available_devices.includes('사용 가능한 기기 없음'))answers.available_devices=['핸드폰'];
   return {version:SURVEY_VERSION,response_key:seed.toString(16).padStart(32,'0'),privacy_ack:true,
     answers,feedback:seed===0?'연락처 없이 강의를 신청하고 싶습니다.':''};
@@ -47,6 +46,9 @@ test('the schema provides distinct devices and venue choices without collecting 
     assert.ok(byKey.get('preferred_places').options.includes(item));
   assert.ok(byKey.get('available_devices').multiple);
   assert.equal(byKey.get('participation').multiple,undefined);
+  assert.equal(byKey.has('priority'),false);
+  assert.ok(byKey.get('respondent_type').options.includes('교직원'));
+  assert.equal(SURVEY_QUESTIONS.findIndex(q=>q.key==='topics'),5,'former question six retains its position');
   for(const key of ['name','phone','email','address','business_registration'])
     assert.equal(byKey.has(key),false);
 });
@@ -60,8 +62,12 @@ test('strict consent, version, options and mutually exclusive device validation'
   assert.equal(validateSurvey(duplicate).error,'invalid_preferred_devices');
   const no=payload();no.answers.available_devices=['사용 가능한 기기 없음','노트북'];
   assert.equal(validateSurvey(no).error,'invalid_available_devices');
-  const mismatch=payload();mismatch.answers.priority='해당 없음';
-  assert.ok(validateSurvey(mismatch).error);
+  const excessive=payload();excessive.answers.topics=SURVEY_QUESTIONS.find(q=>q.key==='topics').options.slice(0,4);
+  assert.equal(validateSurvey(excessive).error,'max_three_ranked_topics');
+  const repeated=payload();repeated.answers.topics=['휴대폰 AI 활용','휴대폰 AI 활용'];
+  assert.equal(validateSurvey(repeated).error,'invalid_topics');
+  const missing=payload();delete missing.answers.respondent_type;
+  assert.equal(validateSurvey(missing).error,'missing_or_invalid_respondent_type');
 });
 test('actual SQLite D1-like store deduplicates anonymous device key and stores structured answers',async()=>{
   const db=memoryDB();try{
@@ -171,8 +177,9 @@ test('admin integration and canonical route contain actual stats and share contr
   assert.match(client,/fetch\(path,\{method:'POST'/);
   assert.match(client,/responseKey/);
   assert.match(client,/categoryForTopic/);
-  assert.match(client,/syncPriorityChoices/);
-  assert.match(client,/input.parentElement.hidden=!selected.has\(input.value\)/);
+  assert.match(client,/updateTopicRanks/);
+  assert.match(client,/topicRank.push/);
+  assert.doesNotMatch(client,/priorityFieldset/);
   for(const term of ['educationSurveyManager','educationSurveyShare','educationSurveyCsv','CGMA_EDUCATION_SURVEY_ADMIN'])assert.ok(admin.includes(term));
   assert.ok(adminJs.includes('CGMA_EDUCATION_SURVEY_ADMIN'));
   // The public HTML keeps stats hidden until validated admin start(), then reveals them.
@@ -203,5 +210,44 @@ test('optional education announcements require separate consent and are not shar
     assert.equal(optout.error,undefined);
     await saveNoticeContact(db,optout.notice);
     assert.equal((await listNoticeContacts(db)).length,0);
+  }finally{db.close()}
+});
+
+test('real SQLite ranks 1-3 precisely while preserving legacy v2 first-choice evidence',async()=>{
+  const db=memoryDB();try{
+    await ensureSurveyTables(db);
+    const current=payload(70);
+    current.answers.topics=['ChatGPT·생성형 AI 기초','AI 자동화·챗봇','숏폼·홍보영상'];
+    current.answers.respondent_type='소상공인·자영업자(대표)';
+    assert.equal(validateSurvey(current).error,undefined);
+    await saveSurvey(db,validateSurvey(current));
+    const old=payload(71);
+    old.version=2;
+    delete old.answers.respondent_type;
+    old.answers.topics=['SNS·블로그·지도 홍보','엑셀·매출·재고 분석','상품 사진·홍보 이미지','숏폼·홍보영상'];
+    old.answers.priority='SNS·블로그·지도 홍보';
+    assert.equal(validateSurvey(old).error,undefined);
+    await saveSurvey(db,validateSurvey(old));
+
+    const stats=await aggregateSurvey(db);
+    assert.equal(stats.total,2);
+    assert.equal(stats.ranked_sections.length,3);
+    const count=(rank,topic)=>stats.ranked_sections[rank-1].options.find(x=>x.answer===topic).count;
+    assert.equal(count(1,'ChatGPT·생성형 AI 기초'),1);
+    assert.equal(count(1,'SNS·블로그·지도 홍보'),1);
+    assert.equal(count(2,'AI 자동화·챗봇'),1);
+    assert.equal(count(2,'엑셀·매출·재고 분석'),0,'v2 unordered selections do not fabricate rank 2');
+    assert.equal(count(3,'숏폼·홍보영상'),1);
+    assert.equal(count(3,'상품 사진·홍보 이미지'),0,'v2 unordered selections do not fabricate rank 3');
+    const type=stats.sections.find(x=>x.key==='respondent_type');
+    assert.equal(type.options.find(x=>x.answer==='소상공인·자영업자(대표)').count,1);
+    const noShare=await aggregateSurvey(db,{shared:true});
+    assert.equal(noShare.suppressed,true);
+    assert.equal(noShare.ranked_sections,undefined);
+    await saveSurvey(db,validateSurvey({...current,answers:{...current.answers,topics:['매출 분석·판매 예측']}}));
+    const refreshed=await aggregateSurvey(db);
+    assert.equal(refreshed.total,2);
+    assert.equal(refreshed.ranked_sections[0].options.find(x=>x.answer==='매출 분석·판매 예측').count,1);
+    assert.equal(refreshed.ranked_sections[1].options.find(x=>x.answer==='AI 자동화·챗봇').count,0);
   }finally{db.close()}
 });
