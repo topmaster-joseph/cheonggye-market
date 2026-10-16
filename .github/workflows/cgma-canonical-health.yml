@@ -30,4 +30,6 @@ jobs:
       - name: Verify canonical production matrix
         run: node verify-canonical-production.mjs
       - name: Verify 2026 festival and coupon canonical signup readiness
+        env:
+          CGMA_VERIFY_OFFICIAL_IMAGES: ${{ github.event_name == 'schedule' && '1' || '0' }}
         run: node verify-festival-production.mjs
