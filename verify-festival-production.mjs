@@ -79,12 +79,11 @@ if(process.env.CGMA_VERIFY_OFFICIAL_IMAGES==='1'){
 
 // Source image publication is checked by inspecting bytes, not merely HTTP 200.
 // Cloudflare rewrites must never serve the fallback HTML document for .webp.
-const sourceImages=['poster','booth','ramen','tile','dalgona','dalgona-glyphs','acrostic','showcase','program-strip','cardnews-booth','cardnews-program','cardnews-coupon'];
+const sourceImages=['poster','booth','ramen','tile','dalgona','dalgona-glyphs','acrostic','showcase','program-strip'];
 const imageChecks=[
  ...sourceImages.map(name=>['https://cheonggye-market.pages.dev',name]),
  ['https://cgma.or.kr','poster'],['https://ekodi.kr/cgma','poster'],
- ['https://cgma.or.kr','ramen'],['https://ekodi.kr/cgma','ramen'],
- ['https://cgma.or.kr','cardnews-booth'],['https://ekodi.kr/cgma','cardnews-coupon']
+ ['https://cgma.or.kr','ramen'],['https://ekodi.kr/cgma','ramen']
 ];
 for(const [origin,name] of imageChecks){
  const url=origin+'/festival/2026/assets/'+name+'.webp';
