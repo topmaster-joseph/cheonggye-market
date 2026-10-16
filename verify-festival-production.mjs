@@ -76,5 +76,27 @@ if(process.env.CGMA_VERIFY_OFFICIAL_IMAGES==='1'){
  }
 }
 
+
+// Source image publication is checked by inspecting bytes, not merely HTTP 200.
+// Cloudflare rewrites must never serve the fallback HTML document for .webp.
+const sourceImages=['poster','booth','ramen','tile','dalgona','dalgona-glyphs','acrostic','showcase','program-strip'];
+const imageChecks=[
+ ...sourceImages.map(name=>['https://cheonggye-market.pages.dev',name]),
+ ['https://cgma.or.kr','poster'],['https://ekodi.kr/cgma','poster'],
+ ['https://cgma.or.kr','ramen'],['https://ekodi.kr/cgma','ramen']
+];
+for(const [origin,name] of imageChecks){
+ const url=origin+'/festival/2026/assets/'+name+'.webp';
+ try{
+  const reply=await fetch(url+'?live_asset='+Date.now(),{redirect:'follow',cache:'no-store',signal:AbortSignal.timeout(15000)});
+  const bytes=Buffer.from(await reply.arrayBuffer());
+  const correct=reply.status===200 && bytes.length>3000 &&
+   bytes.subarray(0,4).toString('ascii')==='RIFF' &&
+   bytes.subarray(8,12).toString('ascii')==='WEBP';
+  console.log((correct?'PASS ':'FAIL ')+'original PDF WebP '+origin+' '+name+' status='+reply.status+' bytes='+bytes.length);
+  if(!correct)failed++;
+ }catch(error){failed++;console.error('FAIL original PDF WebP '+origin+' '+name+' '+error.message)}
+}
+
 console.log('FESTIVAL_PRODUCTION_SMOKE '+(failed?'FAILURES='+failed:'ALL_PASS'));
 if(failed)process.exitCode=1;
