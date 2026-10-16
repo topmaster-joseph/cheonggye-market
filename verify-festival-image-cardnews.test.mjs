@@ -39,3 +39,12 @@ test('existing PDF original and official poster/maps and untouched API remain av
  assert.match(booth,/submitApi=edge\+'\/apply\/booth'/);
  assert.match(coupon,/submitApi=edge\+'\/apply\/coupon'/);
 });
+
+test('all mobile cardnews display at original 4:5 ratio and offer uncropped full-size view',()=>{
+ const css=readFileSync('festival/2026/festival-pdf-gallery.css','utf8');
+ assert.match(css,/max-width:540px[\s\S]*?\.pdf-cardnews-card img\{width:100%;height:auto;aspect-ratio:4\/5;object-fit:contain\}/);
+ for(const p of ['festival/2026/apply/index.html','festival/2026/coupon/index.html']){
+  const html=readFileSync(p,'utf8');
+  assert.equal((html.match(/class="pdf-cardnews-image-link"/g)||[]).length,3,p);
+ }
+});
