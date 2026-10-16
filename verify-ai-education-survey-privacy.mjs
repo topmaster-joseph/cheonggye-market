@@ -41,7 +41,7 @@ assert.match(html,/소상공인 AI 맞춤형 교육 수요조사/);
 assert.match(html,/id="noticeOptIn"/);
 assert.match(html,/id="noticeConsent"/);
 assert.match(html,/최장 6개월/);
-assert.match(app,/notice:\\{opt_in:optedIn/);
+assert.match(app,/notice:\{opt_in:optedIn/);
 assert.match(app,/updateTopicRanks/);
 assert.match(app,/topicRank.push/);
 assert.match(admin,/contacts=1/);
