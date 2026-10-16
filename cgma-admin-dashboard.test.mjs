@@ -29,15 +29,23 @@ test('public content sections authenticate via the current server gate before di
   ]);
   assert.match(inline,/api\/admin-session/);
   assert.match(inline,/res\.ok&&grant\.allowed===true/);
-  assert.match(inline,/if\(permitted\)render\(\)/);
+  assert.match(inline,/if\(res\.ok&&grant\.allowed===true\)render\(\)/);
+  assert.match(inline,/api\.origin!==location\.origin/);
+  assert.match(inline,/sessionStorageKey='sb-renzehysxirjilvdxacv-auth-token'/);
+  assert.match(inline,/window\.addEventListener\('storage'/);
   assert.match(inline,/cgma-management-overlay/);
   assert.match(style,/\.cgma-management-overlay\[hidden\]\{display:none!important\}/);
   assert.match(home,/id="adminNav" href="\?manage=resourceManager#resources"/);
   for(const page of [home,survey,festival,coupon]){
     assert.match(page,/cgma-inline-management\.js/);
     assert.match(page,/cgma-inline-management\.css/);
-    assert.ok(page.indexOf('@supabase/supabase-js@2')<page.indexOf('cgma-inline-management.js'));
+    const sdkIndex=page.indexOf('@supabase/supabase-js@2');
+    if(sdkIndex!==-1) assert.ok(sdkIndex<page.indexOf('cgma-inline-management.js'));
   }
+  assert.doesNotMatch(survey, /cdn\.jsdelivr\.net\/npm\/@supabase\/supabase-js@2/);
+  assert.match(survey, /src="\.\/app\.js"/);
+  assert.match(survey, /id="adminStatsLink" hidden/);
+
 });
 
 test('desktop sidebar is fixed and never scrolls',()=>{
