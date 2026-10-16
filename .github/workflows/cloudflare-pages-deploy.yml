@@ -129,17 +129,25 @@ jobs:
           # Official uploaded promotional images must be served as actual bytes, not HTML error fallbacks.
           verify_festival_asset() {
             local relative="$1" expected_sha="$2"
-            local file
+            local file actual_sha
             file="$(mktemp)"
-            curl -fsSL --max-time 20 "${BASE_URL}/festival/2026/assets/${relative}" -o "$file"
-            local actual_sha
-            actual_sha="$(sha256sum "$file" | awk '{print $1}')"
+            # Pages/CDN can briefly serve stale fallback content immediately after deployment.
+            # Retry against a release-scoped URL, but fail closed if exact bytes do not arrive.
+            for attempt in 1 2 3 4 5 6; do
+              if curl -fsSL --max-time 15 "${BASE_URL}/festival/2026/assets/${relative}?release=${GITHUB_SHA}&attempt=${attempt}" -o "$file"; then
+                actual_sha="$(sha256sum "$file" | awk '{print $1}')"
+                if [[ "$actual_sha" == "$expected_sha" ]]; then
+                  rm -f "$file"
+                  echo "OK official festival image: $relative (attempt $attempt)"
+                  return 0
+                fi
+              fi
+              echo "Waiting for exact official image bytes: $relative (attempt $attempt)"
+              sleep 5
+            done
             rm -f "$file"
-            if [[ "$actual_sha" != "$expected_sha" ]]; then
-              echo "Official festival image checksum mismatch: $relative"
-              exit 1
-            fi
-            echo "OK official festival image: $relative"
+            echo "Official festival image checksum mismatch after retries: $relative"
+            return 1
           }
           verify_festival_asset "du-dream-2026-official-poster.webp" "4cd6eab680f3e8b887e009737661c6f6493fe8347a8c731eb7450d545bd95336"
           verify_festival_asset "du-dream-2026-traffic-overview.webp" "07bd92387a4a98119a7e561c58d0e8e7b85387b7276f10e509ecf78375853077"
