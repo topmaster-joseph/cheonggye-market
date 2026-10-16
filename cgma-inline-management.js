@@ -63,7 +63,14 @@ function render(){
   active=true;
   document.documentElement.classList.add('cgma-can-manage');
   const controls=targets[page]||[];
-  controls.forEach(([id,section,label])=>showButton(id,section,label));
+  const surveyLink=document.getElementById('adminStatsLink');
+  if(page==='education'&&surveyLink){
+    surveyLink.hidden=false;
+    surveyLink.href='?manage=educationSurveyManager';
+    surveyLink.onclick=event=>{event.preventDefault();open('educationSurveyManager')};
+  }else{
+    controls.forEach(([id,section,label])=>showButton(id,section,label));
+  }
   const params=new URLSearchParams(location.search);
   const incoming=params.get('manage');
   if(incoming&&allowed.has(incoming)){
@@ -144,6 +151,8 @@ async function authorize(){
       active=false;
       document.documentElement.classList.remove('cgma-can-manage');
       document.querySelectorAll('.cgma-manage-button').forEach(button=>button.remove());
+      const surveyLink=document.getElementById('adminStatsLink');
+      if(surveyLink){surveyLink.hidden=true;surveyLink.onclick=null}
       close();
     }
   }catch(error){console.warn('CGMA inline management authorization unavailable',error)}
