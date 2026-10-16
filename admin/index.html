@@ -141,6 +141,9 @@
         <div id="educationSurveyCharts" class="survey-stat-columns"></div>
         <div id="educationSurveyDaily" class="admin-resource-list"></div>
         <div id="educationSurveyNotes" class="admin-resource-list"></div>
+        <div class="admin-quick-actions"><button id="educationSurveyContactsToggle" type="button">교육정보 안내 신청 연락처 (관리자 전용)</button></div>
+        <div id="educationSurveyContacts" class="admin-resource-list" hidden aria-live="polite"></div>
+        <p class="admin-section-note">연락처는 교육 일정·신청 안내에 동의한 경우에만 별도로 저장하며, 6개월을 넘겨 보관하지 않습니다. 익명 집계 CSV와 공유 링크에는 포함되지 않습니다.</p>
         <p class="admin-section-note">공유 링크에는 집계 수치만 포함합니다. 응답이 5건 미만이면 세부 결과가 공개되지 않으며, 자유 의견은 공유하지 않습니다. 개별 응답 키도 노출하지 않습니다.</p>
       </section>
       <section class="admin-resource-panel" id="siteModeManager" hidden>
@@ -204,7 +207,7 @@
   <script src="../admin-language-management.js?v=20260912-language-publication-v1"></script>
   <script src="../admin-resources.js?v=20260906-control-plane"></script>
   <script src="../admin-petition.js?v=20260906-control-plane"></script>
-  <script src="../admin-education-survey.js?v=20261017-d1-aggregate-v2"></script>
+  <script src="../admin-education-survey.js?v=20261017-small-business-v3"></script>
   <script src="../admin-dashboard.js?v=20261001-tabs-fixed-sidebar-v1"></script>
   <script>
     const client=window.supabase.createClient('https://renzehysxirjilvdxacv.supabase.co','sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_');
