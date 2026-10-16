@@ -48,7 +48,7 @@ function render(stats){
   el('educationSurveyCount').textContent=fmt(stats.total)+'건';
   el('educationSurveyUpdated').textContent='기준: '+new Date(stats.calculated_at).toLocaleString('ko-KR');
   const panels=el('educationSurveyCharts');
-  panels.replaceChildren(...stats.sections.map(renderSection));
+  panels.replaceChildren(...stats.sections.map(renderSection),...(stats.ranked_sections||[]).map(renderSection));
   const daily=el('educationSurveyDaily');daily.replaceChildren();
   daily.append(div('strong','','최근 30일 응답 추이'));
   if(!stats.daily.length)daily.append(div('p','','아직 제출된 응답이 없습니다.'));
@@ -63,7 +63,7 @@ function render(stats){
 }
 function exportCsv(){
   if(!report)return say('통계 데이터가 없습니다.');
-  const lines=[['질문','선택지','응답 수','비율(%)'],...report.sections.flatMap(q=>q.options.map(o=>[q.title,o.answer,o.count,o.percent]))];
+  const lines=[['질문','선택지','응답 수','비율(%)'],...[...report.sections,...(report.ranked_sections||[])].flatMap(q=>q.options.map(o=>[q.title,o.answer,o.count,o.percent]))];
   const csv='\ufeff'+lines.map(row=>row.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(',')).join('\r\n');
   const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   const link=document.createElement('a');link.href=url;link.download='cgma-ai-education-aggregates.csv';link.click();
@@ -72,7 +72,7 @@ function exportCsv(){
 }
 function copySummary(){
   if(!report)return say('통계 데이터가 없습니다.');
-  const content=['청계면상인회 AI 교육 수요조사','총 응답 '+fmt(report.total)+'건',...report.sections.map(q=>
+  const content=['청계면상인회 AI 교육 수요조사','총 응답 '+fmt(report.total)+'건',...[...report.sections,...(report.ranked_sections||[])].map(q=>
     q.title+': '+q.options.filter(x=>x.count>0).map(x=>x.answer+' '+x.count+'명 ('+x.percent+'%)').join(', ')
   )].join('\n');
   navigator.clipboard.writeText(content).then(()=>say('익명 통계 요약을 복사했습니다.')).catch(()=>say('복사 권한이 없습니다. CSV로 내보내 주세요.'));
