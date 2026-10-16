@@ -171,5 +171,8 @@ test('admin integration and canonical route contain actual stats and share contr
   assert.match(client,/responseKey/);
   for(const term of ['educationSurveyManager','educationSurveyShare','educationSurveyCsv','CGMA_EDUCATION_SURVEY_ADMIN'])assert.ok(admin.includes(term));
   assert.ok(adminJs.includes('CGMA_EDUCATION_SURVEY_ADMIN'));
+  // The public HTML keeps stats hidden until validated admin start(), then reveals them.
+  assert.match(admin,/id="educationSurveyManager" hidden/);
+  assert.ok(adminJs.includes('root().hidden=false'));
   for(const term of ['/api/responses','/api/stats','/api/share','questions.mjs','report/app.js'])assert.ok(gateway.includes(term));
 });
