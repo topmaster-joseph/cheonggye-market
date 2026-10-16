@@ -83,6 +83,8 @@ jobs:
         run: node --test cgma-home-progressive.test.mjs
       - name: Test compact admin dashboard contract
         run: node --test cgma-admin-dashboard.test.mjs
+      - name: Test inline management session without third-party SDK
+        run: node --test cgma-inline-management-session.test.mjs
       - name: Test public-surface notice board contract
         run: node --test cgma-notice-board.test.mjs
       - name: Test market control tower model
