@@ -16,47 +16,52 @@
 #festivalManager .festival-table button,#festivalManager .festival-table select{max-width:230px;font:inherit;padding:7px;border-radius:8px;margin:4px 0;border:1px solid #a7bdb5;background:#fff;color:#234}
 #festivalManager .festival-table button{cursor:pointer}
 #festivalManager .festival-table .muted{font-size:10px;overflow-wrap:anywhere}
+</style><style>
+/* The same privileged modules are reused inside the public page. No duplicate write path. */
+html.cgma-embedded-workbench,html.cgma-embedded-workbench body{background:#fff;min-height:0}
+html.cgma-embedded-workbench .admin-shell{display:block;min-height:0}
+html.cgma-embedded-workbench .admin-side,
+html.cgma-embedded-workbench .admin-title-row,
+html.cgma-embedded-workbench .admin-toolbar,
+html.cgma-embedded-workbench .admin-metrics,
+html.cgma-embedded-workbench .admin-command-grid,
+html.cgma-embedded-workbench #accessState{display:none!important}
+html.cgma-embedded-workbench .admin-main{margin:0!important;padding:12px 14px 30px;max-width:none;width:100%}
+html.cgma-embedded-workbench .admin-resource-panel,
+html.cgma-embedded-workbench .admin-control-tower{margin:0 0 10px}
+html.cgma-embedded-workbench .admin-resource-panel.admin-tab-hidden,
+html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!important}
+@media(max-width:800px){html.cgma-embedded-workbench .admin-shell{padding-top:0}}
 </style></head>
 <body>
   <div id="adminLoading" class="denied"><h1>권한 확인 중</h1><p>EKODI 로그인과 청계면상인회 관리자 권한을 확인하고 있습니다.</p></div>
   <div id="adminDenied" class="denied" hidden><h1>관리자 전용 페이지입니다</h1><p id="deniedMessage">청계면상인회 관리자로 지정된 계정만 사용할 수 있습니다.</p><a id="adminLoginLink" href="https://ekodi.kr/auth/">EKODI 로그인</a></div>
   <div id="adminApp" class="admin-shell" hidden>
     <aside class="admin-side" data-ekodi-fixed-header>
-      <a class="admin-brand" href="../"><b>청계면상인회</b><br><small>OPERATIONS CONSOLE</small></a>
+      <a class="admin-brand" href="../"><b>청계면상인회</b><br><small>REVIEW &amp; OVERSIGHT</small></a>
       <nav aria-label="관리 메뉴">
-        <span class="admin-nav-label">TODAY</span>
-        <a href="#dashboard" data-admin-group="today">오늘</a>
-        <a href="#controlTower" data-admin-group="today">상권 운영 신호</a>
-        <span class="admin-nav-label">MERCHANTS</span>
-        <a href="#merchantManager" data-admin-group="members">점포·회원 명부</a>
-        <a href="#memberReview" data-admin-group="members">정회원 신청 승인</a>
-        <span class="admin-nav-label">CONTENT</span>
-        <a href="#noticeManager" data-admin-group="content">공지·행사 관리</a>
-        <a href="#festivalManager" data-admin-group="content">2026 축제 참여부스 접수</a>
-        <a href="#educationSurveyManager" data-admin-group="content">AI 교육 수요조사 통계</a>
-        <a href="#couponManager" data-admin-group="content">5천원 쿠폰 사용 가능 상가</a>
-        <a href="#resourceManager" data-admin-group="content">공식 자료실</a>
-        <a href="#siteModeManager" data-admin-group="content">홈페이지 첫화면</a>
-        <a href="#languageManager" data-admin-group="content">다국어 번역·게시</a>
-        <span class="admin-nav-label">FIELD</span>
-        <a href="#petitionManager" data-admin-group="field">주차장 동의접수</a>
-        <a href="../#market-map" target="_blank" rel="noopener">공개 상권지도 ↗</a>
+        <span class="admin-nav-label">승인·심사</span>
+        <a href="#memberReview" data-admin-group="review">정회원 신청 승인</a>
+        <a href="#festivalManager" data-admin-group="review">축제 참여부스 선정</a>
+        <span class="admin-nav-label">운영 감독</span>
+        <a href="#controlTower" data-admin-group="oversight">상권 운영 현황</a>
+        <a href="#petitionManager" data-admin-group="oversight">민원·동의 접수</a>
+        <span class="admin-nav-label">제한 설정</span>
+        <a href="#languageManager" data-admin-group="settings">다국어 게시 검증</a>
+        <a href="../#top">사용자 화면에서 직접 관리 ↗</a>
       </nav>
-      <div class="admin-side-foot"><a href="../" target="_blank" rel="noopener">공개 홈페이지 보기 ↗</a><a href="../member" target="_blank" rel="noopener">정회원 신청 화면 ↗</a></div>
+      <div class="admin-side-foot"><a href="../">사용자 화면 바로가기 ↗</a><a href="../member" target="_blank" rel="noopener">정회원 신청 화면 ↗</a></div>
     </aside>
     <main class="admin-main" id="dashboard">
-      <div class="admin-title-row"><div><span class="admin-kicker">CHEONGGYE MERCHANT ASSOCIATION</span><h1>상인회 운영관리</h1></div><div class="admin-title-actions"><span id="adminGlobalPeriod"></span><a class="admin-view-link" href="../" target="_blank" rel="noopener">공개 화면 보기 ↗</a></div></div>
+      <div class="admin-title-row"><div><span class="admin-kicker">CHEONGGYE MERCHANT ASSOCIATION</span><h1>승인·운영 감독</h1></div><div class="admin-title-actions"><span id="adminGlobalPeriod"></span><a class="admin-view-link" href="../">사용자 화면에서 관리 ↗</a></div></div>
       <p class="access-state" id="accessState"></p>
       <div class="admin-toolbar">
-        <div class="admin-workspace-tabs" role="tablist" aria-label="운영관리 영역">
-          <button type="button" role="tab" data-admin-tab="today" aria-selected="true">오늘</button>
-          <button type="button" role="tab" data-admin-tab="members" aria-selected="false">점포·회원</button>
-          <button type="button" role="tab" data-admin-tab="content" aria-selected="false">콘텐츠</button>
-          <button type="button" role="tab" data-admin-tab="field" aria-selected="false">현장</button>
+        <div class="admin-workspace-tabs" role="tablist" aria-label="관리자 전용 영역">
+          <button type="button" role="tab" data-admin-tab="review" aria-selected="true">심사·승인</button>
+          <button type="button" role="tab" data-admin-tab="oversight" aria-selected="false">운영 감독</button>
+          <button type="button" role="tab" data-admin-tab="settings" aria-selected="false">제한 설정</button>
         </div>
-        <div class="admin-quick-actions">
-          <button type="button" id="quickAddMerchant">+ 점포 등록</button>
-        </div>
+
       </div>
       <section class="admin-metrics" aria-label="운영 현황">
         <article class="admin-metric" data-admin-metric="merchant"><span>공개 점포</span><b id="merchantCount">…</b><p>상권지도·명부 공개 점포</p></article>
