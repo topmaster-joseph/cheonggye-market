@@ -1,6 +1,11 @@
 (()=>{
 'use strict';
-const el=id=>document.getElementById(id),api=value=>window.CGMA_ROUTE?.route(value)||value;
+const el=id=>document.getElementById(id),api=value=>{
+  if(location.hostname==='cheonggye-market.pages.dev'){
+    return {'/ai-education/api/stats':'/api/ai-education-stats','/ai-education/api/share':'/api/ai-education-share'}[value]||value;
+  }
+  return window.CGMA_ROUTE?.route(value)||value;
+};
 const root=()=>el('educationSurveyManager');
 let token='',report=null;
 const say=(value)=>{const node=el('educationSurveyStatus');if(node)node.textContent=value};
