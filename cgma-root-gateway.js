@@ -104,23 +104,53 @@ async function delegatedLiveResponse(request, env) {
   catch { return new Response('CGMA live unavailable', { status: 502 }); }
 }
 
-// The CGMA edge owns /cgma/*, so the published survey must be delegated
-// through the internal Shared Site binding rather than falling through to Pages.
+// Survey content is CGMA-owned and served from the already registered Pages origin.
+// Only exact, verified static assets may be published through this scoped route.
+const AI_SURVEY_CSP="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'";
+function surveyHeaders(isHtml) {
+  return {
+    'content-type':isHtml?'text/html; charset=utf-8':'application/javascript; charset=utf-8',
+    'cache-control':isHtml?'no-store':'public, max-age=300',
+    'x-ekodi-route':'cgma-ai-education-survey',
+    'x-ekodi-workspace':'cgma',
+    'x-content-type-options':'nosniff',
+    'x-robots-tag':'noindex, nofollow',
+    ...(isHtml?{'content-security-policy':AI_SURVEY_CSP}:{})
+  };
+}
 function unavailableAiEducation(status) {
-  return new Response('CGMA AI education unavailable', {status, headers:{
+  return new Response('CGMA AI education unavailable', {status,headers:{
     'cache-control':'no-store',
     'x-content-type-options':'nosniff',
-    'x-ekodi-cgma-delegation':'ai-education',
+    'x-ekodi-cgma-delegation':'ai-education'
   }});
 }
-async function delegatedAiEducationResponse(request, env) {
-  if (!env?.EKODI_SHARED?.fetch) return unavailableAiEducation(503);
-  try {
-    const response = await env.EKODI_SHARED.fetch(request);
-    if (response?.headers?.get('x-ekodi-route') === 'cgma-ai-education-survey') return response;
-  } catch {}
-  // Do not accidentally render the generic CGMA homepage as a working survey.
-  return unavailableAiEducation(502);
+async function delegatedAiEducationResponse(request) {
+  const url=new URL(request.url);
+  if (!['GET','HEAD'].includes(request.method)) {
+    return new Response('Method Not Allowed',{status:405,headers:{allow:'GET, HEAD','cache-control':'no-store'}});
+  }
+  if (url.pathname===AI_EDUCATION_PREFIX||url.pathname===AI_EDUCATION_PREFIX+'/index.html') {
+    const destination=new URL(request.url);
+    destination.pathname=AI_EDUCATION_PREFIX+'/';
+    return new Response(null,{status:308,headers:{location:destination.toString(),'cache-control':'no-store','x-ekodi-route':'cgma-ai-education-survey'}});
+  }
+  const html=url.pathname===AI_EDUCATION_PREFIX+'/';
+  const script=url.pathname===AI_EDUCATION_PREFIX+'/app.js';
+  if (!html&&!script)return unavailableAiEducation(404);
+  let response;
+  try {response=await fetch(upstreamRequest(request));} catch {return unavailableAiEducation(502);}
+  if (response.status!==200)return unavailableAiEducation(503);
+  const mime=String(response.headers.get('content-type')||'').toLowerCase();
+  if (html?!mime.includes('text/html'):!mime.includes('javascript'))return unavailableAiEducation(503);
+  if (request.method==='HEAD')return new Response(null,{status:200,headers:surveyHeaders(html)});
+  let body;
+  try{body=await response.text()}catch{return unavailableAiEducation(502)}
+  const valid=html
+    ?body.includes('상인 AI 교육 수요조사')&&body.includes('id="survey"')&&body.includes('src="./app.js"')
+    :body.includes('const questions = [')&&body.includes("document.getElementById('survey')");
+  if (!valid)return unavailableAiEducation(503);
+  return new Response(body,{status:200,headers:surveyHeaders(html)});
 }
 
 async function delegatedOwnerAdminResponse(request, env) {
