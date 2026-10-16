@@ -1,4 +1,5 @@
 const PREFIX = '/cgma';
+const AI_EDUCATION_PREFIX = `${PREFIX}/ai-education`;
 const INTERNAL_BOARD_HOST = 'board.internal.ekodi';
 const CANONICAL_ORIGIN = 'https://ekodi.kr';
 const UPSTREAM_ORIGIN = 'https://cheonggye-market.pages.dev';
@@ -16,6 +17,10 @@ function isMarketingPath(pathname) {
 
 function isLivePath(pathname) {
   return pathname === `${PREFIX}/live` || pathname === `${PREFIX}/live/` || pathname === `${PREFIX}/live/index.html`;
+}
+
+function isAiEducationPath(pathname) {
+  return pathname === AI_EDUCATION_PREFIX || pathname.startsWith(`${AI_EDUCATION_PREFIX}/`);
 }
 
 function isBoardPath(pathname) {
@@ -97,6 +102,25 @@ async function delegatedLiveResponse(request, env) {
   if (!env?.EKODI_SHARED?.fetch) return new Response('CGMA live unavailable', { status: 503 });
   try { return await env.EKODI_SHARED.fetch(request); }
   catch { return new Response('CGMA live unavailable', { status: 502 }); }
+}
+
+// The CGMA edge owns /cgma/*, so the published survey must be delegated
+// through the internal Shared Site binding rather than falling through to Pages.
+function unavailableAiEducation(status) {
+  return new Response('CGMA AI education unavailable', {status, headers:{
+    'cache-control':'no-store',
+    'x-content-type-options':'nosniff',
+    'x-ekodi-cgma-delegation':'ai-education',
+  }});
+}
+async function delegatedAiEducationResponse(request, env) {
+  if (!env?.EKODI_SHARED?.fetch) return unavailableAiEducation(503);
+  try {
+    const response = await env.EKODI_SHARED.fetch(request);
+    if (response?.headers?.get('x-ekodi-route') === 'cgma-ai-education-survey') return response;
+  } catch {}
+  // Do not accidentally render the generic CGMA homepage as a working survey.
+  return unavailableAiEducation(502);
 }
 
 async function delegatedOwnerAdminResponse(request, env) {
@@ -205,6 +229,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (!isCgmaPath(url.pathname)) return new Response('Not Found', { status: 404 });
+    if (isAiEducationPath(url.pathname)) return delegatedAiEducationResponse(request, env);
     if (isBoardPath(url.pathname)) return delegatedBoardResponse(request, env);
     if (isLivePath(url.pathname)) return delegatedLiveResponse(request, env);
     if (isOwnerAdminPath(url.pathname)) return delegatedOwnerAdminResponse(request, env);
@@ -239,4 +264,4 @@ export default {
   },
 };
 
-export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml, isBoardPath, delegatedBoardResponse, isLivePath, delegatedLiveResponse, isMarketingPath, delegatedMarketingResponse, isOwnerAdminPath, delegatedOwnerAdminResponse };
+export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml, isAiEducationPath, delegatedAiEducationResponse, isBoardPath, delegatedBoardResponse, isLivePath, delegatedLiveResponse, isMarketingPath, delegatedMarketingResponse, isOwnerAdminPath, delegatedOwnerAdminResponse };
