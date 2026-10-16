@@ -84,6 +84,8 @@ jobs:
       - name: Test intervention playbook model
         run: node --test cgma-intervention-playbook.test.mjs
 
+      - name: Verify original 2026 festival plan PDF imagery and signup content
+        run: node --test verify-festival-pdf-originals.test.mjs
       - name: Test 2026 CGMA festival intake security and selection rules
         run: node --test cgma-festival-intake.test.mjs
       - name: Verify production EKODI festival Edge status without applicant data
