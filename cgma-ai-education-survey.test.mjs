@@ -345,8 +345,7 @@ test('HTTP submit -> D1-like persistence -> admin ranks -> restricted shared rep
     assert.equal(publicStats.suppressed,false);
     assert.equal(publicStats.ranked_sections.length,3);
     const publicText=JSON.stringify(publicStats);
-    for(const forbidden of ['01055557777','contact_key_hash','contacts','response_key','feedback','notes','id','consent_at']){
-      if(forbidden==='id')continue; // keys such as 'individual' are not private identifiers
+    for(const forbidden of ['01055557777','contact_key_hash','contacts','response_key','feedback','notes','consent_at']){
       assert.equal(publicText.includes('"'+forbidden+'"'),false,'public share must not disclose '+forbidden);
     }
     assert.equal((await getStats({request:new Request('https://cheonggye-market.pages.dev/api/ai-education-stats'),env})).status,401);
@@ -363,7 +362,8 @@ test('HTTP submit -> D1-like persistence -> admin ranks -> restricted shared rep
       const adminStats=await admin.json();
       assert.equal(adminStats.total,5);
       assert.equal(adminStats.ranked_sections[0].options.find(v=>v.answer==='정부지원사업 검색·신청').count,1);
-      assert.equal(adminStats.sections.find(v=>v.key==='respondent_type').options.find(v=>v.answer==='소상공인·자영업자(대표)').count,1);
+      assert.equal(adminStats.sections.find(v=>v.key==='respondent_type').options.find(v=>v.answer==='소상공인·자영업자(대표)').count,
+        1+[202,203,204,205].filter(seed=>payload(seed).answers.respondent_type==='소상공인·자영업자(대표)').length);
       assert.equal(JSON.stringify(adminStats).includes('01055557777'),false);
     }finally{globalThis.fetch=fetchBefore}
   }finally{db.close()}
