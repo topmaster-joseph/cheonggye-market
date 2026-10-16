@@ -2,8 +2,8 @@
 import assert from 'node:assert/strict';
 
 const targets=[
-  {base:'https://ekodi.kr/cgma/ai-education',html:'/',script:'/app.js',schema:'/questions.mjs',stats:'/api/stats',responses:'/api/responses'},
-  {base:'https://cheonggye-market.pages.dev/ai-education',html:'/',script:'/app.js',schema:'/questions.mjs',stats:'/../api/ai-education-stats',responses:'/../api/ai-education-responses'}
+  {base:'https://ekodi.kr/cgma/ai-education',html:'./',script:'app.js',schema:'questions.mjs',stats:'api/stats',responses:'api/responses'},
+  {base:'https://cheonggye-market.pages.dev/ai-education',html:'./',script:'app.js',schema:'questions.mjs',stats:'../api/ai-education-stats',responses:'../api/ai-education-responses'}
 ];
 
 async function get(url){
