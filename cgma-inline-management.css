@@ -1,0 +1,13 @@
+/* CGMA contextual editing. Invisible until the server verifies the manager's session. */
+.cgma-manage-button{display:inline-flex;align-items:center;justify-content:center;min-height:35px;margin:8px 0 12px;padding:6px 12px;border:1px solid #17493c;border-radius:9px;background:#fff;color:#17493c;font:700 13px/1.3 system-ui,sans-serif;cursor:pointer;vertical-align:middle}
+.cgma-manage-button:hover,.cgma-manage-button:focus-visible{background:#17493c;color:#fff}
+.cgma-management-overlay[hidden]{display:none!important}
+.cgma-management-overlay{position:fixed;inset:0;z-index:50000;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:12px}
+.cgma-management-dialog{display:flex;flex-direction:column;width:min(1100px,100%);height:min(90dvh,900px);min-height:340px;overflow:hidden;border-radius:14px;background:#fff;box-shadow:0 18px 70px #0004}
+.cgma-management-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid #ddd;color:#111}
+.cgma-management-actions{display:flex;gap:6px;flex-wrap:wrap}
+.cgma-management-actions button{min-height:38px;border:1px solid #aaa;border-radius:8px;background:white;color:#111;padding:7px 12px;font:700 13px system-ui;cursor:pointer}
+.cgma-management-actions .cgma-management-close{background:#143f35;color:white;border-color:#143f35}
+.cgma-management-frame{flex:1;width:100%;border:0;background:#fff}
+.cgma-management-open{overflow:hidden}
+@media(max-width:600px){.cgma-management-overlay{padding:0}.cgma-management-dialog{width:100vw;height:100dvh;min-height:100dvh;border-radius:0}.cgma-management-head{padding:8px}.cgma-management-actions button{padding:6px 9px}}
