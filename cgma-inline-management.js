@@ -135,30 +135,66 @@ function open(id){
   document.documentElement.classList.add('cgma-management-open');
   drawer.querySelector('.cgma-management-close').focus();
 }
-async function authorize(){
-  if(!window.supabase?.createClient)return;
+// The public survey is deliberately allowed to run with a strict self-only CSP.
+// Reuse the existing Supabase session kept by the EKODI login bridge when the
+// optional browser SDK is unavailable; the *server* still verifies every grant.
+const sessionStorageKey='sb-renzehysxirjilvdxacv-auth-token';
+let authCheck=0;
+let localClient;
+function readStoredAccessToken(){
   try{
-    const sb=window.__CGMA_NOTICE_AUTH||window.supabase.createClient(authBase,publishable);
-    const session=(await sb.auth.getSession()).data.session;
-    let permitted=false;
-    if(session?.access_token){
-      const res=await fetch(api.href,{headers:{Authorization:'Bearer '+session.access_token},cache:'no-store'});
-      const grant=await res.json().catch(()=>({}));
-      permitted=res.ok&&grant.allowed===true;
-    }
-    if(permitted)render();
-    else if(active){
-      active=false;
-      document.documentElement.classList.remove('cgma-can-manage');
-      document.querySelectorAll('.cgma-manage-button').forEach(button=>button.remove());
-      const surveyLink=document.getElementById('adminStatsLink');
-      if(surveyLink){surveyLink.hidden=true;surveyLink.onclick=null}
-      close();
-    }
-  }catch(error){console.warn('CGMA inline management authorization unavailable',error)}
+    const raw=localStorage.getItem(sessionStorageKey);
+    if(!raw)return null;
+    const stored=JSON.parse(raw);
+    return typeof stored?.access_token==='string'&&stored.access_token.length>20
+      ?stored.access_token:null;
+  }catch{return null}
+}
+async function accessToken(){
+  // Avoid a separate dependency for an already-authenticated same-origin page.
+  const persisted=readStoredAccessToken();
+  if(persisted)return persisted;
+  if(!window.supabase?.createClient)return null;
+  try{
+    localClient=window.__CGMA_NOTICE_AUTH||localClient||
+      window.supabase.createClient(authBase,publishable);
+    return (await localClient.auth.getSession()).data?.session?.access_token||null;
+  }catch{return null}
+}
+function revokeControls(){
+  if(!active)return;
+  active=false;
+  document.documentElement.classList.remove('cgma-can-manage');
+  document.querySelectorAll('.cgma-manage-button').forEach(button=>button.remove());
+  const surveyLink=document.getElementById('adminStatsLink');
+  if(surveyLink){surveyLink.hidden=true;surveyLink.onclick=null}
+  close();
+}
+async function authorize(){
+  const sequence=++authCheck;
+  // The access token never travels in a URL or to an external server.
+  if(api.origin!==location.origin){revokeControls();return}
+  try{
+    const token=await accessToken();
+    if(sequence!==authCheck)return;
+    if(!token){revokeControls();return}
+    const res=await fetch(api.href,{
+      headers:{Authorization:'Bearer '+token},
+      cache:'no-store',credentials:'same-origin'
+    });
+    const grant=await res.json().catch(()=>({}));
+    if(sequence!==authCheck)return;
+    if(res.ok&&grant.allowed===true)render();
+    else revokeControls();
+  }catch(error){
+    if(sequence!==authCheck)return;
+    revokeControls();
+    console.warn('CGMA manager permission unavailable',error);
+  }
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',authorize,{once:true});
 else authorize();
 window.addEventListener('focus',authorize);
+window.addEventListener('storage',event=>{if(event.key===sessionStorageKey||event.key===null)authorize()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)authorize()});
 })();
