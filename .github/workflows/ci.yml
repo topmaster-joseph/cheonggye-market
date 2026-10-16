@@ -88,6 +88,8 @@ jobs:
         run: node --test cgma-festival-intake.test.mjs
       - name: Diagnose published official festival images read-only
         run: node diagnose-festival-images.mjs
+      - name: Verify extracted plan PDF photo gallery and existing application fields
+        run: node --test verify-festival-pdf-gallery.test.mjs
       - name: Verify official 2026 festival poster and road maps in both forms
         run: node --test verify-festival-official-assets.test.mjs
       - name: Verify production EKODI festival Edge status without applicant data

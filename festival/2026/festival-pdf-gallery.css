@@ -1,0 +1,47 @@
+/* 2026 Cheonggye Du:Dream — planning PDF content gallery.
+   Scoped: existing official poster, road-map layout and application forms remain untouched. */
+.pdf-plan{--pdf-red:#da3f32;--pdf-ink:#2c2928;--pdf-line:#eadbd4;margin:28px 0 35px;padding:clamp(16px,3vw,28px);background:#fffaf4;color:var(--pdf-ink);border:1px solid #f1d7cb;border-radius:20px;box-shadow:0 9px 27px #65382911}
+.pdf-plan *{box-sizing:border-box}
+.pdf-plan .pdf-kicker{font-size:12px;font-weight:900;letter-spacing:.07em;color:#a72b27;display:block;margin-bottom:7px}
+.pdf-plan h2{font-size:clamp(22px,3vw,32px);line-height:1.28;letter-spacing:-.06em;margin:0 0 12px;color:var(--pdf-ink)}
+.pdf-plan h3{font-size:17px;margin:4px 0 7px;line-height:1.42;letter-spacing:-.035em}
+.pdf-plan .pdf-intro{font-size:14px;color:#645d59;line-height:1.75;margin:0 0 20px}
+.pdf-plan .pdf-hero-card{display:grid;grid-template-columns:1.05fr 1fr;background:#fbe6dd;overflow:hidden;border-radius:15px;margin-bottom:24px}
+.pdf-plan .pdf-hero-card img{display:block;width:100%;height:100%;object-fit:contain;background:#e33c34}
+.pdf-plan .pdf-hero-card>div{padding:20px;display:flex;flex-direction:column;justify-content:center}
+.pdf-plan .pdf-photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.pdf-plan .pdf-photo-card{border-radius:13px;overflow:hidden;border:1px solid var(--pdf-line);background:#fff}
+.pdf-plan .pdf-photo-card img{display:block;width:100%;height:163px;object-fit:cover;background:#e7d8cd}
+.pdf-plan .pdf-photo-card .pdf-card-copy{padding:14px}
+.pdf-plan .pdf-photo-card p{font-size:13px;color:#5f615f;line-height:1.66;margin:0 0 8px}
+.pdf-plan .pdf-tag{font-size:11px;color:#a5382c;font-weight:850}
+.pdf-plan .pdf-subheading{font-size:21px;letter-spacing:-.045em;margin:26px 0 12px;color:#602a27}
+.pdf-plan .pdf-group-grid{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0;padding:0}
+.pdf-plan .pdf-group-grid li{border:1px solid var(--pdf-line);padding:14px;background:#fff;border-radius:10px;line-height:1.5}
+.pdf-plan .pdf-group-grid strong{display:block;font-size:14px;margin-bottom:4px}
+.pdf-plan .pdf-group-grid span{font-size:13px;color:#666}
+.pdf-plan .pdf-stat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.pdf-plan .pdf-stat-grid>div{background:#fff;border:1px solid var(--pdf-line);border-radius:10px;padding:14px}
+.pdf-plan .pdf-stat-grid strong{font-size:24px;color:var(--pdf-red);display:block}
+.pdf-plan .pdf-stat-grid span{font-size:12px;color:#554d4b;line-height:1.6}
+.pdf-plan .pdf-source{border-top:1px solid #edc9ba;font-size:12px;color:#755f5a;line-height:1.75;margin-top:18px;padding-top:13px}
+.pdf-plan .pdf-source strong{color:#a72b27}
+.pdf-plan .pdf-pill-links{display:flex;flex-wrap:wrap;gap:9px;margin:16px 0}
+.pdf-plan .pdf-pill-links a{display:inline-flex;padding:11px 16px;border-radius:10px;text-decoration:none;font-weight:850;font-size:13px;background:#e23e31;color:white}
+.pdf-plan .pdf-pill-links a.pdf-alt{background:white;color:#ab3028;border:1px solid #e7b3a6}
+.pdf-plan .pdf-feature{display:flex;gap:17px;align-items:center;padding:14px;background:#fce7db;border-radius:13px;margin:15px 0}
+.pdf-plan .pdf-feature img{max-width:43%;min-height:90px;object-fit:contain;border-radius:8px}
+.pdf-plan .pdf-feature p{margin:0;font-size:13px;color:#5a5550;line-height:1.7}
+@media(max-width:850px){.pdf-plan .pdf-photo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pdf-plan .pdf-group-grid,.pdf-plan .pdf-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.pdf-plan{padding:15px;margin:20px 0}.pdf-plan .pdf-hero-card{grid-template-columns:1fr}.pdf-plan .pdf-photo-grid{grid-template-columns:1fr}.pdf-plan .pdf-photo-card{display:grid;grid-template-columns:128px 1fr}.pdf-plan .pdf-photo-card img{height:100%;min-height:140px}.pdf-plan .pdf-photo-card .pdf-card-copy{padding:12px}.pdf-plan .pdf-group-grid{grid-template-columns:1fr}.pdf-plan .pdf-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.pdf-plan *{scroll-behavior:auto}}
+
+.pdf-plan .pdf-part{margin-top:27px}
+.pdf-plan .pdf-part>.pdf-head{margin-bottom:12px}
+.pdf-plan .pdf-part>.pdf-head .pdf-kicker{font-size:12px}
+.pdf-plan .pdf-stat-card .n{font-size:24px;color:var(--pdf-red);display:block;font-weight:900}
+.pdf-plan .pdf-part .pdf-feature a{display:inline-block;margin-top:9px;padding:9px 12px;border-radius:9px;background:#cf3b32;color:#fff;text-decoration:none;font-size:13px;font-weight:850}
+.pdf-plan .coupon-amount{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;border:2px dashed #e17b60;border-radius:12px;padding:15px 18px;margin:18px 0;background:white;color:#ac2c26}
+.pdf-plan .coupon-amount strong{font-size:30px;font-weight:950}
+.pdf-plan .coupon-amount span{font-size:12px;font-weight:800}
+.pdf-plan .pdf-head h2{margin-bottom:10px}
