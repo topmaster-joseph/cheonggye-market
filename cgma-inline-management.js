@@ -50,7 +50,8 @@ function makeButton(id,label){
 function showButton(id,section,label){
   const node=section?document.getElementById(section):document.querySelector('main');
   if(!node)return;
-  const heading=section?node.querySelector('h2,h3'):node.querySelector('h1,h2');
+  const heading=section==='top'?node.querySelector('.cgma-hero-message'):
+    (section?node.querySelector('h2,h3'):node.querySelector('h1,h2'));
   const anchor=heading||node;
   const b=makeButton(id,label);
   b.setAttribute('aria-label',label+' (관리자 전용)');
@@ -128,14 +129,23 @@ function open(id){
   drawer.querySelector('.cgma-management-close').focus();
 }
 async function authorize(){
-  if(active||!window.supabase?.createClient)return;
+  if(!window.supabase?.createClient)return;
   try{
     const sb=window.__CGMA_NOTICE_AUTH||window.supabase.createClient(authBase,publishable);
     const session=(await sb.auth.getSession()).data.session;
-    if(!session?.access_token)return;
-    const res=await fetch(api.href,{headers:{Authorization:'Bearer '+session.access_token},cache:'no-store'});
-    const grant=await res.json().catch(()=>({}));
-    if(res.ok&&grant.allowed===true)render();
+    let permitted=false;
+    if(session?.access_token){
+      const res=await fetch(api.href,{headers:{Authorization:'Bearer '+session.access_token},cache:'no-store'});
+      const grant=await res.json().catch(()=>({}));
+      permitted=res.ok&&grant.allowed===true;
+    }
+    if(permitted)render();
+    else if(active){
+      active=false;
+      document.documentElement.classList.remove('cgma-can-manage');
+      document.querySelectorAll('.cgma-manage-button').forEach(button=>button.remove());
+      close();
+    }
   }catch(error){console.warn('CGMA inline management authorization unavailable',error)}
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',authorize,{once:true});
