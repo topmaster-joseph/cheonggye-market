@@ -16,9 +16,11 @@ noticeOptIn.addEventListener('change',()=>{
   if(!noticeOptIn.checked){noticePhone.value='';noticeConsent.checked=false;}
 });
 if(location.hostname==='cheonggye-market.pages.dev'){
-  document.querySelector('header a[href="/cgma/"]').href='/';
-  document.getElementById('adminStatsLink').href='/admin/#educationSurveyManager';
+  const homepage=document.querySelector('header a');
+  if(homepage)homepage.href='../';
 }
+const adminStatsLink=document.getElementById('adminStatsLink');
+if(adminStatsLink)adminStatsLink.href='?manage=educationSurveyManager';
 for(let i=0;i<questions.length;i++){
   const question=questions[i],fieldset=document.createElement('fieldset'),legend=document.createElement('legend');
   legend.textContent=(i+1)+'. '+question.title+(question.multiple?' (복수 선택 가능)':' (1개 선택)');
