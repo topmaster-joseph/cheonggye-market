@@ -170,6 +170,9 @@ test('admin integration and canonical route contain actual stats and share contr
   for(const term of ['교육 희망 기기','교육 희망 장소','실제 접수 및 통계 반영'])assert.ok(html.includes(term));
   assert.match(client,/fetch\(path,\{method:'POST'/);
   assert.match(client,/responseKey/);
+  assert.match(client,/categoryForTopic/);
+  assert.match(client,/syncPriorityChoices/);
+  assert.match(client,/input.parentElement.hidden=!selected.has\(input.value\)/);
   for(const term of ['educationSurveyManager','educationSurveyShare','educationSurveyCsv','CGMA_EDUCATION_SURVEY_ADMIN'])assert.ok(admin.includes(term));
   assert.ok(adminJs.includes('CGMA_EDUCATION_SURVEY_ADMIN'));
   // The public HTML keeps stats hidden until validated admin start(), then reveals them.
