@@ -88,3 +88,23 @@ test('both live forms and admin consoles use the verified same EKODI Edge endpoi
  assert.match(adminBooth,/admin\/booth/);
  assert.match(adminCoupon,/admin\/coupon/);
 });
+
+// The new field is mandatory in the updated UI, but not advertised until the
+// Edge function is ready to persist it (safe Pages / Edge rolling deployment).
+test('coupon membership selection is persisted, privacy disclosed and admin scoped',()=>{
+ const coupon=readFileSync('festival/2026/coupon/index.html','utf8');
+ const admin=readFileSync('admin-coupon.js','utf8');
+ const edge=readFileSync('supabase/functions/cgma-festival-intake/index.ts','utf8');
+ const migration=readFileSync('migrations/20261017_cgma_coupon_membership.sql','utf8');
+ assert.match(coupon,/name="membership" value="regular" required disabled/);
+ assert.match(coupon,/name="membership" value="joining" required disabled/);
+ assert.match(coupon,/v\.couponMembershipEnabled===true/);
+ assert.match(coupon,/membership:membershipEnabled\?fd\.get\('membership'\):undefined/);
+ assert.match(coupon,/정회원 여부 및 가입 신청 의사/);
+ assert.match(coupon,/membershipApplicationRequired===true/);
+ assert.match(admin,/membership_choice/);
+ assert.match(edge,/couponMembershipEnabled:true/);
+ assert.match(edge,/record\.membership_choice=v\.membership/);
+ assert.match(edge,/location_text,items,membership_choice,review_state,created_at/);
+ assert.match(migration,/ADD COLUMN IF NOT EXISTS membership_choice/);
+});
