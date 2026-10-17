@@ -25,11 +25,12 @@ function render(){
   <td><a href="tel:${esc(x.phone)}">${esc(x.phone)}</a></td>
   <td>${esc(x.location_text)}</td>
   <td>${esc(x.items)}</td>
+  <td>${x.membership_choice==='joining'?'가입 신청 의사':x.membership_choice==='regular'?'정회원(확인 필요)':'미확인(기존 접수)'}</td>
   <td><select aria-label="상가 승인 상태" data-coupon-review="${esc(x.receipt)}">
      ${Object.entries(labels).map(([key,label])=>`<option value="${key}" ${x.review_state===key?'selected':''}>${label}</option>`).join('')}
   </select>
   <button type="button" data-coupon-save="${esc(x.receipt)}">저장</button></td></tr>`).join('');
- $('couponAdminList').innerHTML=entries.length?`<table class="festival-table"><thead><tr><th>상호</th><th>연락처</th><th>가게 위치</th><th>품목</th><th>참여 여부</th></tr></thead><tbody>${rows}</tbody></table>`:'<p>쿠폰 취급 상가 신청 내역이 없습니다.</p>';
+ $('couponAdminList').innerHTML=entries.length?`<table class="festival-table"><thead><tr><th>상호</th><th>연락처</th><th>가게 위치</th><th>품목</th><th>정회원 여부·가입 의사</th><th>참여 여부</th></tr></thead><tbody>${rows}</tbody></table>`:'<p>쿠폰 취급 상가 신청 내역이 없습니다.</p>';
 }
 async function load(){
  const status=$('couponAdminStatus');status.textContent='신청 현황을 읽는 중입니다.';
