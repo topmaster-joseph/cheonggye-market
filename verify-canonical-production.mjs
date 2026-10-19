@@ -47,7 +47,9 @@ report(!root.text.includes('href="market-ai"')&&!root.text.includes('href="ai"')
 await fetchText('/cgma/ai',{marker:'청계상권 Marketing AI | 현재 비활성화',finalPath:'/cgma/market-ai'});
 await fetchText('/cgma/member',{marker:'EKODI 통합인증센터',finalPath:'/cgma/member/'});
 await fetchText('/cgma/store',{marker:'내 가게 운영 | 청계상권 AI',finalPath:'/cgma/store-admin'});
-await fetchText('/cgma/admin',{marker:'OPERATIONS CONSOLE',finalPath:'/cgma/admin/'});
+// The console was redesigned (d4b4577); assert the stable app shell + title instead of old copy.
+const adminConsole=await fetchText('/cgma/admin',{marker:'id="adminApp"',finalPath:'/cgma/admin/'});
+report(adminConsole.text.includes('<title>상인회 운영관리 | 청계면상인회</title>'),'admin console title');
 await fetchText('/cgma/member-admin',{marker:'<title>EKODI Workspace Admin</title>',finalPath:'/cgma/admin/member',expectedRoute:'workspace-admin',expectedUpstream:''});
 await fetchText('/cgma/resource?id=bylaws',{marker:'resource-detail.js',finalPath:'/cgma/resource/'});
 
