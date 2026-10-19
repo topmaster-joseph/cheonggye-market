@@ -1,4 +1,4 @@
-name: Temporary read-only motor festival live probe
+name: Temporary motor festival live E2E (synthetic data only)
 on:
   push:
     branches: [claude/probe-motor-festival-live]
@@ -8,28 +8,20 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Read-only GET probes (no data written)
+      - name: Synthetic submit + negative cases (test row is deleted afterwards)
         shell: bash
         run: |
           set +e +o pipefail
-          probe() {
-            local path="$1" needle="$2" code route loc hit
-            code=$(curl -sS -L --max-redirs 6 -D h -o b -w '%{http_code}' --max-time 20 "https://ekodi.kr${path}" || true)
-            route=$(grep -i '^x-ekodi-route:' h | tail -1 | tr -d '\r' | cut -c1-80)
-            loc=$(grep -i '^location:' h | tail -1 | tr -d '\r' | cut -c1-120)
-            hit=no; grep -Fq "$needle" b && hit=yes
-            echo "::warning::PROBE ${path} code=${code} ${route} needle=${hit} ${loc} bytes=$(wc -c <b) head=$(head -c 120 b | tr -d '\n\r' | tr -c '[:print:]' ' ')"
-          }
-          probe '/cgma/motor-festival-2026/' 'id="apply"'
-          probe '/cgma/motor-festival-2026/app.js' "const API='/api/merchant-events/motor-festival-2026/applications'"
-          probe '/cgma/motor-festival-2026/admin/' 'id="refresh"'
-          probe '/cgma/admin/assets/cgma-motor-festival-admin.js' 'mountCgmaMotorFestivalAdmin'
-          probe '/cgma/admin/assets/cgma-member-admin.js' 'mountCgmaMemberAdmin'
-          probe '/cgma/admin/festival' 'EKODI Workspace Admin'
-          probe '/api/merchant-events/motor-festival-2026/applications' 'ADMIN_LOGIN_REQUIRED'
-          probe '/cgma/board' '<title>게시판</title>'
-          probe '/cgma/live/' 'id="hostButton"'
-          probe '/cgma' '청계면상인회 | 오늘도 청계에서 만나요'
-          probe '/cgma/admin' 'id="adminApp"'
-          probe '/cgma/ai-education/' '우리 가게에 필요한 AI 교육을 찾아보세요'
-          probe '/cgma/admin/member' 'EKODI Workspace Admin'
+          API='https://ekodi.kr/api/merchant-events/motor-festival-2026/applications'
+          KEY="e2e-synthetic-$(date +%s)-${GITHUB_RUN_ID}"
+          BODY='{"business_name":"[E2E 테스트] 가상상점","contact_name":"가상테스터","phone":"010-0000-0001","category":"기타","membership":"info","intent":"maybe","activity":["홍보"],"support":["테이블"],"hours":"am","staff":"1","items":"가상 품목","notes":"자동 실증용 가상 데이터 - 삭제 예정","consent":true}'
+          post() { local label="$1"; shift; local code; code=$(curl -sS -o r.json -w '%{http_code}' --max-time 20 -X POST "$API" "$@"); echo "::warning::E2E ${label} code=${code} body=$(head -c 220 r.json | tr -d '\n\r')"; }
+          H=(-H 'content-type: application/json' -H 'x-ekodi-intake-request: 1' -H 'origin: https://ekodi.kr')
+          post cross-origin -H 'content-type: application/json' -H 'x-ekodi-intake-request: 1' -H 'origin: https://evil.example' -H "idempotency-key: ${KEY}x" --data "$BODY"
+          post no-consent "${H[@]}" -H "idempotency-key: ${KEY}n" --data "${BODY/\"consent\":true/\"consent\":false}"
+          post bad-phone "${H[@]}" -H "idempotency-key: ${KEY}p" --data "${BODY/010-0000-0001/abc}"
+          post unknown-field "${H[@]}" -H "idempotency-key: ${KEY}u" --data "${BODY/\"consent\":true/\"consent\":true,\"x\":1}"
+          post submit "${H[@]}" -H "idempotency-key: ${KEY}" --data "$BODY"
+          post replay "${H[@]}" -H "idempotency-key: ${KEY}" --data "$BODY"
+          code=$(curl -sS -o r.json -w '%{http_code}' --max-time 20 "$API?view=summary"); echo "::warning::E2E anon-summary code=${code} body=$(head -c 120 r.json)"
+          code=$(curl -sS -o r.json -w '%{http_code}' --max-time 20 -H 'authorization: Bearer not-a-real-token' "$API"); echo "::warning::E2E bogus-token code=${code} body=$(head -c 120 r.json)"
