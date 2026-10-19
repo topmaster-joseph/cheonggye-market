@@ -6,6 +6,8 @@ let failures=0;
 function report(ok,label,detail=''){
   if(!ok)failures++;
   console.log(`${ok?'PASS':'FAIL'} ${label}${detail?` ${detail}`:''}`);
+  // Surface failures as annotations so they are visible without downloading logs.
+  if(!ok&&process.env.GITHUB_ACTIONS)console.log(`::error title=CGMA canonical::${label}${detail?` ${detail}`:''}`.replace(/\r?\n/g,' '));
 }
 
 async function fetchText(path,{marker='',finalPath='',expectedRoute=EVIDENCE_ROUTE,expectedUpstream=EVIDENCE_UPSTREAM}={}){
