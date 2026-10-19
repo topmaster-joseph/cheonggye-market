@@ -165,3 +165,11 @@ test('client renders user text safely, gates editing on the server grant and wir
   assert.match(nav,/schedule:\['schedule'\]/);
   assert.match(admin,/route\('\/#schedule'\)/);
 });
+
+test('calendar cells keep their height under the gateway readability stylesheet',async()=>{
+  const css=await readFile(new URL('./schedule-board.css',import.meta.url),'utf8');
+  // The injected rule html[data-ekodi-tenant-readability] :where(button) has specificity 0,1,1.
+  // A bare .schedule-day (0,1,0) loses and collapses every day to 40px; regression seen live 2026-10-19.
+  assert.match(css,/\.schedule-grid \.schedule-day\{display:flex;[^}]*min-height:78px/);
+  assert.doesNotMatch(css,/(?<!\.schedule-grid )\.schedule-day\{[^}]*min-height/);
+});

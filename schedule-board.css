@@ -15,7 +15,10 @@
 .schedule-weekday{text-align:center;font-size:.75rem;font-weight:700;color:#60706a;padding:.3rem 0}
 .schedule-weekday.is-sun,.schedule-day.is-sun .schedule-num{color:#d6452c}
 .schedule-weekday.is-sat,.schedule-day.is-sat .schedule-num{color:#2d61b8}
-.schedule-day{display:flex;flex-direction:column;align-items:stretch;gap:2px;min-height:78px;padding:.35rem;border:1px solid #edf1ef;border-radius:10px;background:#fbfcfb;text-align:left;font:inherit;cursor:pointer;overflow:hidden}
+/* Day cells are buttons: the gateway-injected readability sheet sets
+   html[data-ekodi-tenant-readability] :where(button){min-height:40px} (specificity 0,1,1),
+   so cell rules must be scoped under .schedule-grid (0,2,0) to keep their height. */
+.schedule-grid .schedule-day{display:flex;flex-direction:column;align-items:stretch;gap:2px;min-height:78px;padding:.35rem;border:1px solid #edf1ef;border-radius:10px;background:#fbfcfb;text-align:left;font:inherit;cursor:pointer;overflow:hidden}
 .schedule-day:hover{border-color:#b9cbc3}
 .schedule-day:focus-visible,.schedule-nav:focus-visible,.schedule-today:focus-visible{outline:3px solid var(--lime,#d7f04a);outline-offset:2px}
 .schedule-day.has-events{background:#f2f8e6}
@@ -85,7 +88,7 @@
   .schedule-form-row>.schedule-field:only-child{grid-column:1/-1}
 }
 @media (max-width:560px){
-  .schedule-day{min-height:52px;padding:.25rem}
+  .schedule-grid .schedule-day{min-height:52px;padding:.25rem}
   .schedule-mark{font-size:0;height:6px;width:6px;padding:0;border-radius:50%;display:inline-block}
   .schedule-marks{flex-direction:row;flex-wrap:wrap}
   .schedule-more{font-size:.6rem}
