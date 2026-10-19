@@ -116,6 +116,7 @@ jobs:
           check_route "$BASE_URL" "/" 'id="scheduleApp"'
           check_route "$BASE_URL" "/schedule-board.js" "window.CGMA_SCHEDULE"
           check_route "$BASE_URL" "/schedule-board.css" ".schedule-grid .schedule-day{"
+          check_route "$BASE_URL" "/" 'property="og:image"'
           check_route "$BASE_URL" "/api/schedule?upcoming=3" '"upcoming":'
           check_route "$BASE_URL" "/ai-education/" "우리 가게에 필요한 AI 교육을 찾아보세요"
           check_route "$BASE_URL" "/ai-education/" "cgma-inline-management.js"

@@ -92,5 +92,13 @@ for(const origin of [BASE+'/cgma','https://cgma.or.kr']){
   }catch(error){report(false,`${origin} schedule`,`error=${error.message}`)}
 }
 
+// Privacy: public notices must never carry an editor e-mail address.
+try{
+  // Only the author field is checked: notice bodies may legitimately cite the association's contact address.
+  const notices=await fetch(`${BASE}/cgma/api/notices?proof=${Date.now()}`,{cache:'no-store'}),data=await notices.json();
+  const leaked=(Array.isArray(data.items)?data.items:[]).filter(item=>String(item.author||'').includes('@')).length;
+  report(notices.status===200&&leaked===0,'public notices hide editor e-mail',`status=${notices.status} leaked=${leaked}`);
+}catch(error){report(false,'public notices hide editor e-mail',`error=${error.message}`)}
+
 console.log(`RESULT ${failures===0?'ALL_PASS':`FAILURES=${failures}`}`);
 process.exitCode=failures?1:0;
