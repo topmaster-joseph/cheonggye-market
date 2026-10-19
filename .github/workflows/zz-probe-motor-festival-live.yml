@@ -11,6 +11,7 @@ jobs:
       - name: Read-only GET probes (no data written)
         shell: bash
         run: |
+          set +e +o pipefail
           probe() {
             local path="$1" needle="$2" code route loc hit
             code=$(curl -sS -L --max-redirs 6 -D h -o b -w '%{http_code}' --max-time 20 "https://ekodi.kr${path}" || true)
