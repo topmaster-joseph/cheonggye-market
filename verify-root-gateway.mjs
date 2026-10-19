@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import gateway, { upstreamUrl, canonicalLocation, rewriteHtml, isAiEducationPath, isBoardPath, isLivePath, isMarketingPath, isOwnerAdminPath } from './cgma-root-gateway.js';
+import gateway, { upstreamUrl, canonicalLocation, rewriteHtml, publicCanonical, isAiEducationPath, isBoardPath, isLivePath, isMarketingPath, isOwnerAdminPath } from './cgma-root-gateway.js';
 
 assert.equal(upstreamUrl('https://ekodi.kr/cgma').toString(), 'https://cheonggye-market.pages.dev/');
 assert.equal(upstreamUrl('https://ekodi.kr/cgma/admin?x=1').toString(), 'https://cheonggye-market.pages.dev/admin?x=1');
@@ -10,7 +10,15 @@ const rewritten = rewriteHtml('<html><head></head><body><header class="site-head
 assert.match(rewritten, /href="\/cgma\/member"/);
 assert.match(rewritten, /src="\/cgma\/app\.js"/);
 assert.match(rewritten, /href="https:\/\/example\.com"/);
-assert.match(rewritten, /rel="canonical" href="https:\/\/ekodi\.kr\/cgma"/);
+assert.match(rewritten, /rel="canonical" href="https:\/\/cgma\.or\.kr\/"/);
+// Representative address is cgma.or.kr (owner decision 2026-10-20); canonical follows the page path.
+assert.equal(publicCanonical('/'), 'https://cgma.or.kr/');
+assert.equal(publicCanonical('/index.html'), 'https://cgma.or.kr/');
+assert.equal(publicCanonical('/festival/2026/apply/'), 'https://cgma.or.kr/festival/2026/apply/');
+assert.equal(publicCanonical('/ai-education/index.html'), 'https://cgma.or.kr/ai-education/');
+const sub = rewriteHtml('<html><head><link rel="canonical" href="https://ekodi.kr/cgma"></head><body></body></html>', '/notices/7');
+assert.match(sub, /<link rel="canonical" href="https:\/\/cgma\.or\.kr\/notices\/7">/);
+assert.equal((sub.match(/rel="canonical"/g) || []).length, 1);
 assert.match(rewritten, /data-ekodi-tenant-readability="v1"/);
 assert.match(rewritten, /data-ekodi-tenant-readability-style="v1"/);
 assert.match(rewritten, /https:\/\/ekodi\.kr\/shell\/user-ui-shell\.css\?tenant-readability=v1/);

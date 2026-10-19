@@ -27,7 +27,7 @@ async function fetchText(path,{marker='',finalPath='',expectedRoute=EVIDENCE_ROU
 }
 
 const root=await fetchText('/cgma',{marker:'청계면상인회 | 오늘도 청계에서 만나요',finalPath:'/cgma/'});
-report(root.text.includes('<link rel="canonical" href="https://ekodi.kr/cgma">'),'root canonical link');
+report(root.text.includes('<link rel="canonical" href="https://cgma.or.kr/">')&&(root.text.match(/rel="canonical"/g)||[]).length===1,'root canonical link → cgma.or.kr');
 report(!root.text.includes('cgma.ekodi.kr'),'root old public domain absent');
 report(root.text.includes('id="marketMap"')&&root.text.includes('id="mapDirectory"')&&root.text.includes('id="resourceSearch"')&&(root.text.match(/id="resources"/g)||[]).length===1,'map/archive readability layout');
 
@@ -99,6 +99,16 @@ try{
   const leaked=(Array.isArray(data.items)?data.items:[]).filter(item=>String(item.author||'').includes('@')).length;
   report(notices.status===200&&leaked===0,'public notices hide editor e-mail',`status=${notices.status} leaked=${leaked}`);
 }catch(error){report(false,'public notices hide editor e-mail',`error=${error.message}`)}
+
+// Representative address: cgma.or.kr serves directly and declares itself canonical.
+try{
+  const pub=await fetch(`https://cgma.or.kr/?proof=${Date.now()}`,{cache:'no-store',redirect:'manual'}),html=await pub.text();
+  report(pub.status===200&&html.includes('<link rel="canonical" href="https://cgma.or.kr/">'),'cgma.or.kr self canonical',`status=${pub.status}`);
+  const robots=await fetch(`https://cgma.or.kr/robots.txt?proof=${Date.now()}`,{cache:'no-store'}),rt=await robots.text();
+  report(robots.status===200&&rt.includes('Sitemap: https://cgma.or.kr/sitemap.xml'),'cgma.or.kr robots.txt',`status=${robots.status}`);
+  const map=await fetch(`https://cgma.or.kr/sitemap.xml?proof=${Date.now()}`,{cache:'no-store'}),mt=await map.text();
+  report(map.status===200&&mt.includes('<loc>https://cgma.or.kr/</loc>'),'cgma.or.kr sitemap.xml',`status=${map.status}`);
+}catch(error){report(false,'cgma.or.kr representative address',`error=${error.message}`)}
 
 console.log(`RESULT ${failures===0?'ALL_PASS':`FAILURES=${failures}`}`);
 process.exitCode=failures?1:0;

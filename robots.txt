@@ -1,0 +1,11 @@
+# 청계면상인회 — representative address https://cgma.or.kr
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /member-admin
+Disallow: /store-admin
+Disallow: /store
+Disallow: /client
+Disallow: /api/
+
+Sitemap: https://cgma.or.kr/sitemap.xml

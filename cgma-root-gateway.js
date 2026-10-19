@@ -235,7 +235,16 @@ function canonicalLocation(value) {
   return canonical.toString();
 }
 
-function rewriteHtml(html) {
+// Owner decision 2026-10-20: cgma.or.kr is the representative address, so pages
+// served at ekodi.kr/cgma point search engines at their cgma.or.kr equivalent.
+const PUBLIC_CANONICAL_ORIGIN = 'https://cgma.or.kr';
+function publicCanonical(upstreamPath = '/') {
+  const path = String(upstreamPath || '/');
+  const clean = path === '/index.html' ? '/' : path.replace(/\/index\.html$/, '/');
+  return new URL(clean, PUBLIC_CANONICAL_ORIGIN).toString();
+}
+
+function rewriteHtml(html, upstreamPath = '/') {
   let next = String(html || '');
   next = next.replace(/(\s(?:href|src|action)=)(["'])(\/[^"']*)\2/gi, (full, prefix, quote, value) => {
     if (value.startsWith('//') || value === '/cgma' || value.startsWith('/cgma/')) return full;
@@ -243,7 +252,7 @@ function rewriteHtml(html) {
     return `${prefix}${quote}${rewritten}${quote}`;
   });
   next = next.replace(/<link\s+rel=["']canonical["'][^>]*>/gi, '');
-  const canonical = '<link rel="canonical" href="https://ekodi.kr/cgma">';
+  const canonical = `<link rel="canonical" href="${publicCanonical(upstreamPath)}">`;
   const readabilityAssets = `<link rel="stylesheet" href="${TENANT_READABILITY_STYLE}" data-ekodi-tenant-readability-style="${TENANT_READABILITY_VERSION}"><script src="${MOBILE_FIXED_HEADER_SCRIPT}" defer data-ekodi-tenant-mobile-header="${TENANT_READABILITY_VERSION}"></script>`;
   if (/<html\b/i.test(next) && !/data-ekodi-tenant-readability=/i.test(next)) {
     next = next.replace(/<html\b([^>]*)>/i, `<html$1 data-ekodi-tenant-readability="${TENANT_READABILITY_VERSION}">`);
@@ -314,7 +323,7 @@ export default {
 
     const contentType = String(response.headers.get('content-type') || '').toLowerCase();
     if (request.method !== 'HEAD' && contentType.includes('text/html')) {
-      const html = rewriteHtml(await response.text());
+      const html = rewriteHtml(await response.text(), upstreamUrl(request.url).pathname);
       return new Response(html, { status: response.status, statusText: response.statusText, headers });
     }
 
@@ -322,4 +331,4 @@ export default {
   },
 };
 
-export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml, isAiEducationPath, delegatedAiEducationResponse, isBoardPath, delegatedBoardResponse, isLivePath, delegatedLiveResponse, isMarketingPath, delegatedMarketingResponse, isOwnerAdminPath, delegatedOwnerAdminResponse };
+export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml, publicCanonical, isAiEducationPath, delegatedAiEducationResponse, isBoardPath, delegatedBoardResponse, isLivePath, delegatedLiveResponse, isMarketingPath, delegatedMarketingResponse, isOwnerAdminPath, delegatedOwnerAdminResponse };
