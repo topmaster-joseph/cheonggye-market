@@ -13,6 +13,8 @@
     }
     const open=$('openNoticeBoard');
     if(open)open.href=route('/#news');
+    const schedule=$('openScheduleBoard');
+    if(schedule)schedule.href=route('/#schedule');
   }
 
   window.CGMA_NOTICE_ADMIN=Object.freeze({start,load:async()=>null});

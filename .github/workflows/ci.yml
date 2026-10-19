@@ -36,6 +36,9 @@ jobs:
           node --check admin-merchants.js
           node --check admin-notices.js
           node --check notice-board-v2.js
+          node --check schedule-board.js
+          node --check functions/api/schedule.js
+          node --check functions/_shared/cgma-schedule.js
           node --check admin-overview.js
           node --check admin-dashboard.js
           node --check admin-control-tower.js
@@ -87,6 +90,8 @@ jobs:
         run: node --test cgma-inline-management-session.test.mjs
       - name: Test public-surface notice board contract
         run: node --test cgma-notice-board.test.mjs
+      - name: Verify association schedule API and in-place editing
+        run: node --test cgma-schedule.test.mjs
       - name: Test market control tower model
         run: node --test cgma-market-health.test.mjs
       - name: Test canonical store identity model
