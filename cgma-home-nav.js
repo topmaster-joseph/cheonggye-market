@@ -3,11 +3,12 @@ const homeGroups={
   resources:['resources'],
   news:['news'],
   about:['about'],
+  schedule:['schedule'],
   live:['live'],
   member:['login','member-notice','join','join-form']
 };
 const homeRoot={
-  'market-map':'market-map',resources:'resources',news:'news',about:'about',live:'live',member:'login'
+  'market-map':'market-map',resources:'resources',news:'news',about:'about',schedule:'schedule',live:'live',member:'login'
 };
 const managedIds=[...new Set(Object.values(homeGroups).flat())];
 const serviceLinks=[...document.querySelectorAll('[data-home-section]')];
