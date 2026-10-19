@@ -2,6 +2,25 @@ const LEGACY_PUBLIC_HOST = 'cgma.ekodi.kr';
 const PUBLIC_HOST = 'cgma.or.kr';
 const PUBLIC_WWW_HOST = 'www.cgma.or.kr';
 const PLATFORM_BASE = 'https://cgma.or.kr';
+// Owner decision 2026-10-20: cgma.or.kr is the representative (canonical) address.
+const CANONICAL_ORIGIN = 'https://cgma.or.kr';
+
+export function canonicalFor(pathname) {
+  const path = String(pathname || '/');
+  const clean = path === '/index.html' ? '/' : path.replace(/\/index\.html$/, '/');
+  return new URL(clean, CANONICAL_ORIGIN).toString();
+}
+
+class CanonicalHead {
+  constructor(href) { this.href = href; }
+  element(element) {
+    element.append(`<link rel="canonical" href="${this.href}">`, { html: true });
+  }
+}
+
+class RemoveElement {
+  element(element) { element.remove(); }
+}
 
 function platformRedirect(url) {
   const suffix = url.pathname === '/' || url.pathname === '/index.html' ? '/' : url.pathname;
@@ -38,7 +57,11 @@ export async function onRequest(context) {
   if (isRoot && isCgmaAiHost) { const target = new URL('/market-ai', url.origin); target.search = url.search; return Response.redirect(target.toString(), 302); }
 
   const response = await context.next();
-  if (!shouldEnhanceMerchantDirectory(url.pathname)) return response;
   if (!String(response.headers.get('content-type') || '').includes('text/html')) return response;
-  return new HTMLRewriter().on('head', new MerchantDirectoryHead()).transform(response);
+  // Every page declares its cgma.or.kr address; page-level canonical tags are replaced.
+  let rewriter = new HTMLRewriter()
+    .on('link[rel="canonical"]', new RemoveElement())
+    .on('head', new CanonicalHead(canonicalFor(url.pathname)));
+  if (shouldEnhanceMerchantDirectory(url.pathname)) rewriter = rewriter.on('head', new MerchantDirectoryHead());
+  return rewriter.transform(response);
 }

@@ -1,7 +1,7 @@
 import {readFile,readdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
-const canonical='https://ekodi.kr/cgma';
+const canonical='https://cgma.or.kr';
 const pages=[['index.html','/cgma/'],['market-ai.html','/cgma/ai'],['member/index.html','/cgma/member/'],['store-admin.html','/cgma/store'],['admin/index.html','/cgma/admin/'],['resource/index.html','/cgma/resource/'],['order.html','/cgma/order/demo'],['payment-success.html','/cgma/payment-success'],['payment-fail.html','/cgma/payment-fail']];
 const external=/^(?:https?:|mailto:|tel:|data:|javascript:|#)/i;
 function rewritten(value,base){
