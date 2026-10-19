@@ -92,6 +92,8 @@ jobs:
         run: node --test cgma-notice-board.test.mjs
       - name: Verify association schedule API and in-place editing
         run: node --test cgma-schedule.test.mjs
+      - name: Verify home polish (notice privacy, menu view, dock, share preview)
+        run: node --test cgma-home-polish.test.mjs
       - name: Test market control tower model
         run: node --test cgma-market-health.test.mjs
       - name: Test canonical store identity model

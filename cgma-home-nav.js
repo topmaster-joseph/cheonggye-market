@@ -74,15 +74,39 @@ function openFromHash({scroll=false}={}){
 setCollapsed();
 openFromHash({scroll:false});
 
+function goHome(){
+  setCollapsed();
+  if(location.hash)window.history.pushState({},'',location.pathname+location.search);
+  document.getElementById('top')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// The shared header rewrites the logo to this page's absolute home URL; treat any
+// link back to this same page (no fragment) as "return to the home view".
+function isSamePageHome(link){
+  if(link.target&&link.target!=='_self')return false;
+  try{
+    const url=new URL(link.href,location.href);
+    return url.origin===location.origin&&url.pathname===location.pathname&&!url.hash&&url.search===location.search;
+  }catch{return false;}
+}
+
 document.addEventListener('click',event=>{
+  if(event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+  const homeLink=event.target.closest('a[href]');
+  // cgma-i18n.js may already have handled the logo (scroll + URL), so this runs
+  // even when the click was prevented; restoring the home view is idempotent.
+  if(homeLink&&!homeLink.getAttribute('href').startsWith('#')&&isSamePageHome(homeLink)){
+    event.preventDefault();
+    goHome();
+    return;
+  }
+  if(event.defaultPrevented)return;
   const link=event.target.closest('a[href^="#"]');
   if(!link)return;
   const id=hashTargetId(link.getAttribute('href'));
   if(id==='top'){
     event.preventDefault();
-    setCollapsed();
-    if(location.hash)window.history.pushState({},'',location.pathname+location.search);
-    document.getElementById('top')?.scrollIntoView({behavior:'smooth',block:'start'});
+    goHome();
     return;
   }
   const target=document.getElementById(id);

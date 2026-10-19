@@ -1,6 +1,8 @@
 import { cgmaAdmin } from '../_shared/cgma-admin.js';
 
 const clean=(value,max)=>String(value??'').trim().slice(0,max);
+// Editor accounts are kept for audit but never shown publicly.
+const publicAuthor=value=>{const text=String(value??'').trim();return !text||text.includes('@')?'청계면상인회':text.slice(0,40)};
 const reply=(body,status=200,cache='no-store')=>Response.json(body,{status,headers:{'Cache-Control':cache}});
 const input=body=>({
   title:clean(body?.title,120),
@@ -14,7 +16,7 @@ export async function onRequestGet({env}){
   if(!db)return reply({items:[],degraded:true,reason:'notice_store_unavailable'},503);
   try{
     const result=await db.prepare('SELECT id,title,content,category,author,pinned,created_at,updated_at FROM notices ORDER BY pinned DESC, created_at DESC LIMIT 80').all();
-    return reply({items:result.results||[]},200,'public, max-age=15, s-maxage=30');
+    return reply({items:(result.results||[]).map(item=>({...item,author:publicAuthor(item.author)}))},200,'public, max-age=15, s-maxage=30');
   }catch(error){console.warn('CGMA notices load failed',error?.message||error);return reply({items:[],degraded:true,reason:'notice_load_failed'},503)}
 }
 
