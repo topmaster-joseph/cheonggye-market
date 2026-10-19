@@ -282,3 +282,27 @@ console.log('CGMA root gateway contract OK');
 
 // Board-only binding must not accidentally replace live, admin, or marketing.
 assert.match(await (await import('node:fs/promises')).readFile(new URL('./cgma-root-gateway.js',import.meta.url),'utf8'),/async function delegatedBoardResponse[\s\S]*?env\.EKODI_BOARD\.fetch/);
+
+// 2026 motor festival intake: delegated to EKODI_SHARED, exact route header only, never the Pages SPA.
+{
+  const { isMotorFestivalPath } = await import('./cgma-root-gateway.js');
+  for (const p of ['/cgma/motor-festival-2026','/cgma/motor-festival-2026/','/cgma/motor-festival-2026/app.js','/cgma/motor-festival-2026/admin/','/cgma/motor-festival-2026/admin/app.js']) assert.equal(isMotorFestivalPath(p), true, p);
+  for (const p of ['/cgma/motor-festival-2026x','/cgma/motor-festival','/cgma/festival/2026/apply/','/cgma/admin']) assert.equal(isMotorFestivalPath(p), false, p);
+  let pagesCalls = 0; const savedFetch = globalThis.fetch;
+  globalThis.fetch = async () => { pagesCalls++; return new Response('<html>Pages SPA</html>', { status: 200, headers: { 'content-type': 'text/html' } }); };
+  try {
+    let delegated = '';
+    const ok = await gateway.fetch(new Request('https://ekodi.kr/cgma/motor-festival-2026/'), { EKODI_SHARED: { fetch: async r => { delegated = r.url; return new Response('<form id="apply">', { status: 200, headers: { 'content-type': 'text/html', 'x-ekodi-route': 'cgma-motor-festival-2026' } }); } } });
+    assert.equal(ok.status, 200);
+    assert.equal(delegated, 'https://ekodi.kr/cgma/motor-festival-2026/');
+    assert.match(await ok.text(), /id="apply"/);
+    const wrongRoute = await gateway.fetch(new Request('https://ekodi.kr/cgma/motor-festival-2026/'), { EKODI_SHARED: { fetch: async () => new Response('admin shell', { status: 200, headers: { 'x-ekodi-route': 'workspace-admin' } }) } });
+    assert.equal(wrongRoute.status, 502);
+    const unbound = await gateway.fetch(new Request('https://ekodi.kr/cgma/motor-festival-2026/'), {});
+    assert.equal(unbound.status, 503);
+    const thrown = await gateway.fetch(new Request('https://ekodi.kr/cgma/motor-festival-2026/app.js'), { EKODI_SHARED: { fetch: async () => { throw new Error('down'); } } });
+    assert.equal(thrown.status, 502);
+    assert.equal(pagesCalls, 0, 'festival path must never reach the Pages upstream');
+  } finally { globalThis.fetch = savedFetch; }
+  console.log('CGMA motor festival delegation OK');
+}
