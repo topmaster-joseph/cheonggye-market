@@ -109,6 +109,11 @@ jobs:
         run: node verify-cgma-ai-education-live.mjs
       - name: Test 2026 CGMA festival intake security and selection rules
         run: node --test cgma-festival-intake.test.mjs
+      - name: Test festival Edge v3 (public approved list privacy, review audit RPC, admin CSV)
+        run: |
+          node --check supabase/functions/cgma-festival-intake/handler.js
+          node --test cgma-festival-intake-edge.test.mjs
+          node --test cgma-coupon-public-page.test.mjs
       - name: Diagnose published official festival images read-only
         run: node diagnose-festival-images.mjs
       - name: Verify shareable image cardnews raster assets and application links
@@ -397,3 +402,24 @@ jobs:
             echo 'Legacy one-off AI onboarding remains in CGMA member flow'
             exit 1
           fi
+
+  coupon-review-log-migration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: '5432'
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v7
+      - name: Migration ×2, audit/privacy assertions, rollback keeps applications
+        run: bash supabase/tests/run-coupon-review-log.sh
