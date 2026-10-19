@@ -73,5 +73,20 @@ try{
   report(auth.status===401&&auth.headers.get('x-ekodi-route')===EVIDENCE_ROUTE,'admin authorization boundary',`unauthenticated=${auth.status} expected=401`);
 }catch(error){report(false,'admin authorization boundary',`error=${error.message}`)}
 
+// Association schedule (일정표): served on both public addresses, public read
+// is open, and every write/manage path rejects anonymous callers.
+for(const origin of [BASE+'/cgma','https://cgma.or.kr']){
+  try{
+    const page=await fetch(`${origin}/?proof=${Date.now()}`,{cache:'no-store'}),html=await page.text();
+    report(page.status===200&&html.includes('id="scheduleApp"')&&html.includes('schedule-board.js'),`${origin} schedule section`,`status=${page.status}`);
+    const list=await fetch(`${origin}/api/schedule?upcoming=3&proof=${Date.now()}`,{cache:'no-store'}),data=await list.json();
+    const leaked=JSON.stringify(data).includes('updatedBy')||JSON.stringify(data).includes('created_by');
+    report(list.status===200&&Array.isArray(data.items)&&Array.isArray(data.upcoming)&&!leaked,`${origin}/api/schedule public read`,`status=${list.status} items=${data.items?.length}`);
+    const manage=await fetch(`${origin}/api/schedule?manage=1&proof=${Date.now()}`,{cache:'no-store'});
+    const write=await fetch(`${origin}/api/schedule`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({title:'probe',startDate:'2026-01-01'})});
+    report(manage.status===401&&write.status===401,`${origin} schedule authorization boundary`,`manage=${manage.status} write=${write.status} expected=401`);
+  }catch(error){report(false,`${origin} schedule`,`error=${error.message}`)}
+}
+
 console.log(`RESULT ${failures===0?'ALL_PASS':`FAILURES=${failures}`}`);
 process.exitCode=failures?1:0;
