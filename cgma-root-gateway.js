@@ -23,6 +23,22 @@ function isAiEducationPath(pathname) {
   return pathname === AI_EDUCATION_PREFIX || pathname.startsWith(`${AI_EDUCATION_PREFIX}/`);
 }
 
+// 2026 motor festival merchant intake is an EKODI-owned page + API (ekodi.kr/cgma/motor-festival-2026/).
+const MOTOR_FESTIVAL_PREFIX = `${PREFIX}/motor-festival-2026`;
+function isMotorFestivalPath(pathname) {
+  return pathname === MOTOR_FESTIVAL_PREFIX || pathname.startsWith(`${MOTOR_FESTIVAL_PREFIX}/`);
+}
+
+async function delegatedMotorFestivalResponse(request, env) {
+  if (!env?.EKODI_SHARED?.fetch) return new Response('CGMA motor festival unavailable', { status: 503, headers: { 'cache-control': 'no-store' } });
+  try {
+    const response = await env.EKODI_SHARED.fetch(request);
+    // Only the dedicated EKODI route may answer; never fall back to the Pages SPA for this path.
+    if (response?.headers?.get('x-ekodi-route') === 'cgma-motor-festival-2026') return response;
+  } catch {}
+  return new Response('CGMA motor festival unavailable', { status: 502, headers: { 'cache-control': 'no-store' } });
+}
+
 function isBoardPath(pathname) {
   return pathname === `${PREFIX}/board` || pathname.startsWith(`${PREFIX}/board/`);
 }
@@ -297,6 +313,7 @@ export default {
     const url = new URL(request.url);
     if (!isCgmaPath(url.pathname)) return new Response('Not Found', { status: 404 });
     if (isAiEducationPath(url.pathname)) return delegatedAiEducationResponse(request, env);
+    if (isMotorFestivalPath(url.pathname)) return delegatedMotorFestivalResponse(request, env);
     if (isBoardPath(url.pathname)) return delegatedBoardResponse(request, env);
     if (isLivePath(url.pathname)) return delegatedLiveResponse(request, env);
     if (isOwnerAdminPath(url.pathname)) return delegatedOwnerAdminResponse(request, env);
@@ -331,4 +348,4 @@ export default {
   },
 };
 
-export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml, publicCanonical, isAiEducationPath, delegatedAiEducationResponse, isBoardPath, delegatedBoardResponse, isLivePath, delegatedLiveResponse, isMarketingPath, delegatedMarketingResponse, isOwnerAdminPath, delegatedOwnerAdminResponse };
+export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml, publicCanonical, isAiEducationPath, delegatedAiEducationResponse, isBoardPath, delegatedBoardResponse, isLivePath, delegatedLiveResponse, isMarketingPath, delegatedMarketingResponse, isOwnerAdminPath, delegatedOwnerAdminResponse, isMotorFestivalPath, delegatedMotorFestivalResponse };
