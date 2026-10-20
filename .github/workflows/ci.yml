@@ -109,6 +109,8 @@ jobs:
         run: node verify-cgma-ai-education-live.mjs
       - name: Test 2026 CGMA festival intake security and selection rules
         run: node --test cgma-festival-intake.test.mjs
+      - name: Test coupon membership Edge handler and rolling-release compatibility
+        run: node --test cgma-coupon-membership-edge.test.mjs
       - name: Diagnose published official festival images read-only
         run: node diagnose-festival-images.mjs
       - name: Verify shareable image cardnews raster assets and application links
