@@ -20,6 +20,18 @@ const allowed=new Map([
 ]);
 const publicOnly=new Set(['memberReview','petitionManager','festivalManager']);
 let active=false,opened=false,drawer,frame,previousFocus;
+// A ?manage= deep link (e.g. the 접수현황 link) must never fail silently. When this browser has no
+// verified CGMA administrator session, send the visitor once to the full admin page, which offers
+// sign-in and opens the same panel by hash. The server still verifies every grant there.
+const requestedManage=(()=>{try{const id=new URLSearchParams(location.search).get('manage');return id&&allowed.has(id)?id:null}catch{return null}})();
+let manageHandled=false;
+function fallbackToAdmin(){
+  if(!requestedManage||manageHandled)return;
+  manageHandled=true;
+  const dest=new URL('admin/',root);
+  dest.hash=requestedManage;
+  location.assign(dest.href);
+}
 const page=location.pathname.includes('/ai-education/')?'education':
   location.pathname.includes('/festival/2026/apply/')?'festival':
   location.pathname.includes('/festival/2026/coupon/')?'coupon':'home';
@@ -74,6 +86,7 @@ function render(){
   const params=new URLSearchParams(location.search);
   const incoming=params.get('manage');
   if(incoming&&allowed.has(incoming)){
+    manageHandled=true;
     params.delete('manage');
     const next=location.pathname+(params.toString()?'?'+params:'')+location.hash;
     history.replaceState(history.state,'',next);
@@ -177,7 +190,7 @@ async function authorize(){
   try{
     const token=await accessToken();
     if(sequence!==authCheck)return;
-    if(!token){revokeControls();return}
+    if(!token){revokeControls();fallbackToAdmin();return}
     const res=await fetch(api.href,{
       headers:{Authorization:'Bearer '+token},
       cache:'no-store',credentials:'same-origin'
@@ -185,10 +198,11 @@ async function authorize(){
     const grant=await res.json().catch(()=>({}));
     if(sequence!==authCheck)return;
     if(res.ok&&grant.allowed===true)render();
-    else revokeControls();
+    else{revokeControls();fallbackToAdmin()}
   }catch(error){
     if(sequence!==authCheck)return;
     revokeControls();
+    fallbackToAdmin();
     console.warn('CGMA manager permission unavailable',error);
   }
 }

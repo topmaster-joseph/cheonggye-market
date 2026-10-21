@@ -75,6 +75,11 @@ assert.equal(surveyUpstream,'https://cheonggye-market.pages.dev/ai-education/?so
 assert.equal(surveyResponse.status,200);
 assert.equal(surveyResponse.headers.get('x-ekodi-route'),'cgma-ai-education-survey');
 assert.match(surveyResponse.headers.get('content-security-policy'),/connect-src 'self'/);
+// The admin statistics drawer embeds the same-origin admin workbench and its stylesheet.
+assert.match(surveyResponse.headers.get('content-security-policy'),/frame-src 'self'/);
+assert.match(surveyResponse.headers.get('content-security-policy'),/style-src 'self'/);
+assert.match(surveyResponse.headers.get('content-security-policy'),/frame-ancestors 'none'/);
+assert.doesNotMatch(surveyResponse.headers.get('content-security-policy'),/frame-src[^;]*(\*|https:)/);
 assert.match(await surveyResponse.text(),/수요조사/);
 const surveyScript=await gateway.fetch(new Request('https://ekodi.kr/cgma/ai-education/app.js'));
 assert.equal(surveyScript.status,200);
