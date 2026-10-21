@@ -122,7 +122,10 @@ async function delegatedLiveResponse(request, env) {
 
 // CGMA survey assets and API are owned by this tenant's existing Pages project.
 // Keep authenticated admin stats and response writes on same canonical host.
-const AI_SURVEY_CSP="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'";
+// frame-src 'self' + style-src 'self': the admin-only 교육 수요조사 통계 drawer (cgma-inline-management.js)
+// embeds the same-origin /cgma/admin/?inline=1 workbench and its stylesheet. Without them the browser
+// blocked the drawer, so the 접수현황 link opened an empty panel (2026-10-21).
+const AI_SURVEY_CSP="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'";
 const SURVEY_ASSETS=Object.freeze({
   '/':{upstream:'/ai-education/',html:true,needles:['상인 AI 교육 수요조사','id="survey"','src="./app.js"']},
   '/app.js':{upstream:'/ai-education/app.js',needles:['const questions = [',"document.getElementById('survey')"]},
