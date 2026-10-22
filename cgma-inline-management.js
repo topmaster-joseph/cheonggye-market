@@ -34,7 +34,8 @@ function fallbackToAdmin(){
 }
 const page=location.pathname.includes('/ai-education/')?'education':
   location.pathname.includes('/festival/2026/apply/')?'festival':
-  location.pathname.includes('/festival/2026/coupon/')?'coupon':'home';
+  location.pathname.includes('/festival/2026/coupon/')?'coupon':
+  /\/member\/?$/.test(location.pathname)?'member':'home';
 const targets={
   home:[
     ['siteModeManager','top','첫 화면 관리'],
@@ -45,7 +46,8 @@ const targets={
   ],
   education:[['educationSurveyManager',null,'설문 통계·공유 관리']],
   festival:[['festivalManager',null,'축제 신청·선정 관리']],
-  coupon:[['couponManager',null,'쿠폰 참여 점포 관리']]
+  coupon:[['couponManager',null,'쿠폰 참여 점포 관리']],
+  member:[['memberReview',null,'정회원 신청 승인']]
 };
 function element(tag,cls,label){
   const el=document.createElement(tag);

@@ -31,6 +31,7 @@
   <link rel="stylesheet" href="cgma-home-redesign.css?v=20261015-human-home-v1" />
 <link rel="stylesheet" href="cgma-inline-management.css?v=20261021-admin-link-v1">
 <link rel="stylesheet" href="schedule-board.css?v=20261019-schedule-v2">
+<link rel="stylesheet" href="cgma-programs.css?v=20261022-programs-v1">
 </head>
 <body class="cgma-user-page">
   <a class="skip" href="#main">본문 바로가기</a>
@@ -41,7 +42,7 @@
     </a>
     <button class="menu-btn" aria-expanded="false" aria-controls="nav" aria-label="메뉴 열기"><span></span><span></span></button>
     <nav id="nav" aria-label="주요 메뉴">
-      <a href="#about">상인회 소개</a><a href="#schedule">일정</a><a href="#market-map">가게찾기</a><a href="#resources">공지·자료</a><a href="#news">상권소식</a><a href="ai-education/">AI 교육 수요조사</a><a href="festival/2026/apply/">축제 참여부스 신청</a><a href="festival/2026/coupon/">5천원 쿠폰 사용 상가 신청</a><a href="#live">커뮤니티</a><label class="language-picker" aria-label="언어 선택"><select id="siteLanguage"><option value="ko">한국어</option><option value="en">English</option><option value="zh-CN">中文</option><option value="ja">日本語</option><option value="vi">Tiếng Việt</option><option value="ne">नेपाली</option></select></label><a class="nav-cta" data-central-auth data-site="cgma" href="https://auth.ekodi.kr/?site=cgma&amp;direct=1&amp;return_to=https%3A%2F%2Fekodi.kr%2Fcgma%2F">Google 로그인</a><a class="nav-cta admin-entry" id="adminNav" href="?manage=resourceManager#resources" hidden>화면에서 관리</a><a class="nav-cta" data-member-apply data-auth-only href="member?apply=1" hidden>정회원 신청</a>
+      <a href="#about">상인회 소개</a><a href="#schedule">일정</a><a href="#market-map">가게찾기</a><a href="#resources">공지·자료</a><a href="#news">상권소식</a><a href="programs/" class="nav-programs">행사·참여</a><a href="#live">커뮤니티</a><label class="language-picker" aria-label="언어 선택"><select id="siteLanguage"><option value="ko">한국어</option><option value="en">English</option><option value="zh-CN">中文</option><option value="ja">日本語</option><option value="vi">Tiếng Việt</option><option value="ne">नेपाली</option></select></label><a class="nav-cta" data-central-auth data-site="cgma" href="https://auth.ekodi.kr/?site=cgma&amp;direct=1&amp;return_to=https%3A%2F%2Fekodi.kr%2Fcgma%2F">Google 로그인</a><a class="nav-cta admin-entry" id="adminNav" href="?manage=resourceManager#resources" hidden>화면에서 관리</a><a class="nav-cta" data-member-apply data-auth-only href="member?apply=1" hidden>정회원 신청</a>
     </nav>
   </header>
 
@@ -60,7 +61,7 @@
         <a class="cgma-hero-photo-note cgma-festival-credit" href="https://www.youtube.com/watch?v=aF9hOSdgXSA" target="_blank" rel="noopener noreferrer">2024 청계면상인회 가을 골목축제<br><strong>공식 현장영상 보기 ↗</strong></a>
       </div>
     </section>
-    <section class="cgma-festival-alert" data-home-only aria-label="2026 누구나 두:드림 축제 공식 안내" style="margin:18px auto;padding:15px;max-width:1100px;border-radius:16px;background:#fdf3ee;display:grid;grid-template-columns:minmax(105px,180px) minmax(0,1fr);align-items:center;gap:18px">
+    <section class="cgma-festival-alert" data-home-only data-expires="2026-10-28" aria-label="2026 누구나 두:드림 축제 공식 안내" style="margin:18px auto;padding:15px;max-width:1100px;border-radius:16px;background:#fdf3ee;display:grid;grid-template-columns:minmax(105px,180px) minmax(0,1fr);align-items:center;gap:18px">
       <a href="festival/2026/apply/" aria-label="축제 공식 포스터 및 참여부스 신청">
         <img src="festival/2026/assets/du-dream-2026-official-poster.webp" width="1191" height="1500" loading="lazy" decoding="async" alt="2026 청계 누구나 두:드림 축제 공식 포스터, 10월 28일 11시부터 17시" style="display:block;width:100%;height:auto;max-height:225px;object-fit:contain;border-radius:8px;background:#fff">
       </a>
@@ -72,6 +73,12 @@
           <a href="festival/2026/coupon/" style="padding:10px 13px;border:2px solid #087252;color:#07563f;background:white;border-radius:9px;text-decoration:none;font-weight:800;font-size:14px">5천원 쿠폰 사용 상가 신청 →</a>
           <a href="festival/2026/apply/#traffic" style="padding:10px 13px;border:1px solid #c09b91;color:#70413d;background:white;border-radius:9px;text-decoration:none;font-weight:750;font-size:14px">도로 통제·우회도로 안내도 ↗</a>
         </div>
+      </div>
+    </section>
+    <section class="cgma-programs-strip cgp-wrap" id="cgmaProgramsStrip" data-home-only aria-labelledby="cgmaProgramsTitle">
+      <div class="cgp-head"><h2 id="cgmaProgramsTitle">지금 참여할 수 있는 활동</h2><a class="cgp-all" href="programs/">행사·참여 전체 보기 →</a></div>
+      <div class="cgp-grid" data-programs-grid>
+        <article class="cgp-card"><div class="cgp-body"><div class="cgp-tags"><span class="cgp-status">모집 중</span><span class="cgp-cat">교육</span></div><h3>상인 AI 마케팅 교육 8회 과정</h3><p class="cgp-when">11.6(금) – 12.18(금) · 매주 2시간</p><div class="cgp-actions"><a class="cgp-go" href="programs/ai-marketing-2026/">참가 신청 →</a></div></div></article>
       </div>
     </section>
     <section class="cgma-home-quick" data-home-only aria-label="청계면상인회 빠른 이용">
@@ -274,6 +281,7 @@
   <script src="schedule-board.js?v=20261019-schedule-v1"></script>
   <script src="resources.js?v=20260903-readability"></script>
   <script type="module" src="central-auth-bridge.js?v=20260915-auth-only-signup-v1"></script>
+<script src="cgma-programs.js?v=20261022-programs-v1" defer></script>
 <script src="cgma-inline-management.js?v=20261021-admin-link-v1"></script>
 </body>
 </html>

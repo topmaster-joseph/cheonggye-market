@@ -58,6 +58,9 @@ jobs:
           node --check functions/api/ai-education-responses.js
           node --check functions/api/ai-education-stats.js
           node --check functions/api/ai-education-share.js
+          node --check cgma-programs.js
+          node --check programs/ai-marketing-2026/app.js
+          node --check cgma-inline-management.js
           node --check ai-education/app.js
           node --check ai-education/questions.mjs
           node --check ai-education/report/app.js
@@ -96,6 +99,8 @@ jobs:
         run: node --test cgma-home-polish.test.mjs
       - name: Verify cgma.or.kr representative address (canonical, robots, sitemap)
         run: node --test cgma-canonical-domain.test.mjs
+      - name: Test CGMA programs hub, single menu and fail-closed user-page management
+        run: node --test cgma-programs.test.mjs
       - name: Test market control tower model
         run: node --test cgma-market-health.test.mjs
       - name: Test canonical store identity model
