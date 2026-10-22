@@ -1,5 +1,6 @@
 -- CGMA-PROGRAMS-001 (EKODI AI 협의 이슈 ekodi-platform#5616, 조건부 승인 반영)
 -- 대상: Supabase ekodi-platform-prod. 가산적 변경만(기존 데이터 무변경).
+-- 적용: 2026-10-22 KST, 5개 마이그레이션으로 분할 적용(cgma_site_admin_and_audit, cgma_programs_table_and_public_rpc, cgma_programs_admin_save_rpc, cgma_ai_edu_site_admin_jwt_auth, cgma_programs_seed_current_activities).
 -- 롤백: drop function cgma_programs_* / cgma_is_site_admin, drop table cgma_programs, cgma_admin_audit.
 
 create or replace function public.cgma_is_site_admin()
@@ -32,7 +33,6 @@ declare v_fail int; v_ok boolean;
 begin
   if public.cgma_is_site_admin() then return 'ok'; end if;
   if coalesce(p_pin, '') = '' then return 'login_required'; end if;
-  delete from public.cgma_ai_edu_2026_admin_attempts where at < now() - interval '1 day';
   select count(*) into v_fail from public.cgma_ai_edu_2026_admin_attempts
    where not ok and at > now() - interval '1 hour';
   if v_fail >= 5 then return 'locked'; end if;
