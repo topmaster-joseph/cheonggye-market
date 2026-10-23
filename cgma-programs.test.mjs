@@ -32,11 +32,11 @@ test('browser code holds only the publishable key and never a service credential
   assert.doesNotMatch(eduJs,/p_pin:\s*['"][^'"]+['"]/,'no PIN in page code');
 });
 
-test('private roster stays isolated and requires a positive server admin decision',()=>{
+test('private roster stays isolated and requires verified site admin or roster PIN',()=>{
   assert.match(js,/rpc\('cgma_is_site_admin',\{\},\{auth:true\}\)\.then\(v=>v===true\)\.catch\(\(\)=>false\)/);
   assert.match(manageJs,/admin=await P\.isAdmin\(\);/);
   assert.match(manageJs,/if\(admin\)\{[\s\S]*?panelShell\(\);[\s\S]*?panel\.hidden=false;/);
-  assert.match(manageJs,/else\{[\s\S]*?관리자 인증이 필요합니다/);
+  assert.match(manageJs,/else\{[\s\S]*?교육 신청현황 전용 로그인/);
   assert.doesNotMatch(eduJs,/cgma_ai_edu_2026_admin_list|cgma_ai_edu_2026_admin_update|panelShell/);
   assert.doesNotMatch(edu,/id="manage" class="manage"/);
 });
