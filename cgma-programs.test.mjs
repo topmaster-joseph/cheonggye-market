@@ -6,6 +6,7 @@ import {readFileSync} from 'node:fs';
 const read=p=>readFileSync(new URL('./'+p,import.meta.url),'utf8');
 const home=read('index.html'),js=read('cgma-programs.js'),hub=read('programs/index.html');
 const edu=read('programs/ai-marketing-2026/index.html'),eduJs=read('programs/ai-marketing-2026/app.js');
+const manageHtml=read('programs/ai-marketing-2026/manage/index.html'),manageJs=read('programs/ai-marketing-2026/manage/app.js');
 const admin=read('admin/index.html'),inline=read('cgma-inline-management.js'),sql=read('migrations/supabase/20261022_cgma_programs_registry.sql');
 
 test('top menu carries one stable 행사·참여 entry instead of one link per event',()=>{
@@ -24,20 +25,20 @@ test('home strip is registry-driven with a static read-only fallback; festival n
 });
 
 test('browser code holds only the publishable key and never a service credential',()=>{
-  for(const src of [js,eduJs]){
+  for(const src of [js,eduJs,manageJs]){
     assert.doesNotMatch(src,/service_role|SUPABASE_SERVICE|secret/i);
   }
   assert.match(js,/sb_publishable_/);
   assert.doesNotMatch(eduJs,/p_pin:\s*['"][^'"]+['"]/,'no PIN in page code');
 });
 
-test('management UI is fail-closed: only a positive DB answer opens it',()=>{
+test('private roster stays isolated and requires a positive server admin decision',()=>{
   assert.match(js,/rpc\('cgma_is_site_admin',\{\},\{auth:true\}\)\.then\(v=>v===true\)\.catch\(\(\)=>false\)/);
-  assert.match(js,/if\(!admin\)\{/);
-  assert.match(eduJs,/admin=await P\.isAdmin\(\);/);
-  assert.match(eduJs,/if\(admin\)\{[\s\S]*?panelShell\(\);[\s\S]*?panel\.hidden=false;/);
-  assert.match(eduJs,/else if\(location\.hash==='#manage'\)/);
-  assert.doesNotMatch(eduJs,/else\{admin=false;panel\.innerHTML='';\}/,'a verified admin list error must not silently hide the panel');
+  assert.match(manageJs,/admin=await P\.isAdmin\(\);/);
+  assert.match(manageJs,/if\(admin\)\{[\s\S]*?panelShell\(\);[\s\S]*?panel\.hidden=false;/);
+  assert.match(manageJs,/else\{[\s\S]*?관리자 인증이 필요합니다/);
+  assert.doesNotMatch(eduJs,/cgma_ai_edu_2026_admin_list|cgma_ai_edu_2026_admin_update|panelShell/);
+  assert.doesNotMatch(edu,/id="manage" class="manage"/);
 });
 
 test('rendered registry text is escaped and links are limited to site paths or https',()=>{
@@ -53,16 +54,21 @@ test('hub groups now / soon / past and keeps static links when the list cannot l
   assert.match(hub,/data-admin-bar hidden/);
 });
 
-test('AI 교육 신청 page uses the existing single source RPCs and in-page management',()=>{
-  for(const fn of ['cgma_ai_edu_2026_public_stats','cgma_ai_edu_2026_apply','cgma_ai_edu_2026_lookup','cgma_ai_edu_2026_admin_list','cgma_ai_edu_2026_admin_update'])assert.ok(eduJs.includes(fn),fn);
-  assert.match(edu,/<section id="manage" class="manage" hidden/);
+test('AI 교육 public intake retains public RPCs while management is a separate noindex page',()=>{
+  for(const fn of ['cgma_ai_edu_2026_public_stats','cgma_ai_edu_2026_apply','cgma_ai_edu_2026_lookup'])assert.ok(eduJs.includes(fn),fn);
+  for(const fn of ['cgma_ai_edu_2026_admin_list','cgma_ai_edu_2026_admin_update'])assert.ok(manageJs.includes(fn),fn);
+  assert.match(edu,/href="\.\/manage\/">신청현황 관리/);
   assert.match(edu,/id="f-privacy" name="consent_privacy" required/);
   assert.match(edu,/개인정보 수집·이용 안내 보기/);
+  assert.match(manageHtml,/name="robots" content="noindex,nofollow,noarchive"/);
+  assert.match(manageHtml,/id="manage" class="manage" hidden/);
+  assert.match(manageHtml,/href="\.\.\/">참가 신청 페이지로 돌아가기/);
+  assert.match(eduJs,/P\.whenAuthReady\(\)\.finally\(\(\)=>location\.replace\(P\.route/);
 });
 
 test('admin console links to user-page management instead of duplicating it; member review is inline',()=>{
   assert.match(admin,/href="\.\.\/programs\/#manage">행사·활동 등록·관리 ↗/);
-  assert.match(admin,/href="\.\.\/programs\/ai-marketing-2026\/#manage">AI 교육 신청현황 ↗/);
+  assert.match(admin,/href="\.\.\/programs\/ai-marketing-2026\/manage\/">AI 교육 신청현황 ↗/);
   assert.match(inline,/member:\[\['memberReview',null,'정회원 신청 승인'\]\]/);
 });
 
