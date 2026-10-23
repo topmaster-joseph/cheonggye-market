@@ -21,7 +21,7 @@ function panelShell(){
   $('m-q').oninput=renderRows;$('m-st').onchange=renderRows;
   $('m-save').onclick=saveSettings;$('m-csv').onclick=csv;$('m-copy').onclick=copyPhones;
   const body=$('m-body');
-  body.addEventListener('change',async ev=>{const tr=ev.target.closest('tr');if(tr&&ev.target.matches('[data-status]')&&await patch(tr.dataset.id,{status:ev.target.value},ev.target.parentElement))renderAll()});
+  body.addEventListener('change',async ev=>{const tr=ev.target.closest('tr');if(tr&&ev.target.matches('[data-status]')&&await patch(tr.dataset.id,{status:ev.target.value},ev.target.closest('.m-detail-actions')))renderAll()});
   body.addEventListener('focusout',ev=>{if(!ev.target.matches('[data-memo]'))return;const tr=ev.target.closest('tr[data-id]'),row=rows.find(x=>x.id===tr.dataset.id);const v=ev.target.value.trim();if((row.admin_memo||'')!==v)patch(row.id,{admin_memo:v},ev.target.parentElement)});
   body.addEventListener('click',async ev=>{const expand=ev.target.closest('[data-expand]');if(expand){expandedId=expandedId===expand.dataset.expand?null:expand.dataset.expand;renderRows();return}const b=ev.target.closest('[data-att]');if(!b)return;const tr=b.closest('tr'),row=rows.find(x=>x.id===tr.dataset.id),n=Number(b.dataset.att);const cur=row.attendance||[];const next=cur.includes(n)?cur.filter(x=>x!==n):cur.concat(n).sort((a,c)=>a-c);b.disabled=true;if(await patch(row.id,{attendance:next},b.closest('td'))){b.classList.toggle('on');b.setAttribute('aria-pressed',String(b.classList.contains('on')))}b.disabled=false});
 }
