@@ -11,7 +11,7 @@ const managerHtml=readFileSync(new URL('./programs/ai-marketing-2026/manage/inde
 const sharedJs=readFileSync(new URL('./cgma-programs.js',root),'utf8');
 
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
-function boot({allowed=false,listingFailure=false,authMessage=''}={}){
+function boot({allowed=false,pinAllowed=false,listingFailure=false,authMessage=''}={}){
   const events=[],classNames=[],elements=new Map();
   function elt(id){
     if(!elements.has(id))elements.set(id,{
@@ -28,7 +28,7 @@ function boot({allowed=false,listingFailure=false,authMessage=''}={}){
     loginUrl:()=> 'https://auth.ekodi.kr/?site=cgma&direct=1&return_to=https%3A%2F%2Fcgma.or.kr%2Fprograms%2Fai-marketing-2026%2Fmanage%2F',
     async rpc(name,body,{auth}={}){
       events.push({name,body,auth});
-      if(!allowed)throw Error('unauthorized');
+      if(!allowed&&!(pinAllowed&&body?.p_pin==='test-only-secret'))throw Error('unauthorized');
       if(listingFailure)throw Error('list unavailable');
       if(name==='cgma_ai_edu_2026_admin_list')return {ok:true,rows:[],settings:{capacity:15,is_open:true}};
       throw Error('unexpected write');
@@ -62,7 +62,7 @@ test('a guest cannot load applicant records and instead sees central Google admi
   await tick();
   assert.equal(page.events.length,0,'no applicant API call before authorization');
   assert.equal(page.elt('manage').hidden,false,'visible sign-in gate');
-  assert.match(page.elt('manage').innerHTML,/관리자 인증이 필요합니다/);
+  assert.match(page.elt('manage').innerHTML,/교육 신청현황 전용 로그인/);
   assert.match(page.elt('manage').innerHTML,/auth\.ekodi\.kr/);
   assert.doesNotMatch(page.elt('manage').innerHTML,/휴대폰 번호|신청자명단|엑셀\(CSV\)/);
 });
@@ -75,7 +75,7 @@ test('verified administrator opens a separate management workspace and reads onl
   assert.equal(page.events[0].auth,true);
   assert.equal(page.elt('manage').hidden,false);
   assert.match(page.elt('manage').innerHTML,/엑셀\(CSV\) 받기/);
-  assert.match(page.elt('manage').innerHTML,/출석 \(1–8회\)/);
+  assert.match(page.elt('manage').innerHTML,/m-roster/);
   assert.ok(page.classNames.includes('cgma-can-manage'));
 });
 
@@ -93,4 +93,37 @@ test('legacy #manage links remain supported without leaking the former private p
   assert.match(publicJs,/location\.replace\(P\.route\('\/programs\/ai-marketing-2026\/manage\/'\)\)/);
   assert.match(sharedJs,/raw==='\/programs\/ai-marketing-2026\/#manage'/);
   assert.match(sharedJs,/whenAuthReady:\(\)=>authReady/);
+});
+
+test('guest PIN only opens the scoped roster after server-verified list response',async()=>{
+  const guest=boot({allowed:false,pinAllowed:true});
+  await tick();
+  assert.equal(guest.events.length,0);
+  guest.elt('m-pin').value='test-only-secret';
+  await guest.elt('m-pin-form').onsubmit({preventDefault(){}});
+  assert.equal(guest.events.length,1);
+  assert.equal(guest.events[0].name,'cgma_ai_edu_2026_admin_list');
+  assert.equal(guest.events[0].auth,false);
+  assert.equal(guest.events[0].body.p_pin,'test-only-secret');
+  assert.match(guest.elt('manage').innerHTML,/m-roster/);
+  assert.ok(!guest.classNames.includes('cgma-can-manage'),'PIN does not unlock site-admin UI');
+});
+
+test('incorrect PIN never displays applicant roster',async()=>{
+  const guest=boot({allowed:false,pinAllowed:false});
+  await tick();
+  guest.elt('m-pin').value='wrong-code';
+  await guest.elt('m-pin-form').onsubmit({preventDefault(){}});
+  assert.equal(guest.events.length,1);
+  assert.doesNotMatch(guest.elt('manage').innerHTML,/m-roster/);
+  assert.match(guest.elt('m-pin-msg').textContent,/비밀번호/);
+});
+
+test('password stays out of client source and summary row exposes no phone or sensitive detail',()=>{
+  assert.doesNotMatch(source,/1234567890|localStorage\.setItem\(.{0,100}pin/);
+  assert.match(source,/data-expand/);
+  assert.match(source,/aria-expanded/);
+  assert.match(source,/m-detail-card/);
+  assert.match(source,/m-detail-grid/);
+  assert.match(source,/p_pin:pin/);
 });
