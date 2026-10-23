@@ -96,3 +96,4 @@ async function copyPhones(){
     panel.innerHTML=`<div class="manager-gate"><h2>관리자 인증이 필요합니다</h2><p class="msg" role="status">${esc(notice)}</p><a class="cgp-go" href="${esc(P.loginUrl())}">관리자 Google 로그인 →</a></div>`;
   }
 })();
+})();
