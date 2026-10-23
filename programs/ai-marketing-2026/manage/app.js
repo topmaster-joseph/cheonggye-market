@@ -107,7 +107,7 @@ async function copyPhones(){
       $('m-msg').textContent='관리자 권한은 확인되었지만 신청현황을 불러오지 못했습니다. [새로고침]으로 다시 시도해 주세요.';
     }
   }else{
-    // Only this roster's two RPCs accept the secret; no CGMA site-admin JWT is minted.
+    // Only this roster's two RPCs accept the scoped PIN; no CGMA site-admin JWT is minted.
     panel.hidden=false;
     const notice=P.authError?.()||'교육 신청현황만 담당하는 경우 전용 비밀번호를 입력하세요.';
     panel.innerHTML='<div class="manager-gate"><h2>교육 신청현황 전용 로그인</h2><p class="msg">'+esc(notice)+'</p>'+
