@@ -101,6 +101,8 @@ jobs:
         run: node --test cgma-canonical-domain.test.mjs
       - name: Test CGMA programs hub, single menu and fail-closed user-page management
         run: node --test cgma-programs.test.mjs
+      - name: Test CGMA central auth handoff, manage deep link and expired-session refresh
+        run: node --test cgma-programs-auth-return.test.mjs
       - name: Test market control tower model
         run: node --test cgma-market-health.test.mjs
       - name: Test canonical store identity model
