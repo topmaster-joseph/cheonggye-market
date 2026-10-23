@@ -7,7 +7,7 @@ const $=id=>document.getElementById(id);
 const esc=P.esc;
 const SESSIONS=[[1,'11/6 금'],[2,'11/13 금'],[3,'11/20 금'],[4,'11/25 수'],[5,'11/27 금'],[6,'12/4 금'],[7,'12/11 금'],[8,'12/18 금']];
 const digits=v=>String(v||'').replace(/\D/g,'');
-const fmtPhone=v=>{const d=digits(v).slice(0,11);if(d.length<4)return d;if(d.length<8)return d.slice(0,3)+'-'+d.slice(3)+'-'+d.slice(-4);return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4)};
+const fmtPhone=v=>{const d=digits(v).slice(0,11);if(d.length<4)return d;if(d.length<8)return d.slice(0,3)+'-'+d.slice(3);return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4)};
 const rpc=(fn,body,auth)=>P.rpc(fn,body,{auth});
 const panel=$('manage');let admin=false,rows=[],settings={capacity:15,is_open:true};
 function panelShell(){
