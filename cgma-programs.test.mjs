@@ -35,7 +35,9 @@ test('management UI is fail-closed: only a positive DB answer opens it',()=>{
   assert.match(js,/rpc\('cgma_is_site_admin',\{\},\{auth:true\}\)\.then\(v=>v===true\)\.catch\(\(\)=>false\)/);
   assert.match(js,/if\(!admin\)\{/);
   assert.match(eduJs,/admin=await P\.isAdmin\(\);/);
-  assert.match(eduJs,/else\{admin=false;panel\.innerHTML='';\}/);
+  assert.match(eduJs,/if\(admin\)\{[\s\S]*?panelShell\(\);[\s\S]*?panel\.hidden=false;/);
+  assert.match(eduJs,/else if\(location\.hash==='#manage'\)/);
+  assert.doesNotMatch(eduJs,/else\{admin=false;panel\.innerHTML='';\}/,'a verified admin list error must not silently hide the panel');
 });
 
 test('rendered registry text is escaped and links are limited to site paths or https',()=>{
