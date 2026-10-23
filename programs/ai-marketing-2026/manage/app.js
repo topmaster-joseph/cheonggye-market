@@ -1,5 +1,5 @@
 // 청계면상인회 AI 마케팅 교육 — 별도 관리자 화면 (공개 신청과 분리).
-// No applicant records are requested until the server verifies site-admin JWT.
+// Applicant records are requested only after site-admin JWT verification OR a valid server-checked, roster-scoped PIN.
 (()=>{
 'use strict';
 const P=window.CGMA_PROGRAMS;
@@ -9,25 +9,25 @@ const SESSIONS=[[1,'11/6 금'],[2,'11/13 금'],[3,'11/20 금'],[4,'11/25 수'],[
 const digits=v=>String(v||'').replace(/\D/g,'');
 const fmtPhone=v=>{const d=digits(v).slice(0,11);if(d.length<4)return d;if(d.length<8)return d.slice(0,3)+'-'+d.slice(3);return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4)};
 const rpc=(fn,body,auth)=>P.rpc(fn,body,{auth});
-const panel=$('manage');let admin=false,rows=[],settings={capacity:15,is_open:true};
+const panel=$('manage');let admin=false,pin=null,expandedId=null,rows=[],settings={capacity:15,is_open:true};
 function panelShell(){
   panel.innerHTML=`<div class="row" style="justify-content:space-between"><h2>신청현황 관리 <small style="font-weight:400;font-size:13px">관리자에게만 보입니다 · 변경 이력 기록</small></h2><div class="row"><button class="btn" id="m-refresh" type="button">새로고침</button><button class="btn" id="m-csv" type="button">엑셀(CSV) 받기</button><button class="btn" id="m-copy" type="button">확정자 번호 복사</button></div></div>
   <div class="tiles" id="m-tiles"></div>
   <div class="row"><label class="row">정원 <input id="m-cap" type="number" min="1" max="200" inputmode="numeric"> 명</label><label class="row switch"><input type="checkbox" id="m-open"> 신청 받기</label><button class="btn" id="m-save" type="button">설정 저장</button></div>
   <p class="msg" id="m-msg" aria-live="polite"></p>
   <div class="row"><input id="m-q" placeholder="이름·상호·번호 검색" aria-label="검색" style="flex:1 1 200px;min-height:40px;font-size:15px"><select id="m-st" aria-label="상태 필터" style="width:auto!important"><option value="">전체 상태</option><option>접수</option><option>확정</option><option>대기</option><option>취소</option></select></div>
-  <div class="wrap-table"><table><thead><tr><th>접수</th><th>신청자</th><th>연락처</th><th>상태</th><th>출석 (1–8회)</th><th>설문</th><th>메모</th></tr></thead><tbody id="m-body"></tbody></table></div>`;
+  <p class="m-list-help">이름을 누르면 연락처·희망 교육·출석·메모를 자세히 확인하고 수정할 수 있습니다.</p><div class="wrap-table"><table class="m-roster"><thead><tr><th>신청자 · 상호</th><th>접수일</th><th>상태</th><th>상세</th></tr></thead><tbody id="m-body"></tbody></table></div>`;
   $('m-refresh').onclick=()=>loadAdmin();
   $('m-q').oninput=renderRows;$('m-st').onchange=renderRows;
   $('m-save').onclick=saveSettings;$('m-csv').onclick=csv;$('m-copy').onclick=copyPhones;
   const body=$('m-body');
   body.addEventListener('change',async ev=>{const tr=ev.target.closest('tr');if(tr&&ev.target.matches('[data-status]')&&await patch(tr.dataset.id,{status:ev.target.value},ev.target.parentElement))renderAll()});
-  body.addEventListener('focusout',ev=>{if(!ev.target.matches('[data-memo]'))return;const tr=ev.target.closest('tr'),row=rows.find(x=>x.id===tr.dataset.id);const v=ev.target.value.trim();if((row.admin_memo||'')!==v)patch(row.id,{admin_memo:v},ev.target.parentElement)});
-  body.addEventListener('click',async ev=>{const b=ev.target.closest('[data-att]');if(!b)return;const tr=b.closest('tr'),row=rows.find(x=>x.id===tr.dataset.id),n=Number(b.dataset.att);const cur=row.attendance||[];const next=cur.includes(n)?cur.filter(x=>x!==n):cur.concat(n).sort((a,c)=>a-c);b.disabled=true;if(await patch(row.id,{attendance:next},b.closest('td'))){b.classList.toggle('on');b.setAttribute('aria-pressed',String(b.classList.contains('on')))}b.disabled=false});
+  body.addEventListener('focusout',ev=>{if(!ev.target.matches('[data-memo]'))return;const tr=ev.target.closest('tr[data-id]'),row=rows.find(x=>x.id===tr.dataset.id);const v=ev.target.value.trim();if((row.admin_memo||'')!==v)patch(row.id,{admin_memo:v},ev.target.parentElement)});
+  body.addEventListener('click',async ev=>{const expand=ev.target.closest('[data-expand]');if(expand){expandedId=expandedId===expand.dataset.expand?null:expand.dataset.expand;renderRows();return}const b=ev.target.closest('[data-att]');if(!b)return;const tr=b.closest('tr'),row=rows.find(x=>x.id===tr.dataset.id),n=Number(b.dataset.att);const cur=row.attendance||[];const next=cur.includes(n)?cur.filter(x=>x!==n):cur.concat(n).sort((a,c)=>a-c);b.disabled=true;if(await patch(row.id,{attendance:next},b.closest('td'))){b.classList.toggle('on');b.setAttribute('aria-pressed',String(b.classList.contains('on')))}b.disabled=false});
 }
 async function loadAdmin(){
   try{
-    const r=await rpc('cgma_ai_edu_2026_admin_list',{p_pin:null},true);
+    const r=await rpc('cgma_ai_edu_2026_admin_list',{p_pin:pin},admin);
     if(!r.ok)throw Object.assign(new Error(r.error),{code:r.error});
     rows=r.rows;settings=r.settings;renderAll();$('m-msg').textContent='갱신 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
     return true;
@@ -40,27 +40,44 @@ function renderAll(){
 }
 function filtered(){const q=digits($('m-q').value)||$('m-q').value.trim().toLowerCase(),st=$('m-st').value;return rows.filter(r=>(!st||r.status===st)&&(!q||(r.name+r.store_name+r.phone+r.receipt_no+r.business_type).toLowerCase().includes(q)))}
 function renderRows(){
-  $('m-body').innerHTML=filtered().map(r=>{
-    const d=new Date(r.created_at),when=`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-    const att=SESSIONS.map(([n,dd])=>{const on=(r.attendance||[]).includes(n),can=(r.available_sessions||[]).includes(n);return `<button type="button" data-att="${n}" class="${on?'on ':''}${can?'can':''}" aria-pressed="${on}" title="${n}회 ${dd}${can?' · 참석 가능':''}">${n}</button>`}).join('');
-    return `<tr data-id="${esc(r.id)}" class="${r.status==='취소'?'cancelled':''}"><td class="no">${esc(r.receipt_no)}<small>${when}</small></td>
-    <td><b>${esc(r.name)}</b> <small>${esc(r.role)}</small><br><small>${esc(r.store_name)} · ${esc(r.business_type)}</small></td>
-    <td class="tel">${esc(fmtPhone(r.phone))}</td>
-    <td><select data-status aria-label="상태">${['접수','확정','대기','취소'].map(s=>`<option${s===r.status?' selected':''}>${s}</option>`).join('')}</select><span class="saved"></span></td>
-    <td><div class="att">${att}</div><span class="saved"></span></td>
-    <td class="survey">${esc(r.phone_os)} · AI ${esc(r.ai_level)}${r.consent_photo?' · 촬영동의':''}<br>${(r.interests||[]).map(i=>`<span class="t">${esc(i)}</span>`).join('')}${r.needs?`<br>“${esc(r.needs)}”`:''}</td>
-    <td><textarea class="memo" data-memo rows="2" maxlength="1000" aria-label="메모">${esc(r.admin_memo||'')}</textarea><span class="saved"></span></td></tr>`;
-  }).join('')||'<tr><td colspan="7">아직 신청자가 없습니다.</td></tr>';
+  const list=filtered();
+  $('m-body').innerHTML=list.map(r=>{
+    const d=new Date(r.created_at),when=(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    const open=expandedId===r.id;
+    const id=esc(r.id);
+    const summary='<tr class="m-summary'+(r.status==='취소'?' cancelled':'')+'" data-id="'+id+'"><td><button type="button" class="m-name" data-expand="'+id+'" aria-expanded="'+open+'" aria-controls="m-detail-'+id+'"><b>'+esc(r.name)+'</b><small>'+esc(r.store_name)+' · '+esc(r.role)+'</small></button></td><td><span class="m-date">'+esc(when)+'</span></td><td><span class="m-status">'+esc(r.status)+'</span></td><td><button class="m-expand" type="button" data-expand="'+id+'" aria-expanded="'+open+'" aria-controls="m-detail-'+id+'">'+(open?'접기 ▲':'자세히 ▼')+'</button></td></tr>';
+    if(!open)return summary;
+    const att=SESSIONS.map(([n,dd])=>{
+      const on=(r.attendance||[]).includes(n),can=(r.available_sessions||[]).includes(n);
+      return '<button type="button" data-att="'+n+'" class="'+(on?'on ':'')+(can?'can':'')+'" aria-pressed="'+on+'" title="'+n+'회 '+dd+(can?' · 참석 가능':'')+'">'+n+'</button>';
+    }).join('');
+    const details='<tr class="m-detail" data-id="'+id+'"><td colspan="4"><section id="m-detail-'+id+'" class="m-detail-card" aria-label="'+esc(r.name)+' 신청 상세">'+
+      '<div class="m-detail-top"><strong>접수번호 '+esc(r.receipt_no)+'</strong><span>신청 '+esc(new Date(r.created_at).toLocaleString('ko-KR'))+'</span></div>'+
+      '<div class="m-detail-grid">'+
+      '<div><small>연락처</small><b>'+esc(fmtPhone(r.phone))+'</b></div>'+
+      '<div><small>업종</small><b>'+esc(r.business_type)+'</b></div>'+
+      '<div><small>휴대폰 · AI 활용 경험</small><b>'+esc(r.phone_os)+' · '+esc(r.ai_level)+'</b></div>'+
+      '<div><small>촬영 동의</small><b>'+(r.consent_photo?'동의':'미동의')+'</b></div>'+
+      '<div><small>희망 교육</small><p>'+(r.interests||[]).map(i=>'<span class="t">'+esc(i)+'</span>').join('')+'</p></div>'+
+      '<div><small>참석 가능 회차</small><b>'+esc((r.available_sessions||[]).join(', ')||'미선택')+'</b></div>'+
+      '<div class="m-detail-wide"><small>추가 요청사항</small><p>'+esc(r.needs||'없음')+'</p></div>'+
+      '</div>'+
+      '<div class="m-detail-actions"><label>접수 상태 <select data-status aria-label="상태">'+['접수','확정','대기','취소'].map(v=>'<option'+(v===r.status?' selected':'')+'>'+v+'</option>').join('')+'</select></label><span class="saved"></span></div>'+
+      '<div class="m-detail-actions"><span>출석 (1–8회)</span><div class="att">'+att+'</div><span class="saved"></span></div>'+
+      '<label class="m-note">관리자 메모<textarea class="memo" data-memo rows="2" maxlength="1000">'+esc(r.admin_memo||'')+'</textarea><span class="saved"></span></label>'+
+      '</section></td></tr>';
+    return summary+details;
+  }).join('')||'<tr><td colspan="4">해당하는 신청자가 없습니다.</td></tr>';
 }
 async function patch(id,p,cell){
   const tag=cell.querySelector('.saved');tag.textContent='저장 중…';tag.style.color='';
-  try{const r=await rpc('cgma_ai_edu_2026_admin_update',{p_pin:null,p_id:id,p_patch:p},true);if(!r.ok)throw new Error(r.error);Object.assign(rows.find(x=>x.id===id),p);tag.textContent='저장됨';setTimeout(()=>{tag.textContent=''},1500);return true}
+  try{const r=await rpc('cgma_ai_edu_2026_admin_update',{p_pin:pin,p_id:id,p_patch:p},admin);if(!r.ok)throw new Error(r.error);Object.assign(rows.find(x=>x.id===id),p);tag.textContent='저장됨';setTimeout(()=>{tag.textContent=''},1500);return true}
   catch(e){tag.textContent=['login_required','denied','locked'].includes(e.message)?'권한 오류 — 다시 로그인':'저장 실패 — 다시 시도';tag.style.color='var(--danger)';return false}
 }
 async function saveSettings(){
   const cap=parseInt($('m-cap').value,10),msg=$('m-msg');
   if(!(cap>=1&&cap<=200)){msg.textContent='정원은 1~200 사이 숫자로 적어 주세요.';return}
-  try{const r=await rpc('cgma_ai_edu_2026_admin_update',{p_pin:null,p_id:null,p_patch:{capacity:cap,is_open:$('m-open').checked}},true);if(!r.ok)throw new Error(r.error);settings={capacity:cap,is_open:$('m-open').checked};msg.textContent='설정을 저장했습니다.';renderAll()}
+  try{const r=await rpc('cgma_ai_edu_2026_admin_update',{p_pin:pin,p_id:null,p_patch:{capacity:cap,is_open:$('m-open').checked}},admin);if(!r.ok)throw new Error(r.error);settings={capacity:cap,is_open:$('m-open').checked};msg.textContent='설정을 저장했습니다.';renderAll()}
   catch{msg.textContent='설정을 저장하지 못했습니다.'}
 }
 function csv(){
@@ -90,10 +107,30 @@ async function copyPhones(){
       $('m-msg').textContent='관리자 권한은 확인되었지만 신청현황을 불러오지 못했습니다. [새로고침]으로 다시 시도해 주세요.';
     }
   }else{
-    // The page is reachable, but applicant records require server-confirmed site-admin role.
+    // Only this roster's two RPCs accept the secret; no CGMA site-admin JWT is minted.
     panel.hidden=false;
-    const notice=P.authError?.()||'신청현황은 청계면상인회 관리자에게만 공개됩니다. 관리자 Google 계정으로 로그인해 주세요.';
-    panel.innerHTML=`<div class="manager-gate"><h2>관리자 인증이 필요합니다</h2><p class="msg" role="status">${esc(notice)}</p><a class="cgp-go" href="${esc(P.loginUrl())}">관리자 Google 로그인 →</a></div>`;
+    const notice=P.authError?.()||'교육 신청현황만 담당하는 경우 전용 비밀번호를 입력하세요.';
+    panel.innerHTML='<div class="manager-gate"><h2>교육 신청현황 전용 로그인</h2><p class="msg">'+esc(notice)+'</p>'+
+      '<form id="m-pin-form" autocomplete="off"><label for="m-pin">교육 담당자 비밀번호</label><div class="row"><input id="m-pin" type="password" autocomplete="off" required maxlength="128" placeholder="비밀번호" aria-label="교육 신청현황 비밀번호"><button class="btn" type="submit">신청현황 열기</button></div><p id="m-pin-msg" class="msg" role="status"></p></form>'+
+      '<p class="msg">이 비밀번호로는 다른 상인회 관리 메뉴에 접근할 수 없습니다.</p><a class="cgp-go" href="'+esc(P.loginUrl())+'">기존 관리자 Google 로그인 →</a></div>';
+    $('m-pin-form').onsubmit=async ev=>{
+      ev.preventDefault();
+      const submitted=$('m-pin').value;
+      $('m-pin').value='';
+      $('m-pin-msg').textContent='비밀번호 확인 중…';
+      try{
+        const result=await rpc('cgma_ai_edu_2026_admin_list',{p_pin:submitted},false);
+        if(!result?.ok)throw new Error(result?.error||'denied');
+        pin=submitted;
+        rows=result.rows||[];settings=result.settings||{capacity:15,is_open:true};
+        panelShell();renderAll();
+        $('m-msg').textContent='교육 신청현황 전용 권한으로 접속했습니다. 다른 관리 메뉴의 접근권한은 부여되지 않습니다.';
+      }catch(error){
+        pin=null;
+        $('m-pin-msg').textContent=error.message==='locked'?'로그인 시도 횟수 초과 — 15분 뒤 다시 시도해 주세요.':'비밀번호가 틀렸거나 인증이 제한되었습니다.';
+      }
+    };
+
   }
 })();
 })();
