@@ -60,6 +60,7 @@ jobs:
           node --check functions/api/ai-education-share.js
           node --check cgma-programs.js
           node --check programs/ai-marketing-2026/app.js
+          node --check programs/ai-marketing-2026/manage/app.js
           node --check cgma-inline-management.js
           node --check ai-education/app.js
           node --check ai-education/questions.mjs
@@ -106,6 +107,8 @@ jobs:
         run: node --test cgma-programs.test.mjs
       - name: Test CGMA central auth handoff, manage deep link and expired-session refresh
         run: node --test cgma-programs-auth-return.test.mjs
+      - name: Test CGMA public intake / standalone roster isolation and admin authorization
+        run: node --test cgma-programs-management-split.test.mjs
       - name: Test market control tower model
         run: node --test cgma-market-health.test.mjs
       - name: Test canonical store identity model
