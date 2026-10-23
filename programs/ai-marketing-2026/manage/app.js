@@ -10,6 +10,7 @@ const digits=v=>String(v||'').replace(/\D/g,'');
 const fmtPhone=v=>{const d=digits(v).slice(0,11);if(d.length<4)return d;if(d.length<8)return d.slice(0,3)+'-'+d.slice(3);return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4)};
 const rpc=(fn,body,auth)=>P.rpc(fn,body,{auth});
 const panel=$('manage');let admin=false,expandedId=null,rows=[],settings={capacity:15,is_open:true};
+// A roster-scoped member is authenticated independently of CGMA site administration.
 function panelShell(){
   panel.innerHTML=`<div class="row" style="justify-content:space-between"><h2>신청현황 관리 <small style="font-weight:400;font-size:13px">관리자에게만 보입니다 · 변경 이력 기록</small></h2><div class="row"><button class="btn" id="m-refresh" type="button">새로고침</button><button class="btn" id="m-csv" type="button">엑셀(CSV) 받기</button><button class="btn" id="m-copy" type="button">확정자 번호 복사</button></div></div>
   <div class="tiles" id="m-tiles"></div>
@@ -92,6 +93,19 @@ async function copyPhones(){
   if(!list){msg.textContent='확정된 신청자가 아직 없습니다.';return}
   try{await navigator.clipboard.writeText(list);msg.textContent=`확정자 번호 ${list.split(',').length}개를 복사했습니다.`}catch{msg.textContent=list}
 }
+
+async function hasScopedRosterAccess(){
+  // A Google identity is handed back by EKODI auth as a verified Supabase session.
+  // Do not grant any site-admin privileges; only the roster RPC may authorize access.
+  if(!P.token?.())return false;
+  try{
+    const result=await rpc('cgma_ai_edu_2026_admin_list',{p_pin:null},true);
+    if(result?.ok!==true)return false;
+    rows=Array.isArray(result.rows)?result.rows:[];
+    settings=result.settings||settings;
+    return true;
+  }catch{return false}
+}
 (async()=>{
   admin=await P.isAdmin();
   if(admin){
@@ -102,15 +116,20 @@ async function copyPhones(){
       if(location.hash==='#manage')panel.scrollIntoView({block:'start'});
       setInterval(()=>{if(!panel.contains(document.activeElement))loadAdmin()},60000);
     }else{
-      // Keep the error and refresh button visible: never silently hide a
-      // verified administrator's management view after a list API failure.
       $('m-msg').textContent='관리자 권한은 확인되었지만 신청현황을 불러오지 못했습니다. [새로고침]으로 다시 시도해 주세요.';
     }
-  }else{
-    // The page is reachable, but applicant records require server-confirmed site-admin role.
+  }else if(await hasScopedRosterAccess()){
+    // This login is accepted only by the education roster. Do not add cgma-can-manage.
+    panelShell();
     panel.hidden=false;
-    const notice=P.authError?.()||'신청현황은 청계면상인회 관리자에게만 공개됩니다. 관리자 Google 계정으로 로그인해 주세요.';
-    panel.innerHTML=`<div class="manager-gate"><h2>관리자 인증이 필요합니다</h2><p class="msg" role="status">${esc(notice)}</p><a class="cgp-go" href="${esc(P.loginUrl())}">관리자 Google 로그인 →</a></div>`;
+    renderAll();
+    $('m-msg').textContent='상인 AI 교육 신청현황 전용 권한으로 접속했습니다.';
+    if(location.hash==='#manage')panel.scrollIntoView({block:'start'});
+    setInterval(()=>{if(!panel.contains(document.activeElement))loadAdmin()},60000);
+  }else{
+    panel.hidden=false;
+    const notice=P.authError?.()||'이 교육의 신청현황을 관리하려면 지정된 Google 계정으로 로그인하세요. 다른 상인회 관리자 권한은 부여되지 않습니다.';
+    panel.innerHTML=`<div class="manager-gate"><h2>관리자 인증이 필요합니다</h2><p class="msg" role="status">${esc(notice)}</p><a class="cgp-go" href="${esc(P.loginUrl())}">지정된 Google 계정으로 로그인 →</a></div>`;
   }
 })();
 })();
