@@ -6,6 +6,39 @@
 const SUPABASE='https://renzehysxirjilvdxacv.supabase.co';
 const KEY='sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_';
 const SESSION_KEY='sb-renzehysxirjilvdxacv-auth-token';
+const RETURN_KEY='ekodi_return';
+let authReturnError='';
+let sdkPromise;
+function supabaseClient(){
+  sdkPromise=sdkPromise||import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm')
+    .then(({createClient})=>createClient(SUPABASE,KEY,{auth:{detectSessionInUrl:false,persistSession:true}}));
+  return sdkPromise;
+}
+// The central auth hub replaces the URL hash with a one-time OTP. Consume it on
+// this origin before the site-admin check, and restore the requested manage view.
+const authReady=(async()=>{
+  const current=new URL(location.href);
+  const hash=new URLSearchParams(current.hash.replace(/^#/,''));
+  const tokenHash=hash.get('ekodi_token');
+  const requestedView=current.searchParams.get(RETURN_KEY);
+  if(!tokenHash&&requestedView===null)return;
+  current.searchParams.delete(RETURN_KEY);
+  current.hash=requestedView==='manage'?'manage':'';
+  // Never leave a one-time OTP in browser history or logs.
+  history.replaceState({},document.title,current.pathname+current.search+current.hash);
+  if(!tokenHash){
+    authReturnError='통합 로그인에서 복귀하지 못했습니다. 다시 로그인해 주세요.';
+    return;
+  }
+  try{
+    const sb=await supabaseClient();
+    const {data,error}=await sb.auth.verifyOtp({token_hash:tokenHash,type:hash.get('ekodi_type')||'email'});
+    if(error||!data?.session?.access_token)throw new Error('invalid_auth_handoff');
+  }catch{
+    authReturnError='통합 로그인 연결이 완료되지 않았습니다. Google 로그인을 다시 시도해 주세요.';
+  }
+})();
+
 const route=v=>window.CGMA_ROUTE?.route?window.CGMA_ROUTE.route(v):v;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const STATUS_ORDER={'모집중':0,'준비':1,'마감':2,'종료':3};
@@ -21,8 +54,23 @@ function token(){
     return s.access_token;
   }catch{return null}
 }
+// An expired but refreshable EKODI session must not send users into a
+// repeated login loop. Supabase refreshes it with the existing refresh token.
+async function sessionToken(){
+  await authReady;
+  const active=token();
+  if(active)return active;
+  let saved;
+  try{saved=JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch{return null}
+  if(!saved?.refresh_token)return null;
+  try{
+    const sb=await supabaseClient();
+    const {data,error}=await sb.auth.getSession();
+    return error?null:(data?.session?.access_token||null);
+  }catch{return null}
+}
 async function rpc(fn,body,{auth=false,timeout=12000}={}){
-  const t=auth?token():null;
+  const t=auth?await sessionToken():null;
   if(auth&&!t)throw Object.assign(new Error('login_required'),{code:'login_required'});
   const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),timeout);
   try{
@@ -38,14 +86,19 @@ async function rpc(fn,body,{auth=false,timeout=12000}={}){
 }
 // Only a positive server answer opens management UI. Any error = not an admin (fail-closed).
 let adminCheck;
-function isAdmin(){
-  if(!token())return Promise.resolve(false);
+async function isAdmin(){
+  if(!await sessionToken())return false;
   adminCheck=adminCheck||rpc('cgma_is_site_admin',{},{auth:true}).then(v=>v===true).catch(()=>false);
   return adminCheck;
 }
 function loginUrl(){
-  const back=location.href.split('#')[0]+(location.hash||'');
-  return 'https://auth.ekodi.kr/?site=cgma&direct=1&return_to='+encodeURIComponent(back);
+  const back=new URL(location.href);
+  if(back.hash==='#manage'){
+    // The auth hub overwrites the hash; keep the intended view in the URL query.
+    back.hash='';
+    back.searchParams.set(RETURN_KEY,'manage');
+  }else if(back.hash.startsWith('#ekodi_token='))back.hash='';
+  return 'https://auth.ekodi.kr/?site=cgma&direct=1&return_to='+encodeURIComponent(back.href);
 }
 function safeHref(v){
   const s=String(v||'');
@@ -193,7 +246,7 @@ async function hub(el){
   if(location.hash==='#manage')bar.scrollIntoView({block:'start'});
 }
 
-window.CGMA_PROGRAMS=Object.freeze({rpc,token,isAdmin,loginUrl,route,esc});
+window.CGMA_PROGRAMS=Object.freeze({rpc,token,isAdmin,loginUrl,authError:()=>authReturnError,route,esc});
 function boot(){
   expireStatic();
   const strip=document.getElementById('cgmaProgramsStrip');if(strip)homeStrip(strip);

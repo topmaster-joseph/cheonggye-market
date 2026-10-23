@@ -138,11 +138,20 @@ async function copyPhones(){
   admin=await P.isAdmin();
   if(admin){
     panelShell();
-    if(await loadAdmin()){panel.hidden=false;document.documentElement.classList.add('cgma-can-manage');if(location.hash==='#manage')panel.scrollIntoView({block:'start'});setInterval(()=>{if(!panel.contains(document.activeElement))loadAdmin()},60000)}
-    else{admin=false;panel.innerHTML='';}
+    panel.hidden=false;
+    if(await loadAdmin()){
+      document.documentElement.classList.add('cgma-can-manage');
+      if(location.hash==='#manage')panel.scrollIntoView({block:'start'});
+      setInterval(()=>{if(!panel.contains(document.activeElement))loadAdmin()},60000);
+    }else{
+      // Keep the error and refresh button visible: never silently hide a
+      // verified administrator's management view after a list API failure.
+      $('m-msg').textContent='관리자 권한은 확인되었지만 신청현황을 불러오지 못했습니다. [새로고침]으로 다시 시도해 주세요.';
+    }
   }else if(location.hash==='#manage'){
     panel.hidden=false;
-    panel.innerHTML=`<h2>신청현황 관리</h2><p class="msg">상인회 관리자 계정으로 로그인하면 이 화면에서 바로 신청현황을 관리할 수 있습니다.</p><div class="row"><a class="cgp-go" href="${esc(P.loginUrl())}">Google로 로그인 →</a></div>`;
+    const notice=P.authError?.()||'상인회 관리자 계정으로 로그인하면 이 화면에서 바로 신청현황을 관리할 수 있습니다.';
+    panel.innerHTML=`<h2>신청현황 관리</h2><p class="msg" role="status">${esc(notice)}</p><div class="row"><a class="cgp-go" href="${esc(P.loginUrl())}">Google로 로그인 →</a></div>`;
   }
 })();
 })();

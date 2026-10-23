@@ -122,6 +122,8 @@ jobs:
           check_route "$BASE_URL" "/sitemap.xml" "<loc>https://cgma.or.kr/</loc>"
           check_route "$BASE_URL" "/api/schedule?upcoming=3" '"upcoming":'
           check_route "$BASE_URL" "/ai-education/" "우리 가게에 필요한 AI 교육을 찾아보세요"
+          check_route "$BASE_URL" "/programs/ai-marketing-2026/" "cgma-programs.js?v=20261023-auth-handoff-v1"
+          check_route "$BASE_URL" "/cgma-programs.js" "const RETURN_KEY='ekodi_return'"
           check_route "$BASE_URL" "/ai-education/" "cgma-inline-management.js"
           check_route "$BASE_URL" "/cgma-inline-management.js" "sessionStorageKey='sb-renzehysxirjilvdxacv-auth-token'"
           check_route "$BASE_URL" "/ai-education/app.js" "const questions = ["
