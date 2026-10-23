@@ -9,21 +9,21 @@ const SESSIONS=[[1,'11/6 금'],[2,'11/13 금'],[3,'11/20 금'],[4,'11/25 수'],[
 const digits=v=>String(v||'').replace(/\D/g,'');
 const fmtPhone=v=>{const d=digits(v).slice(0,11);if(d.length<4)return d;if(d.length<8)return d.slice(0,3)+'-'+d.slice(3);return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4)};
 const rpc=(fn,body,auth)=>P.rpc(fn,body,{auth});
-const panel=$('manage');let admin=false,rows=[],settings={capacity:15,is_open:true};
+const panel=$('manage');let admin=false,expandedId=null,rows=[],settings={capacity:15,is_open:true};
 function panelShell(){
   panel.innerHTML=`<div class="row" style="justify-content:space-between"><h2>신청현황 관리 <small style="font-weight:400;font-size:13px">관리자에게만 보입니다 · 변경 이력 기록</small></h2><div class="row"><button class="btn" id="m-refresh" type="button">새로고침</button><button class="btn" id="m-csv" type="button">엑셀(CSV) 받기</button><button class="btn" id="m-copy" type="button">확정자 번호 복사</button></div></div>
   <div class="tiles" id="m-tiles"></div>
   <div class="row"><label class="row">정원 <input id="m-cap" type="number" min="1" max="200" inputmode="numeric"> 명</label><label class="row switch"><input type="checkbox" id="m-open"> 신청 받기</label><button class="btn" id="m-save" type="button">설정 저장</button></div>
   <p class="msg" id="m-msg" aria-live="polite"></p>
   <div class="row"><input id="m-q" placeholder="이름·상호·번호 검색" aria-label="검색" style="flex:1 1 200px;min-height:40px;font-size:15px"><select id="m-st" aria-label="상태 필터" style="width:auto!important"><option value="">전체 상태</option><option>접수</option><option>확정</option><option>대기</option><option>취소</option></select></div>
-  <div class="wrap-table"><table><thead><tr><th>접수</th><th>신청자</th><th>연락처</th><th>상태</th><th>출석 (1–8회)</th><th>설문</th><th>메모</th></tr></thead><tbody id="m-body"></tbody></table></div>`;
+  <p class="m-list-help">이름을 누르면 연락처·희망 교육·출석·메모를 자세히 확인하고 수정할 수 있습니다.</p><div class="wrap-table"><table class="m-roster"><thead><tr><th>신청자 · 상호</th><th>접수일</th><th>상태</th><th>상세</th></tr></thead><tbody id="m-body"></tbody></table></div>`;
   $('m-refresh').onclick=()=>loadAdmin();
   $('m-q').oninput=renderRows;$('m-st').onchange=renderRows;
   $('m-save').onclick=saveSettings;$('m-csv').onclick=csv;$('m-copy').onclick=copyPhones;
   const body=$('m-body');
-  body.addEventListener('change',async ev=>{const tr=ev.target.closest('tr');if(tr&&ev.target.matches('[data-status]')&&await patch(tr.dataset.id,{status:ev.target.value},ev.target.parentElement))renderAll()});
-  body.addEventListener('focusout',ev=>{if(!ev.target.matches('[data-memo]'))return;const tr=ev.target.closest('tr'),row=rows.find(x=>x.id===tr.dataset.id);const v=ev.target.value.trim();if((row.admin_memo||'')!==v)patch(row.id,{admin_memo:v},ev.target.parentElement)});
-  body.addEventListener('click',async ev=>{const b=ev.target.closest('[data-att]');if(!b)return;const tr=b.closest('tr'),row=rows.find(x=>x.id===tr.dataset.id),n=Number(b.dataset.att);const cur=row.attendance||[];const next=cur.includes(n)?cur.filter(x=>x!==n):cur.concat(n).sort((a,c)=>a-c);b.disabled=true;if(await patch(row.id,{attendance:next},b.closest('td'))){b.classList.toggle('on');b.setAttribute('aria-pressed',String(b.classList.contains('on')))}b.disabled=false});
+  body.addEventListener('change',async ev=>{const tr=ev.target.closest('tr');if(tr&&ev.target.matches('[data-status]')&&await patch(tr.dataset.id,{status:ev.target.value},ev.target.closest('.m-detail-actions')))renderAll()});
+  body.addEventListener('focusout',ev=>{if(!ev.target.matches('[data-memo]'))return;const tr=ev.target.closest('tr[data-id]'),row=rows.find(x=>x.id===tr.dataset.id);const v=ev.target.value.trim();if((row.admin_memo||'')!==v)patch(row.id,{admin_memo:v},ev.target.parentElement)});
+  body.addEventListener('click',async ev=>{const expand=ev.target.closest('[data-expand]');if(expand){expandedId=expandedId===expand.dataset.expand?null:expand.dataset.expand;renderRows();return}const b=ev.target.closest('[data-att]');if(!b)return;const tr=b.closest('tr'),row=rows.find(x=>x.id===tr.dataset.id),n=Number(b.dataset.att);const cur=row.attendance||[];const next=cur.includes(n)?cur.filter(x=>x!==n):cur.concat(n).sort((a,c)=>a-c);b.disabled=true;if(await patch(row.id,{attendance:next},b.closest('td'))){b.classList.toggle('on');b.setAttribute('aria-pressed',String(b.classList.contains('on')))}b.disabled=false});
 }
 async function loadAdmin(){
   try{
@@ -40,17 +40,34 @@ function renderAll(){
 }
 function filtered(){const q=digits($('m-q').value)||$('m-q').value.trim().toLowerCase(),st=$('m-st').value;return rows.filter(r=>(!st||r.status===st)&&(!q||(r.name+r.store_name+r.phone+r.receipt_no+r.business_type).toLowerCase().includes(q)))}
 function renderRows(){
-  $('m-body').innerHTML=filtered().map(r=>{
-    const d=new Date(r.created_at),when=`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-    const att=SESSIONS.map(([n,dd])=>{const on=(r.attendance||[]).includes(n),can=(r.available_sessions||[]).includes(n);return `<button type="button" data-att="${n}" class="${on?'on ':''}${can?'can':''}" aria-pressed="${on}" title="${n}회 ${dd}${can?' · 참석 가능':''}">${n}</button>`}).join('');
-    return `<tr data-id="${esc(r.id)}" class="${r.status==='취소'?'cancelled':''}"><td class="no">${esc(r.receipt_no)}<small>${when}</small></td>
-    <td><b>${esc(r.name)}</b> <small>${esc(r.role)}</small><br><small>${esc(r.store_name)} · ${esc(r.business_type)}</small></td>
-    <td class="tel">${esc(fmtPhone(r.phone))}</td>
-    <td><select data-status aria-label="상태">${['접수','확정','대기','취소'].map(s=>`<option${s===r.status?' selected':''}>${s}</option>`).join('')}</select><span class="saved"></span></td>
-    <td><div class="att">${att}</div><span class="saved"></span></td>
-    <td class="survey">${esc(r.phone_os)} · AI ${esc(r.ai_level)}${r.consent_photo?' · 촬영동의':''}<br>${(r.interests||[]).map(i=>`<span class="t">${esc(i)}</span>`).join('')}${r.needs?`<br>“${esc(r.needs)}”`:''}</td>
-    <td><textarea class="memo" data-memo rows="2" maxlength="1000" aria-label="메모">${esc(r.admin_memo||'')}</textarea><span class="saved"></span></td></tr>`;
-  }).join('')||'<tr><td colspan="7">아직 신청자가 없습니다.</td></tr>';
+  const list=filtered();
+  $('m-body').innerHTML=list.map(r=>{
+    const d=new Date(r.created_at),when=(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    const open=expandedId===r.id;
+    const id=esc(r.id);
+    const summary='<tr class="m-summary'+(r.status==='취소'?' cancelled':'')+'" data-id="'+id+'"><td><button type="button" class="m-name" data-expand="'+id+'" aria-expanded="'+open+'" aria-controls="m-detail-'+id+'"><b>'+esc(r.name)+'</b><small>'+esc(r.store_name)+' · '+esc(r.role)+'</small></button></td><td><span class="m-date">'+esc(when)+'</span></td><td><span class="m-status">'+esc(r.status)+'</span></td><td><button class="m-expand" type="button" data-expand="'+id+'" aria-expanded="'+open+'" aria-controls="m-detail-'+id+'">'+(open?'접기 ▲':'자세히 ▼')+'</button></td></tr>';
+    if(!open)return summary;
+    const att=SESSIONS.map(([n,dd])=>{
+      const on=(r.attendance||[]).includes(n),can=(r.available_sessions||[]).includes(n);
+      return '<button type="button" data-att="'+n+'" class="'+(on?'on ':'')+(can?'can':'')+'" aria-pressed="'+on+'" title="'+n+'회 '+dd+(can?' · 참석 가능':'')+'">'+n+'</button>';
+    }).join('');
+    const details='<tr class="m-detail" data-id="'+id+'"><td colspan="4"><section id="m-detail-'+id+'" class="m-detail-card" aria-label="'+esc(r.name)+' 신청 상세">'+
+      '<div class="m-detail-top"><strong>접수번호 '+esc(r.receipt_no)+'</strong><span>신청 '+esc(new Date(r.created_at).toLocaleString('ko-KR'))+'</span></div>'+
+      '<div class="m-detail-grid">'+
+      '<div><small>연락처</small><b>'+esc(fmtPhone(r.phone))+'</b></div>'+
+      '<div><small>업종</small><b>'+esc(r.business_type)+'</b></div>'+
+      '<div><small>휴대폰 · AI 활용 경험</small><b>'+esc(r.phone_os)+' · '+esc(r.ai_level)+'</b></div>'+
+      '<div><small>촬영 동의</small><b>'+(r.consent_photo?'동의':'미동의')+'</b></div>'+
+      '<div><small>희망 교육</small><p>'+(r.interests||[]).map(i=>'<span class="t">'+esc(i)+'</span>').join('')+'</p></div>'+
+      '<div><small>참석 가능 회차</small><b>'+esc((r.available_sessions||[]).join(', ')||'미선택')+'</b></div>'+
+      '<div class="m-detail-wide"><small>추가 요청사항</small><p>'+esc(r.needs||'없음')+'</p></div>'+
+      '</div>'+
+      '<div class="m-detail-actions"><label>접수 상태 <select data-status aria-label="상태">'+['접수','확정','대기','취소'].map(v=>'<option'+(v===r.status?' selected':'')+'>'+v+'</option>').join('')+'</select></label><span class="saved"></span></div>'+
+      '<div class="m-detail-actions"><span>출석 (1–8회)</span><div class="att">'+att+'</div><span class="saved"></span></div>'+
+      '<label class="m-note">관리자 메모<textarea class="memo" data-memo rows="2" maxlength="1000">'+esc(r.admin_memo||'')+'</textarea><span class="saved"></span></label>'+
+      '</section></td></tr>';
+    return summary+details;
+  }).join('')||'<tr><td colspan="4">해당하는 신청자가 없습니다.</td></tr>';
 }
 async function patch(id,p,cell){
   const tag=cell.querySelector('.saved');tag.textContent='저장 중…';tag.style.color='';

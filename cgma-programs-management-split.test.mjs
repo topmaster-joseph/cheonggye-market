@@ -75,7 +75,7 @@ test('verified administrator opens a separate management workspace and reads onl
   assert.equal(page.events[0].auth,true);
   assert.equal(page.elt('manage').hidden,false);
   assert.match(page.elt('manage').innerHTML,/엑셀\(CSV\) 받기/);
-  assert.match(page.elt('manage').innerHTML,/출석 \(1–8회\)/);
+  assert.match(page.elt('manage').innerHTML,/m-roster/);
   assert.ok(page.classNames.includes('cgma-can-manage'));
 });
 
@@ -93,4 +93,13 @@ test('legacy #manage links remain supported without leaking the former private p
   assert.match(publicJs,/location\.replace\(P\.route\('\/programs\/ai-marketing-2026\/manage\/'\)\)/);
   assert.match(sharedJs,/raw==='\/programs\/ai-marketing-2026\/#manage'/);
   assert.match(sharedJs,/whenAuthReady:\(\)=>authReady/);
+});
+
+test('compact roster reveals private fields only after an explicit row expand',()=>{
+  assert.match(source,/data-expand/);
+  assert.match(source,/aria-expanded/);
+  assert.match(source,/m-detail-card/);
+  assert.match(source,/m-detail-grid/);
+  assert.match(source,/m-detail-actions/);
+  assert.match(source,/ev\.target\.closest\('\.m-detail-actions'\)/);
 });
