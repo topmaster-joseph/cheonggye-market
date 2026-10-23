@@ -11,7 +11,7 @@ const managerHtml=readFileSync(new URL('./programs/ai-marketing-2026/manage/inde
 const sharedJs=readFileSync(new URL('./cgma-programs.js',root),'utf8');
 
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
-function boot({allowed=false,listingFailure=false,authMessage=''}={}){
+function boot({allowed=false,scoped=false,listingFailure=false,authMessage=''}={}){
   const events=[],classNames=[],elements=new Map();
   function elt(id){
     if(!elements.has(id))elements.set(id,{
@@ -24,11 +24,12 @@ function boot({allowed=false,listingFailure=false,authMessage=''}={}){
   const api={
     esc:s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;'),
     isAdmin:async()=>allowed,
+    token:()=>scoped?'scoped-verified-access-token':null,
     authError:()=>authMessage,
     loginUrl:()=> 'https://auth.ekodi.kr/?site=cgma&direct=1&return_to=https%3A%2F%2Fcgma.or.kr%2Fprograms%2Fai-marketing-2026%2Fmanage%2F',
     async rpc(name,body,{auth}={}){
       events.push({name,body,auth});
-      if(!allowed)throw Error('unauthorized');
+      if(!allowed&&!scoped)throw Error('unauthorized');
       if(listingFailure)throw Error('list unavailable');
       if(name==='cgma_ai_edu_2026_admin_list')return {ok:true,rows:[],settings:{capacity:15,is_open:true}};
       throw Error('unexpected write');
@@ -102,4 +103,31 @@ test('compact roster reveals private fields only after an explicit row expand',(
   assert.match(source,/m-detail-grid/);
   assert.match(source,/m-detail-actions/);
   assert.match(source,/ev\.target\.closest\('\.m-detail-actions'\)/);
+});
+
+test('verified education-only account opens roster without site-admin privileges',async()=>{
+  const page=boot({allowed:false,scoped:true});
+  await tick();await tick();
+  assert.equal(page.events.length,1,'one scoped RPC, no privileged admin RPC');
+  assert.equal(page.events[0].name,'cgma_ai_edu_2026_admin_list');
+  assert.equal(page.events[0].auth,true,'scoped access requires a signed-in account');
+  assert.equal(page.events[0].body.p_pin,null,'Google flow never sends a shared password');
+  assert.equal(page.elt('manage').hidden,false);
+  assert.match(page.elt('manage').innerHTML,/m-roster/);
+  assert.doesNotMatch(page.classNames.join(' '),/cgma-can-manage/,'other CGMA manager pages remain locked');
+});
+
+test('unauthorized signed-in accounts still receive no roster',async()=>{
+  const page=boot({allowed:false,scoped:false});
+  await tick();await tick();
+  assert.equal(page.events.length,0);
+  assert.match(page.elt('manage').innerHTML,/관리자 인증이 필요합니다/);
+  assert.doesNotMatch(page.elt('manage').innerHTML,/m-roster/);
+});
+
+test('education-only access uses server-validated scope and does not expose privileged credentials',()=>{
+  assert.match(source,/hasScopedRosterAccess/);
+  assert.match(source,/if\(!P\.token\?\.\(\)\)return false/);
+  assert.match(source,/cgma_ai_edu_2026_admin_list/);
+  assert.doesNotMatch(source,/dlaehd12345619|service_role|SUPABASE_SERVICE/i);
 });
