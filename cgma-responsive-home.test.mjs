@@ -30,7 +30,8 @@ test('home preview and complete schedule are fed by the existing public API',()=
 test('verified association social destinations open safely',()=>{
  assert.match(html,/https:\/\/www\.youtube\.com\/@cgma4989/);
  assert.match(html,/https:\/\/www\.youtube\.com\/@cgma4989\/live/);
- assert.match(html,/https:\/\/lit\.link\/cgma/);
+ assert.match(html,/class="cgma-social-tile social-links" href="#live"/);
+ assert.doesNotMatch(html,/lit\.link\/cgma/);
  assert.match(html,/class="cgma-social-home" data-home-only/);
  assert.doesNotMatch(html,/instagram\.com\/cgma4989|facebook\.com\/cgma4989/);
  assert.match(html,/target="_blank" rel="noopener noreferrer"/);
