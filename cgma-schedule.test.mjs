@@ -160,7 +160,7 @@ test('client renders user text safely, gates editing on the server grant and wir
   assert.match(html,/id="scheduleApp"/);
   assert.match(html,/id="schedulePreview"/);
   assert.match(html,/<a href="#schedule">일정<\/a>/);
-  assert.match(html,/schedule-board\.js\?v=20261019-schedule-v1/);
+  assert.match(html,/schedule-board\.js\?v=20261024-home-calendar-v1/);
   assert.match(html,/id="scheduleAdd" type="button" hidden/);
   assert.match(nav,/schedule:\['schedule'\]/);
   assert.match(admin,/route\('\/#schedule'\)/);
