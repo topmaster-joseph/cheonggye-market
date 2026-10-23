@@ -74,3 +74,6 @@ legend{width:100%;font-weight:800;font-size:15px;color:var(--g);padding:0 0 8px;
 .ai-edu a:focus-visible,.ai-edu button:focus-visible,.ai-edu input:focus-visible,.ai-edu textarea:focus-visible,.ai-edu select:focus-visible,.ai-edu summary:focus-visible{outline:3px solid #f0b63c;outline-offset:2px}
 @media (max-width:520px){.lookup{grid-template-columns:1fr}.plan li{grid-template-columns:40px 1fr}.plan .dt{grid-row:auto;grid-column:2}.plan .wk{grid-row:span 3}.plan li b,.plan li small{grid-column:2}}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+/* Public page keeps one small administrator entry without exposing the roster. */
+.top nav .manage-entry{background:#eff7f2;border:1px solid #9dcabb;color:#065a41}
