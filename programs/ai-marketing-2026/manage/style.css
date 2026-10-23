@@ -1,0 +1,18 @@
+/* Standalone CGMA admin page — larger working area, readable on desktop and mobile. */
+html,body{min-height:100%}
+[hidden]{display:none!important}
+.ai-edu.manage-page{width:min(1280px,calc(100% - 32px));margin:24px auto 80px}
+.manage-intro{padding:6px 2px 12px}
+.manage-intro .eyebrow{color:#087252}
+.manage-intro h1{margin:6px 0;color:#0f3c53;font-size:clamp(24px,4vw,34px);line-height:1.25}
+.manage-intro p:not(.eyebrow){margin:8px 0 12px;color:#526570;font-size:15px}
+.manage-back{font-size:14px;font-weight:750;color:#065a41}
+.manage-page .manage{margin:6px 0 30px;padding:20px;overflow:hidden}
+.manage-page .manage h2{font-size:22px}
+.manage-page .manage .row{min-width:0}
+.manage-page .manage .wrap-table{max-width:100%;overflow:auto;overscroll-behavior-x:contain}
+.manage-page .manage table{min-width:960px}
+.manage-page .manager-gate{display:grid;gap:12px;justify-items:start;padding:18px}
+.manage-page .manager-gate h2{margin:0}
+.manage-page .manager-gate .cgp-go{display:inline-flex;align-items:center;min-height:44px;padding:10px 16px;background:#087252;border-radius:10px;color:white;text-decoration:none;font-weight:800}
+@media(max-width:620px){.ai-edu.manage-page{width:calc(100% - 20px);margin-top:14px}.manage-page .manage{padding:12px}.manage-page .manage h2{font-size:19px}.manage-intro{padding:4px 2px 8px}.manage-intro p:not(.eyebrow){font-size:14px}}
