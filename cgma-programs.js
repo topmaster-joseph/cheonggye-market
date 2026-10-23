@@ -101,7 +101,9 @@ function loginUrl(){
   return 'https://auth.ekodi.kr/?site=cgma&direct=1&return_to='+encodeURIComponent(back.href);
 }
 function safeHref(v){
-  const s=String(v||'');
+  const raw=String(v||'');
+  // Existing registry records still use the pre-split management deep link.
+  const s=raw==='/programs/ai-marketing-2026/#manage'?'/programs/ai-marketing-2026/manage/':raw;
   if(/^https:\/\//i.test(s))return s;
   if(s.startsWith('/'))return route(s);
   return '';
@@ -246,7 +248,7 @@ async function hub(el){
   if(location.hash==='#manage')bar.scrollIntoView({block:'start'});
 }
 
-window.CGMA_PROGRAMS=Object.freeze({rpc,token,isAdmin,loginUrl,authError:()=>authReturnError,route,esc});
+window.CGMA_PROGRAMS=Object.freeze({rpc,token,isAdmin,loginUrl,whenAuthReady:()=>authReady,authError:()=>authReturnError,route,esc});
 function boot(){
   expireStatic();
   const strip=document.getElementById('cgmaProgramsStrip');if(strip)homeStrip(strip);
