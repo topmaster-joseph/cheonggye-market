@@ -75,6 +75,9 @@ jobs:
           node --check admin-coupon.js
           node --check functions/_shared/cgma-festival.js
           node --check admin-festival.js
+          node --check festival/2026/coupon/coupon-sheet.mjs
+          node --check festival/2026/coupon/admin/app.mjs
+          node --check festival/2026/coupon/share/share.mjs
           node --check functions/api/site-mode.js
           node --check functions/_shared/cgma-merchant-defaults.js
 
@@ -114,6 +117,8 @@ jobs:
         run: node verify-cgma-ai-education-live.mjs
       - name: Test 2026 CGMA festival intake security and selection rules
         run: node --test cgma-festival-intake.test.mjs
+      - name: Test coupon merchant bulk intake, scoped share links and admin entry
+        run: node --test cgma-festival-coupon-admin.test.mjs
       - name: Diagnose published official festival images read-only
         run: node diagnose-festival-images.mjs
       - name: Verify shareable image cardnews raster assets and application links
@@ -126,7 +131,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          body="$(curl -fsS --max-time 15 -H 'Origin: https://cgma.or.kr' -H 'apikey: sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_' 'https://renzehysxirjilvdxacv.supabase.co/functions/v1/cgma-festival-intake/status')"
+          # Bounded retry: a cold Edge boot from a US runner once returned HTTP 555 after ~10s
+          # (run 39913382516, no function log). Three spaced attempts still fail on a real outage.
+          body="$(curl -fsS --max-time 20 --retry 2 --retry-delay 15 --retry-all-errors -H 'Origin: https://cgma.or.kr' -H 'apikey: sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_' 'https://renzehysxirjilvdxacv.supabase.co/functions/v1/cgma-festival-intake/status')"
           echo "$body" | grep -Fq '"ok":true'
           echo "$body" | grep -Fq '"couponValue":5000'
       - name: Verify canonical CGMA root contract

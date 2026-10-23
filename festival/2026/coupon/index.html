@@ -161,7 +161,7 @@ footer{text-align:center;font-size:13px;color:#60716b;padding:20px}
 @media(max-width:600px){.coupon-form-heading{display:grid;grid-template-columns:minmax(0,1fr)}.coupon-admin-entry{width:100%}form,.fields,.links{min-width:0;max-width:100%}input,textarea{max-width:100%}}
 </style>
 <form id="couponForm">
-<div class="coupon-form-heading"><h2 id="apply">쿠폰 사용 가능 상가 참여 신청서</h2><a class="coupon-admin-entry" id="couponAdminEntry" href="/cgma/admin/#coupon" rel="nofollow" aria-label="관리자 로그인 및 축제 신청자 명단 관리">관리자 로그인 · 신청자 명단 관리 ↗</a></div>
+<div class="coupon-form-heading"><h2 id="apply">쿠폰 사용 가능 상가 참여 신청서</h2><a class="coupon-admin-entry" id="couponAdminEntry" href="/festival/2026/coupon/admin/" rel="nofollow" aria-label="관리자 로그인 및 축제 신청자 명단 관리">관리자 로그인 · 신청자 명단 관리</a></div>
 <p>접수 상태: <span id="status" class="status">연결 확인 중</span> · 마감일 미지정</p>
 <div class="notice">신청은 참여 확정이 아닙니다. 축제 운영기관·상인회의 사전 협의와 확인을 거쳐 사용 가능 상가를 선정합니다. 5천원 쿠폰의 사용 조건, 잔액 처리, 정산 절차 등은 아직 확정되지 않았습니다.</div>
 <div class="fields">
@@ -187,6 +187,7 @@ footer{text-align:center;font-size:13px;color:#60716b;padding:20px}
  const prefix=location.pathname.startsWith('/cgma/')?'/cgma':'';
  document.getElementById('home').href=prefix+'/';
  document.getElementById('booth').href=prefix+'/festival/2026/apply/';
+ document.getElementById('couponAdminEntry').href=prefix+'/festival/2026/coupon/admin/';
  const edge='https://renzehysxirjilvdxacv.supabase.co/functions/v1/cgma-festival-intake';
 const edgeKey='sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_';
 const api=edge+'/status',submitApi=edge+'/apply/coupon';
