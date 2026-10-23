@@ -139,7 +139,7 @@ async function fetchMonth(){
   }finally{state.loading=false}
   // An expired admin grant falls back to the public view instead of failing.
   if(revoked){state.token='';syncAdminUi();return fetchMonth()}
-  renderApp();renderPreview();
+  renderApp();renderPreview();renderHomeCalendar();
 }
 
 // ---- home preview ----
@@ -161,6 +161,49 @@ function renderPreview(){
     body.append(make('em','schedule-chip',item.category),make('strong','',item.title),make('small','',when(item)+(item.place?' · '+item.place:'')));
     a.append(date,body);li.append(a);preview.append(li);
   });
+}
+
+// ---- compact home calendar: same public rows as the full schedule ----
+function renderHomeCalendar(){
+  const root=document.getElementById('cgmaHomeCalendar');
+  if(!root)return;
+  root.replaceChildren();
+  root.setAttribute('aria-busy',state.loading?'true':'false');
+  const heading=make('div','cgma-compact-month');
+  const monthLabel=make('strong','',state.month.replace('-','년 ')+'월');
+  const actions=make('div','cgma-compact-controls');
+  function move(delta){state.month=shiftMonth(state.month,delta);state.selected='';fetchMonth()}
+  const prev=button('‹','',()=>move(-1)),next=button('›','',()=>move(1));
+  prev.setAttribute('aria-label','이전 달 일정');next.setAttribute('aria-label','다음 달 일정');
+  const current=button('오늘','cgma-calendar-today',()=>{state.month=today.slice(0,7);state.selected=today;fetchMonth()});
+  actions.append(prev,next,current);heading.append(monthLabel,actions);
+  const grid=make('div','cgma-compact-days');
+  grid.setAttribute('role','grid');grid.setAttribute('aria-label',monthLabel.textContent+' 일정');
+  WEEK.forEach((day,i)=>{
+    const label=make('span','cgma-compact-weekday',day);
+    label.setAttribute('role','columnheader');grid.append(label);
+  });
+  const first=weekdayOf(state.month+'-01');
+  for(let i=0;i<first;i++)grid.append(make('span','cgma-compact-day is-outside'));
+  for(let day=1;day<=daysIn(state.month);day++){
+    const date=state.month+'-'+String(day).padStart(2,'0');
+    const count=state.items.filter(item=>covers(item,date)).length;
+    const weekday=weekdayOf(date);
+    const cls='cgma-compact-day'+(weekday===0?' is-sun':weekday===6?' is-sat':'')+
+      (date===today?' is-today':'')+(date===state.selected?' is-selected':'')+(count?' has-events':'');
+    const el=button(String(day),cls,()=>{
+      state.selected=date;renderApp();renderHomeCalendar();
+      const link=document.querySelector('#nav a[href="#schedule"]');
+      if(link)link.click();else location.hash='schedule';
+    });
+    el.setAttribute('role','gridcell');
+    el.setAttribute('aria-label',dot(date)+(count?' 일정 '+count+'건':' 일정 없음')+' 전체 일정으로 이동');
+    if(count)el.title='일정 '+count+'건';
+    grid.append(el);
+  }
+  const legend=make('p','cgma-compact-legend');
+  legend.append(make('span','', '일정 있는 날은 초록색으로 표시됩니다.'));
+  root.append(heading,grid,legend);
 }
 
 // ---- full calendar ----

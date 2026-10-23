@@ -1,0 +1,144 @@
+/* 청계면상인회 2026 반응형 첫 화면 — 기존 관리자·회원·일정 서비스와 분리된 공개 UI 계층 */
+body.cgma-user-page{font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:#faf9f5;color:#192c28}
+body.cgma-user-page .header{background:rgba(255,255,255,.98);border-color:#e7eee8;box-shadow:0 4px 22px rgba(14,51,42,.055);padding:0 clamp(18px,3vw,56px)}
+body.cgma-user-page .header .brand{color:#153d32;gap:10px;flex-shrink:0}
+body.cgma-user-page .header .brand b{font-size:clamp(1.08rem,1.32vw,1.35rem);letter-spacing:-.05em}
+body.cgma-user-page .header .brand small{font-size:.54rem;letter-spacing:.12em}
+body.cgma-user-page .header nav{gap:clamp(2px,.35vw,7px);font-size:.78rem}
+body.cgma-user-page .header nav>a:not(.nav-cta){color:#263932;padding:.6rem .48rem;letter-spacing:-.035em}
+body.cgma-user-page .header nav>a:not(.nav-cta):hover{color:#0b664d;background:#edf7ef}
+body.cgma-user-page .header .nav-cta{border-color:#14513e;color:#14513e;font-size:.75rem;padding:.58rem .75rem}
+body.cgma-user-page .header .nav-cta:hover{background:#14513e;color:#fff}
+.cgma-nav-social{display:flex;align-items:center;gap:6px;margin:0 5px}
+.cgma-nav-social a{display:inline-flex;gap:5px;align-items:center;min-height:37px;padding:5px 9px;background:#f2f6f3;border-radius:100px;color:#184a3a;text-decoration:none;font-size:.73rem;font-weight:800}
+.cgma-nav-social a:first-child span{display:grid;place-items:center;background:#d82929;color:#fff;width:23px;height:20px;border-radius:6px;font-size:.62rem}
+.cgma-nav-social a:hover{background:#e2efe7}
+body.cgma-user-page .header .language-picker{min-height:37px}
+body.cgma-user-page .header .language-picker select{min-height:35px;padding:.28rem 1.45rem .28rem .58rem;font-size:.7rem}
+.cgma-home-stage{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(355px,.85fr);gap:18px;max-width:1550px;margin:18px auto 0;padding:0 clamp(14px,2.4vw,38px);align-items:stretch}
+.cgma-home-stage[hidden],.cgma-home-stage [hidden]{display:none!important}
+body.cgma-user-page .cgma-home-stage>.hero.cgma-photo-hero{display:block;position:relative;isolation:isolate;min-width:0;min-height:570px;height:100%;border-radius:19px;overflow:hidden;border:0;background:#123d32;box-shadow:0 12px 37px rgba(22,52,44,.10)}
+body.cgma-user-page .cgma-home-stage .cgma-hero-people{position:absolute;inset:0;width:100%;height:100%;min-height:0;z-index:0;background:#1d5143}
+body.cgma-user-page .cgma-home-stage .cgma-hero-people img{position:absolute;inset:0;width:100%;height:100%;min-height:0;max-height:none;object-fit:cover;object-position:center 42%}
+body.cgma-user-page .cgma-home-stage .cgma-hero-people:after{background:linear-gradient(90deg,rgba(5,31,25,.85) 0%,rgba(9,42,33,.45) 51%,rgba(6,29,25,.07) 100%),linear-gradient(0deg,rgba(1,21,18,.65),transparent 54%)}
+body.cgma-user-page .cgma-home-stage .cgma-banner-copy{position:absolute;inset:auto auto 0 0;z-index:2;width:min(100%,810px);display:flex;align-items:flex-start;justify-content:flex-end;gap:17px;text-align:left;padding:clamp(30px,5.4vw,80px) clamp(22px,4vw,72px);background:transparent}
+body.cgma-user-page .cgma-home-stage .cgma-community-label{background:rgba(245,247,225,.15);border:1px solid rgba(255,255,255,.4);color:#fff;font-size:.81rem;letter-spacing:0;padding:8px 13px}
+body.cgma-user-page .cgma-home-stage .cgma-legacy-art{position:absolute;top:-385px;left:clamp(20px,4vw,70px);padding:0;min-height:0;width:135px;opacity:.92;justify-content:flex-start}
+body.cgma-user-page .cgma-home-stage .cgma-historic-banner{display:block;width:135px;height:auto;max-height:75px;object-fit:contain;box-shadow:0 6px 21px #14291f70;border-radius:7px}
+body.cgma-user-page .cgma-home-stage .cgma-hero-message{color:#fff;font-family:"Gowun Batang","Noto Sans KR",serif;font-size:clamp(2.15rem,3.15vw,3.6rem);font-weight:700;letter-spacing:-.062em;line-height:1.25;margin:3px 0 0;text-shadow:0 3px 25px #0006}
+body.cgma-user-page .cgma-home-stage .cgma-hero-message strong{color:#ffe299;font-weight:700}
+body.cgma-user-page .cgma-home-stage .cgma-hero-desc{color:#f6faf7;line-height:1.8;font-size:clamp(.85rem,1.1vw,1rem);text-shadow:0 1px 8px #0005}
+.cgma-hero-cta{display:inline-flex;align-items:center;justify-content:space-between;gap:30px;padding:13px 20px;border:1px solid #dbeade;border-radius:30px;color:#fff;background:#11513e;font-weight:800;text-decoration:none;min-height:44px}
+.cgma-hero-cta:hover{background:#146a50;color:#fff}
+.cgma-hero-cta span{font-size:1.2rem}
+body.cgma-user-page .cgma-home-stage .cgma-hero-photo-note{top:17px;right:18px;bottom:auto;max-width:235px;font-size:.72rem;padding:7px 11px;background:rgba(5,37,27,.78)}
+.cgma-home-calendar{min-width:0;display:flex;flex-direction:column;padding:18px;background:#fff;border-radius:19px;border:1px solid #e0e9e2;box-shadow:0 10px 35px rgba(28,61,42,.055)}
+.cgma-home-calendar-head,.cgma-schedule-preview .schedule-preview-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cgma-home-calendar-head{border-bottom:1px solid #e8eee9;padding:0 0 12px}
+.cgma-home-calendar-head h2{margin:0;font-size:clamp(.98rem,1.25vw,1.2rem);letter-spacing:-.04em;color:#163e32}
+.cgma-home-calendar-head a,.cgma-schedule-preview .schedule-preview-head a{font-weight:800;font-size:.73rem;color:#0a6a4e;text-decoration:none;white-space:nowrap}
+.cgma-home-calendar-grid{padding:14px 0 8px;min-width:0}
+.cgma-compact-month{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.cgma-compact-month strong{font-size:1.03rem;color:#173e33;font-weight:850}
+.cgma-compact-controls{display:flex;gap:4px;align-items:center}
+.cgma-compact-month button{display:grid;place-items:center;border:1px solid #dfe8e2;background:#fff;color:#205342;border-radius:50%;width:34px;height:34px;min-width:34px;min-height:34px;cursor:pointer}
+.cgma-compact-month button:hover{background:#e8f3ec}
+.cgma-compact-month button.cgma-calendar-today{width:auto;min-width:51px;border-radius:99px;padding:0 8px;font-size:.74rem;font-weight:800}
+.cgma-compact-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
+.cgma-compact-weekday{display:grid;place-items:center;min-height:26px;font-size:.74rem;font-weight:700;color:#687a70}
+.cgma-compact-weekday:first-child,.cgma-compact-day.is-sun{color:#bc4b45}
+.cgma-compact-weekday:nth-child(7),.cgma-compact-day.is-sat{color:#3564b9}
+.cgma-compact-day{position:relative;display:grid;place-items:center;align-content:center;gap:1px;width:100%;aspect-ratio:1/1;min-width:0;min-height:36px;padding:4px 1px;color:#253830;background:#fff;border:1px solid #f0f3f0;border-radius:9px;font:inherit;font-size:.78rem;cursor:pointer}
+.cgma-compact-day:focus-visible{outline:3px solid #f3ca57;outline-offset:1px}
+.cgma-compact-day:hover{background:#f0f8f2}
+.cgma-compact-day.is-today{background:#e7f2e9;font-weight:900}
+.cgma-compact-day.is-selected{outline:2px solid #17614a;outline-offset:-2px}
+.cgma-compact-day.has-events{background:#e8f5ec;color:#114d3b;font-weight:900}
+.cgma-compact-day.has-events:after{content:"";position:absolute;bottom:4px;left:calc(50% - 2.5px);width:5px;height:5px;border-radius:50%;background:#1d815d}
+.cgma-compact-day.is-outside{visibility:hidden}
+.cgma-compact-legend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;color:#677a6e;font-size:.68rem;margin-top:9px}
+.cgma-compact-legend span:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle;background:#20835e}
+.cgma-home-calendar .cgma-schedule-preview{margin:8px 0 0;max-width:none;padding:13px 0 0;border:0;border-top:1px solid #e8eee9;border-radius:0;box-shadow:none;background:#fff;flex:1}
+.cgma-home-calendar .schedule-preview-head{margin:0 0 7px}
+.cgma-home-calendar .schedule-preview-head h3{margin:0;font-size:.96rem;color:#173e34}
+.cgma-home-calendar .schedule-preview-list{display:grid;grid-template-columns:minmax(0,1fr);gap:7px;margin:0;padding:0}
+.cgma-home-calendar .schedule-preview-item{min-width:0;border-radius:11px;overflow:hidden;background:#f7faf8}
+.cgma-home-calendar .schedule-preview-item a{padding:6px;gap:10px;min-width:0}
+.cgma-home-calendar .schedule-preview-date{min-width:45px;max-width:45px;min-height:52px;border-radius:8px;background:#e4f2e9;color:#14523d}
+.cgma-home-calendar .schedule-preview-date b{font-size:1.2rem}
+.cgma-home-calendar .schedule-preview-date small{color:#237653}
+.cgma-home-calendar .schedule-preview-body{min-width:0;flex:1}
+.cgma-home-calendar .schedule-preview-body .schedule-chip{font-size:.63rem}
+.cgma-home-calendar .schedule-preview-body strong{font-size:.79rem;line-height:1.45}
+.cgma-home-calendar .schedule-preview-body small{font-size:.68rem}
+.cgma-home-calendar .schedule-empty{padding:15px 8px;font-size:.84rem;color:#74837b}
+body.cgma-user-page .cgma-home-quick{padding:18px clamp(14px,2.4vw,38px) 6px;max-width:1550px}
+body.cgma-user-page .home-services{grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+body.cgma-user-page .home-services .cgma-quick-link{background:#fff!important;border:1px solid #e2eae3;border-radius:15px;box-shadow:0 5px 18px #21452c0c;min-height:95px}
+body.cgma-user-page .home-services .cgma-quick-link b{color:#1a4334}
+body.cgma-user-page .home-services .cgma-quick-link:hover{box-shadow:0 12px 25px #21452c1c}
+body.cgma-user-page .cgma-festival-alert{max-width:1474px!important;margin:15px auto!important;background:#fcf3ed!important;border:1px solid #f4e4d6}
+body.cgma-user-page .cgma-programs-strip{max-width:1474px}
+.cgma-social-home{max-width:1474px;margin:18px auto 30px;padding:24px;border-radius:19px;background:#fff;border:1px solid #e2eae3}
+.cgma-social-copy span{font-size:.65rem;color:#258160;letter-spacing:.16em;font-weight:900}
+.cgma-social-copy h2{margin:4px 0 2px;font-size:1.27rem;color:#173e32}
+.cgma-social-copy p{margin:0 0 16px;color:#667a6e;font-size:.82rem}
+.cgma-social-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.cgma-social-tile{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;border:1px solid #e8eee9;border-radius:13px;padding:17px 10px;color:#183f31;min-width:0}
+.cgma-social-tile>span{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:#e9f3ec;color:#14503c;font-size:1.3rem}
+.cgma-social-tile.social-youtube>span{background:#ffecec;color:#d32624}
+.cgma-social-tile.social-live>span{background:#fdf0f0;color:#c53333}
+.cgma-social-tile strong{font-size:.94rem}.cgma-social-tile small{font-size:.7rem;color:#62796d}
+.cgma-social-tile:hover{background:#f4faf6;border-color:#b9d7c3}
+@media(max-width:1230px){
+ body.cgma-user-page .header nav{display:none;position:absolute;top:84px;left:0;right:0;padding:18px 23px;background:#fff;flex-direction:column;align-items:stretch;gap:5px;max-height:calc(100dvh - 84px);overflow-y:auto;box-shadow:0 20px 45px #103b291c}
+ body.cgma-user-page .header nav.open{display:flex}
+ body.cgma-user-page .header .menu-btn{display:block;margin-left:auto}
+ body.cgma-user-page .header nav>a:not(.nav-cta){padding:11px 13px}
+ body.cgma-user-page .header .cgma-nav-social{margin:4px 0 8px;gap:9px}
+ body.cgma-user-page .header .cgma-nav-social a{flex:1;justify-content:center;min-height:44px}
+ body.cgma-user-page .header .language-picker{width:100%}
+ body.cgma-user-page .header .language-picker select{width:100%}
+}
+@media(max-width:960px){
+ .cgma-home-stage{grid-template-columns:minmax(0,1fr);max-width:780px;gap:12px}
+ body.cgma-user-page .cgma-home-stage>.hero.cgma-photo-hero{height:470px;min-height:470px}
+ .cgma-home-calendar{padding:18px}
+ .cgma-compact-day{min-height:43px}
+ body.cgma-user-page .home-services{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .cgma-social-home{margin:18px clamp(14px,2.4vw,38px)}
+}
+@media(max-width:720px){
+ body.cgma-user-page .header{height:70px;padding:0 16px}
+ body.cgma-user-page .header nav{top:70px;max-height:calc(100dvh - 70px);padding-bottom:90px}
+ body.cgma-user-page .header .brand b{font-size:1.04rem}
+ .cgma-home-stage{margin-top:10px;padding:0 10px;gap:10px}
+ body.cgma-user-page .cgma-home-stage>.hero.cgma-photo-hero{height:410px;min-height:410px;border-radius:15px}
+ body.cgma-user-page .cgma-home-stage .cgma-banner-copy{padding:24px 23px 27px;gap:12px;justify-content:flex-end}
+ body.cgma-user-page .cgma-home-stage .cgma-community-label{font-size:.7rem}
+ body.cgma-user-page .cgma-home-stage .cgma-hero-message{font-size:clamp(1.78rem,7vw,2.6rem)}
+ body.cgma-user-page .cgma-home-stage .cgma-hero-desc{font-size:.79rem}
+ body.cgma-user-page .cgma-home-stage .cgma-hero-people img{object-position:center 43%}
+ body.cgma-user-page .cgma-home-stage .cgma-legacy-art{top:-305px;left:23px;width:108px}
+ body.cgma-user-page .cgma-home-stage .cgma-historic-banner{width:108px}
+ body.cgma-user-page .cgma-home-stage .cgma-hero-photo-note{font-size:.62rem;right:10px;top:10px}
+ .cgma-home-calendar{padding:15px;border-radius:15px}
+ .cgma-compact-day{min-height:37px}
+ body.cgma-user-page .cgma-home-quick{padding:11px 10px}
+ body.cgma-user-page .home-services{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ body.cgma-user-page .home-services .cgma-quick-link{min-height:77px;padding:11px}
+ body.cgma-user-page .cgma-festival-alert{margin:10px!important;grid-template-columns:minmax(85px,112px) minmax(0,1fr)!important;gap:12px!important;padding:10px!important}
+ body.cgma-user-page .cgma-festival-alert a{font-size:.75rem!important}
+ .cgma-social-home{margin:15px 10px;padding:19px 12px}
+ .cgma-social-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .cgma-social-tile{padding:14px 6px}
+ .cgma-social-tile small{text-align:center}
+}
+@media(max-width:360px){
+ body.cgma-user-page .cgma-home-stage .cgma-hero-message{font-size:1.68rem}
+ body.cgma-user-page .cgma-home-stage .cgma-legacy-art{display:none}
+ .cgma-compact-days{gap:2px}
+ .cgma-compact-day{min-height:31px;font-size:.73rem}
+ .cgma-social-cards{grid-template-columns:1fr 1fr}
+}
+@media(prefers-reduced-motion:reduce){.cgma-home-stage *{scroll-behavior:auto;transition:none!important}}
