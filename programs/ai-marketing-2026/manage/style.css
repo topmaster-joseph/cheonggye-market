@@ -51,3 +51,21 @@ html,body{min-height:100%}
 .manage-page .manager-gate #m-pin-form .btn{min-height:44px}
 .manage-page .m-name:focus-visible,.manage-page .m-expand:focus-visible{outline:3px solid #087252;outline-offset:2px}
 @media(max-width:620px){.manage-page .manage table.m-roster{min-width:460px}.manage-page .m-detail-grid{grid-template-columns:1fr}.manage-page .m-roster th:nth-child(1){width:37%}}
+
+/* Signed-in roster managers can always find logout in the fixed header. */
+.top nav .cgma-manage-auth-login,.top nav .cgma-manage-auth-logout{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:42px;padding:9px 12px;border:1px solid #087252;
+  border-radius:10px;background:#eff7f2;color:#065a41;
+  font:inherit;font-size:14px;font-weight:800;line-height:1.5;
+  cursor:pointer;text-decoration:none
+}
+.top nav .cgma-manage-auth-logout{border-color:#9db6ad;background:#fff;color:#0f3c53}
+.top nav .cgma-manage-auth-logout:disabled{opacity:.65;cursor:wait}
+.top nav .cgma-manage-auth-message{align-self:center;font-size:12px;color:#a8321c;max-width:210px}
+.top nav .cgma-manage-auth-login:focus-visible,.top nav .cgma-manage-auth-logout:focus-visible{outline:3px solid #f0b63c;outline-offset:2px}
+@media(max-width:620px){
+  .top{align-items:flex-start;flex-wrap:wrap}
+  .top nav{width:100%;justify-content:flex-start}
+  .top nav .cgma-manage-auth-login,.top nav .cgma-manage-auth-logout{padding:8px 10px;min-height:42px;font-size:13px}
+}
