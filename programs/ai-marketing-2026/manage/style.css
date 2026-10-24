@@ -69,3 +69,23 @@ html,body{min-height:100%}
   .top nav{width:100%;justify-content:flex-start}
   .top nav .cgma-manage-auth-login,.top nav .cgma-manage-auth-logout{padding:8px 10px;min-height:42px;font-size:13px}
 }
+
+/* Inline receipt status and selected-applicant bulk actions. */
+.manage-page .m-bulk{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:12px;border:1px solid #c9dfd3;border-radius:12px;background:#f2f8f4}
+.manage-page .m-bulk label{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;flex-wrap:wrap}
+.manage-page .m-bulk select{width:auto!important;min-height:40px!important;padding:6px 10px!important;font-size:14px!important}
+.manage-page .m-bulk .btn{min-height:40px}
+.manage-page .m-bulk button:disabled{opacity:.55;cursor:not-allowed}
+.manage-page .m-bulk-count{font-weight:800;font-size:13px;color:#155843}
+.manage-page .manage table.m-roster{min-width:690px}
+.manage-page .m-roster th.m-select-th{width:46px;padding-left:12px}
+.manage-page .m-roster th:nth-child(2){width:32%}
+.manage-page .m-roster th:nth-child(3){width:19%}
+.manage-page .m-roster th:nth-child(4){width:29%}
+.manage-page .m-roster th:nth-child(5){width:16%}
+.manage-page .m-roster [data-select],.manage-page #m-check-all{width:20px;height:20px;accent-color:#087252;cursor:pointer}
+.manage-page .m-state-cell select{width:100%!important;min-width:88px!important;max-width:145px!important;min-height:38px!important;border-radius:8px}
+.manage-page .m-state-cell .saved{min-height:14px;height:auto}
+.manage-page .m-state-cell select:disabled{opacity:.55;cursor:wait}
+.manage-page .m-bulk :focus-visible,.manage-page .m-roster [data-select]:focus-visible,.manage-page #m-check-all:focus-visible,.manage-page .m-state-cell select:focus-visible{outline:3px solid #f0b63c;outline-offset:2px}
+@media(max-width:620px){.manage-page .m-bulk{padding:10px}.manage-page .manage table.m-roster{min-width:690px}}

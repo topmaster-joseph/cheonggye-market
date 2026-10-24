@@ -18,7 +18,7 @@ function boot({allowed=false,scoped=false,loggedIn=allowed||scoped,signOutFailur
     if(!elements.has(id))elements.set(id,{
       id,hidden:id==='manage'||id==='cgma-manage-logout',innerHTML:'',textContent:'',value:'',checked:false,disabled:false,href:'',
       listeners:{},classList:{add(x){classNames.push(x)},toggle(){}},
-      style:{},contains(){return false},addEventListener(event,handler){this.listeners[event]=handler},scrollIntoView(){}
+      style:{},contains(){return false},querySelectorAll(){return []},addEventListener(event,handler){this.listeners[event]=handler},scrollIntoView(){}
     });
     return elements.get(id);
   }
@@ -42,7 +42,7 @@ function boot({allowed=false,scoped=false,loggedIn=allowed||scoped,signOutFailur
     getElementById:elt,activeElement:null,documentElement:{classList:{add:n=>classNames.push(n)}}
   };
   const location={hash:'',pathname:'/programs/ai-marketing-2026/manage/',search:'',replace(to){redirects.push(to)}};
-  const context={window:{CGMA_PROGRAMS:api},document,location,setInterval:()=>1,setTimeout:()=>1,URL,Date,navigator:{}};
+  const context={window:{CGMA_PROGRAMS:api,confirm:()=>true},document,location,setInterval:()=>1,setTimeout:()=>1,URL,Date,navigator:{}};
   runInNewContext(source,context);
   return {events,elements,classNames,elt,redirects,get logoutCalls(){return logoutCalls}};
 }
@@ -108,7 +108,7 @@ test('compact roster reveals private fields only after an explicit row expand',(
   assert.match(source,/m-detail-card/);
   assert.match(source,/m-detail-grid/);
   assert.match(source,/m-detail-actions/);
-  assert.match(source,/ev\.target\.closest\('\.m-detail-actions'\)/);
+  assert.match(source,/target\.closest\('\.m-detail-actions'\)/);
 });
 
 test('verified education-only account opens roster without site-admin privileges',async()=>{
