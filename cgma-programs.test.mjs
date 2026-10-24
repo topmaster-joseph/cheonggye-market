@@ -61,7 +61,8 @@ test('AI 교육 public intake retains public RPCs while management is a separate
   assert.match(edu,/id="f-privacy" name="consent_privacy" required/);
   assert.match(edu,/개인정보 수집·이용 안내 보기/);
   assert.match(manageHtml,/name="robots" content="noindex,nofollow,noarchive"/);
-  assert.match(manageHtml,/id="manage" class="manage" hidden/);
+  assert.match(manageHtml,/id="manage" class="manage" aria-label/);
+  assert.match(manageHtml,/id="cgma-roster-login"[\s\S]*?Google 계정으로 로그인/);
   assert.match(manageHtml,/href="\.\.\/">참가 신청 페이지로 돌아가기/);
   assert.match(eduJs,/P\.whenAuthReady\(\)\.finally\(\(\)=>location\.replace\(P\.route/);
 });

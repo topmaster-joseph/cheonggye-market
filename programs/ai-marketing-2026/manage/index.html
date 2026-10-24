@@ -7,7 +7,7 @@
 <meta name="description" content="청계면상인회 승인 관리자 전용 AI 마케팅 교육 접수 및 출석 관리">
 <link rel="stylesheet" href="../../../cgma-programs.css?v=20261022-programs-v1">
 <link rel="stylesheet" href="../style.css?v=20261022-aiedu-v1">
-<link rel="stylesheet" href="./style.css?v=20261024-compact-roster-v2">
+<link rel="stylesheet" href="./style.css?v=20261024-roster-login-visible-v3">
 </head>
 <body>
 <header class="top">
@@ -25,9 +25,17 @@
     <p>승인된 상인회 관리자가 접수 상태·출석·정원을 관리합니다. 변경 사항은 서버에서 권한을 재검증하고 기록합니다.</p>
     <a class="manage-back" href="../">참가 신청 페이지로 돌아가기 →</a>
   </section>
-  <section id="manage" class="manage" hidden aria-label="신청현황 관리(관리자)"></section>
+  <section id="manage" class="manage" aria-label="신청현황 관리(관리자)">
+    <!-- Login stays visible even before JavaScript and when the auth SDK cannot load.
+         Applicant data remains protected exclusively by server-side roster RPCs. -->
+    <div class="manager-gate">
+      <h2>교육 신청현황 로그인</h2>
+      <p class="msg">교육 신청현황 담당자는 지정된 Google 계정으로 로그인해 주세요.</p>
+      <a class="cgp-go" id="cgma-roster-login" href="https://auth.ekodi.kr/?site=cgma&amp;direct=1&amp;return_to=https%3A%2F%2Fekodi.kr%2Fcgma%2Fprograms%2Fai-marketing-2026%2Fmanage%2F">Google 계정으로 로그인 →</a>
+    </div>
+  </section>
 </main>
 <script src="../../../site-path.js?v=20260902-root-path"></script>
-<script src="../../../cgma-programs.js?v=20261024-compact-roster-v2"></script>
-<script src="./app.js?v=20261024-compact-roster-v2"></script>
+<script src="../../../cgma-programs.js?v=20261024-roster-login-visible-v3"></script>
+<script src="./app.js?v=20261024-roster-login-visible-v3"></script>
 </body></html>
