@@ -14,6 +14,41 @@ const panel=$('manage');let admin=false,expandedId=null,rows=[],settings={capaci
 // Upgrade its return URL for the current domain, preserving the EKODI /cgma path.
 const initialLogin=$('cgma-roster-login');
 if(initialLogin)initialLogin.href=P.loginUrl();
+// Header controls are available on both EKODI and the CGMA custom domain.
+// Signing out immediately removes sensitive applicant data and reloads the guest gate.
+const headerLogin=$('cgma-manage-login'),headerLogout=$('cgma-manage-logout');
+const headerAuthMessage=$('cgma-manage-auth-message');
+if(headerLogin)headerLogin.href=P.loginUrl();
+function showSignedInHeader(){
+  if(headerLogin)headerLogin.hidden=true;
+  if(headerLogout)headerLogout.hidden=false;
+}
+if(headerLogout){
+  headerLogout.addEventListener('click',async()=>{
+    if(headerLogout.disabled)return;
+    headerLogout.disabled=true;
+    headerLogout.textContent='로그아웃 중…';
+    if(headerAuthMessage)headerAuthMessage.hidden=true;
+    try{
+      await P.signOut();
+      rows=[];expandedId=null;
+      panel.innerHTML='<div class="manager-gate"><h2>로그아웃되었습니다</h2><p class="msg">신청자 정보 화면을 종료했습니다.</p></div>';
+      if(headerLogin)headerLogin.hidden=false;
+      headerLogout.hidden=true;
+      // Hard navigation clears private DOM, cancels auto-refresh, and resets auth state.
+      location.replace(location.pathname+location.search);
+    }catch{
+      headerLogout.disabled=false;
+      headerLogout.textContent='로그아웃';
+      if(headerAuthMessage){
+        headerAuthMessage.textContent='로그아웃하지 못했습니다. 다시 시도해 주세요.';
+        headerAuthMessage.hidden=false;
+      }
+    }
+  });
+  // Signed-in users without this particular roster role must still be able to sign out.
+  P.currentUser().then(user=>{if(user)showSignedInHeader()}).catch(()=>{});
+}
 // A roster-scoped member is authenticated independently of CGMA site administration.
 function panelShell(){
   panel.innerHTML=`<div class="row" style="justify-content:space-between"><h2>신청현황 관리 <small style="font-weight:400;font-size:13px">관리자에게만 보입니다 · 변경 이력 기록</small></h2><div class="row"><button class="btn" id="m-refresh" type="button">새로고침</button><button class="btn" id="m-csv" type="button">엑셀(CSV) 받기</button><button class="btn" id="m-copy" type="button">확정자 번호 복사</button></div></div>
@@ -113,6 +148,7 @@ async function hasScopedRosterAccess(){
 (async()=>{
   admin=await P.isAdmin();
   if(admin){
+    showSignedInHeader();
     panelShell();
     panel.hidden=false;
     if(await loadAdmin()){
@@ -123,6 +159,7 @@ async function hasScopedRosterAccess(){
       $('m-msg').textContent='관리자 권한은 확인되었지만 신청현황을 불러오지 못했습니다. [새로고침]으로 다시 시도해 주세요.';
     }
   }else if(await hasScopedRosterAccess()){
+    showSignedInHeader();
     // This login is accepted only by the education roster. Do not add cgma-can-manage.
     panelShell();
     panel.hidden=false;
