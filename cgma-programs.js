@@ -100,6 +100,25 @@ function loginUrl(){
   }else if(back.hash.startsWith('#ekodi_token='))back.hash='';
   return 'https://auth.ekodi.kr/?site=cgma&direct=1&return_to='+encodeURIComponent(back.href);
 }
+// Shared Google-auth status for the public education registration header.
+// Only the Supabase Auth service can confirm a signed-in user; tokens alone do not
+// grant any education roster or CGMA administration rights.
+async function currentUser(){
+  await authReady;
+  try{
+    const sb=await supabaseClient();
+    const {data,error}=await sb.auth.getUser();
+    return error?null:(data?.user||null);
+  }catch{return null}
+}
+// Local sign-out clears this browser's EKODI session without revoking all other devices.
+async function signOut(){
+  await authReady;
+  const sb=await supabaseClient();
+  const {error}=await sb.auth.signOut({scope:'local'});
+  if(error)throw error;
+  adminCheck=undefined;
+}
 function safeHref(v){
   const raw=String(v||'');
   // Existing registry records still use the pre-split management deep link.
@@ -248,7 +267,7 @@ async function hub(el){
   if(location.hash==='#manage')bar.scrollIntoView({block:'start'});
 }
 
-window.CGMA_PROGRAMS=Object.freeze({rpc,token,isAdmin,loginUrl,whenAuthReady:()=>authReady,authError:()=>authReturnError,route,esc});
+window.CGMA_PROGRAMS=Object.freeze({rpc,token,isAdmin,loginUrl,currentUser,signOut,whenAuthReady:()=>authReady,authError:()=>authReturnError,route,esc});
 function boot(){
   expireStatic();
   const strip=document.getElementById('cgmaProgramsStrip');if(strip)homeStrip(strip);
