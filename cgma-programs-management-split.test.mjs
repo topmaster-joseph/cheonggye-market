@@ -11,19 +11,22 @@ const managerHtml=readFileSync(new URL('./programs/ai-marketing-2026/manage/inde
 const sharedJs=readFileSync(new URL('./cgma-programs.js',root),'utf8');
 
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
-function boot({allowed=false,scoped=false,listingFailure=false,authMessage=''}={}){
-  const events=[],classNames=[],elements=new Map();
+function boot({allowed=false,scoped=false,loggedIn=allowed||scoped,signOutFailure=false,listingFailure=false,authMessage=''}={}){
+  const events=[],classNames=[],elements=new Map(),redirects=[];
+  let logoutCalls=0;
   function elt(id){
     if(!elements.has(id))elements.set(id,{
-      id,hidden:id==='manage',innerHTML:'',textContent:'',value:'',checked:false,
-      classList:{add(x){classNames.push(x)},toggle(){}},
-      style:{},contains(){return false},addEventListener(){},scrollIntoView(){}
+      id,hidden:id==='manage'||id==='cgma-manage-logout',innerHTML:'',textContent:'',value:'',checked:false,disabled:false,href:'',
+      listeners:{},classList:{add(x){classNames.push(x)},toggle(){}},
+      style:{},contains(){return false},addEventListener(event,handler){this.listeners[event]=handler},scrollIntoView(){}
     });
     return elements.get(id);
   }
   const api={
     esc:s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;'),
     isAdmin:async()=>allowed,
+    currentUser:async()=>loggedIn?{id:'verified-user'}:null,
+    signOut:async()=>{logoutCalls++;if(signOutFailure)throw Error('cannot sign out')},
     token:()=>scoped?'scoped-verified-access-token':null,
     authError:()=>authMessage,
     loginUrl:()=> 'https://auth.ekodi.kr/?site=cgma&direct=1&return_to=https%3A%2F%2Fcgma.or.kr%2Fprograms%2Fai-marketing-2026%2Fmanage%2F',
@@ -38,9 +41,10 @@ function boot({allowed=false,scoped=false,listingFailure=false,authMessage=''}={
   const document={
     getElementById:elt,activeElement:null,documentElement:{classList:{add:n=>classNames.push(n)}}
   };
-  const context={window:{CGMA_PROGRAMS:api},document,location:{hash:''},setInterval:()=>1,setTimeout:()=>1,URL,Date,navigator:{}};
+  const location={hash:'',pathname:'/programs/ai-marketing-2026/manage/',search:'',replace(to){redirects.push(to)}};
+  const context={window:{CGMA_PROGRAMS:api},document,location,setInterval:()=>1,setTimeout:()=>1,URL,Date,navigator:{}};
   runInNewContext(source,context);
-  return {events,elements,classNames,elt};
+  return {events,elements,classNames,elt,redirects,get logoutCalls(){return logoutCalls}};
 }
 
 test('the public HTML and script never load a private roster or management handler',()=>{
@@ -132,4 +136,58 @@ test('education-only access uses server-validated scope and does not expose priv
   assert.match(source,/if\(!P\.token\?\.\(\)\)return false/);
   assert.match(source,/cgma_ai_edu_2026_admin_list/);
   assert.doesNotMatch(source,/dlaehd12345619|service_role|SUPABASE_SERVICE/i);
+});
+
+test('manager header keeps a static login button and an initially hidden logout control',()=>{
+  assert.match(managerHtml,/id="cgma-manage-login"[^>]*>Google 로그인/);
+  assert.match(managerHtml,/id="cgma-manage-logout" hidden>로그아웃/);
+  assert.match(managerHtml,/id="cgma-manage-auth-message"[^>]*aria-live="polite"/);
+});
+
+test('Google roster-only manager sees logout even without general CGMA admin access',async()=>{
+  const page=boot({scoped:true});
+  await tick();await tick();
+  assert.equal(page.elt('cgma-manage-login').hidden,true);
+  assert.equal(page.elt('cgma-manage-logout').hidden,false);
+  assert.match(page.elt('manage').innerHTML,/m-roster/);
+  assert.ok(!page.classNames.includes('cgma-can-manage'));
+});
+
+test('authenticated site administrator also sees logout in the roster page',async()=>{
+  const page=boot({allowed:true});
+  await tick();await tick();
+  assert.equal(page.elt('cgma-manage-logout').hidden,false);
+  assert.equal(page.elt('cgma-manage-login').hidden,true);
+});
+
+test('roster logout signs out locally, removes applicant HTML and navigates to guest gate',async()=>{
+  const page=boot({scoped:true});
+  await tick();await tick();
+  const button=page.elt('cgma-manage-logout');
+  assert.match(page.elt('manage').innerHTML,/m-roster/);
+  await button.listeners.click();
+  assert.equal(page.logoutCalls,1);
+  assert.doesNotMatch(page.elt('manage').innerHTML,/m-roster|엑셀\(CSV\)/);
+  assert.equal(button.hidden,true);
+  assert.equal(page.elt('cgma-manage-login').hidden,false);
+  assert.deepEqual(page.redirects,['/programs/ai-marketing-2026/manage/']);
+});
+
+test('logout errors preserve the page and show a retry message',async()=>{
+  const page=boot({scoped:true,signOutFailure:true});
+  await tick();await tick();
+  await page.elt('cgma-manage-logout').listeners.click();
+  assert.equal(page.logoutCalls,1);
+  assert.equal(page.elt('cgma-manage-logout').disabled,false);
+  assert.match(page.elt('manage').innerHTML,/m-roster/);
+  assert.equal(page.elt('cgma-manage-auth-message').hidden,false);
+  assert.equal(page.redirects.length,0);
+});
+
+test('guest sees login but no logout or applicant details',async()=>{
+  const page=boot({allowed:false,scoped:false,loggedIn:false});
+  await tick();await tick();
+  assert.equal(page.elt('cgma-manage-logout').hidden,true);
+  assert.equal(page.elt('cgma-manage-login').hidden,false);
+  assert.doesNotMatch(page.elt('manage').innerHTML,/m-roster|휴대폰 번호/);
 });
