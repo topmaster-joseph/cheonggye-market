@@ -54,7 +54,9 @@ test('the public HTML and script never load a private roster or management handl
 
 test('the standalone management HTML is noindex, with no public application form',()=>{
   assert.match(managerHtml,/noindex,nofollow,noarchive/);
-  assert.match(managerHtml,/id="manage" class="manage" hidden/);
+  assert.match(managerHtml,/id="manage" class="manage" aria-label/);
+  assert.match(managerHtml,/id="cgma-roster-login"[\s\S]*?Google 계정으로 로그인/);
+  assert.doesNotMatch(managerHtml,/name="consent_privacy"|data-status|cgma_ai_edu_2026_admin_list/);
   assert.doesNotMatch(managerHtml,/id="apply"|id="lookup"|name="consent_privacy"/);
 });
 
