@@ -10,6 +10,10 @@ const digits=v=>String(v||'').replace(/\D/g,'');
 const fmtPhone=v=>{const d=digits(v).slice(0,11);if(d.length<4)return d;if(d.length<8)return d.slice(0,3)+'-'+d.slice(3);return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4)};
 const rpc=(fn,body,auth)=>P.rpc(fn,body,{auth});
 const panel=$('manage');let admin=false,expandedId=null,rows=[],settings={capacity:15,is_open:true};
+// The static login CTA is in the HTML before authentication scripts run.
+// Upgrade its return URL for the current domain, preserving the EKODI /cgma path.
+const initialLogin=$('cgma-roster-login');
+if(initialLogin)initialLogin.href=P.loginUrl();
 // A roster-scoped member is authenticated independently of CGMA site administration.
 function panelShell(){
   panel.innerHTML=`<div class="row" style="justify-content:space-between"><h2>신청현황 관리 <small style="font-weight:400;font-size:13px">관리자에게만 보입니다 · 변경 이력 기록</small></h2><div class="row"><button class="btn" id="m-refresh" type="button">새로고침</button><button class="btn" id="m-csv" type="button">엑셀(CSV) 받기</button><button class="btn" id="m-copy" type="button">확정자 번호 복사</button></div></div>
