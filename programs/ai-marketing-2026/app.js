@@ -10,6 +10,36 @@ const digits=v=>String(v||'').replace(/\D/g,'');
 const fmtPhone=v=>{const d=digits(v).slice(0,11);if(d.length<4)return d;if(d.length<8)return d.slice(0,3)+'-'+d.slice(3);return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4)};
 const rpc=(fn,body,auth)=>P.rpc(fn,body,{auth});
 
+// The application stays open to guests; the Google login/logout header merely
+// reflects a validated EKODI session and does not authorize private roster RPCs.
+const loginLink=$('ai-edu-login'),logoutButton=$('ai-edu-logout');
+async function refreshAuthControls(){
+  if(!loginLink||!logoutButton)return;
+  loginLink.href=P.loginUrl();
+  const user=await P.currentUser();
+  loginLink.hidden=Boolean(user);
+  logoutButton.hidden=!user;
+  logoutButton.disabled=false;
+  logoutButton.textContent='로그아웃';
+}
+if(loginLink&&logoutButton){
+  logoutButton.addEventListener('click',async()=>{
+    logoutButton.disabled=true;
+    logoutButton.textContent='로그아웃 중…';
+    try{
+      await P.signOut();
+      await refreshAuthControls();
+    }catch{
+      logoutButton.disabled=false;
+      logoutButton.textContent='로그아웃';
+      const status=$('ai-edu-auth-status');
+      if(status){status.hidden=false;status.textContent='로그아웃에 실패했습니다. 다시 시도해 주세요.'}
+    }
+  });
+  // A static sign-in link is present even when scripts or Auth are unavailable.
+  refreshAuthControls();
+}
+
 ['f-phone','l-phone'].forEach(id=>$(id).addEventListener('input',e=>{e.target.value=fmtPhone(e.target.value)}));
 const box=$('sessions');
 SESSIONS.forEach(([n,d])=>{const l=document.createElement('label');l.innerHTML=`<input type="checkbox" name="available_sessions" id="f-s-${n}" value="${n}"><b>${n}회 · ${d}</b>`;box.append(l)});
