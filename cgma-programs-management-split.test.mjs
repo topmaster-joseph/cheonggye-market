@@ -108,7 +108,7 @@ test('compact roster reveals private fields only after an explicit row expand',(
   assert.match(source,/m-detail-card/);
   assert.match(source,/m-detail-grid/);
   assert.match(source,/m-detail-actions/);
-  assert.match(source,/ev\.target\.closest\('\.m-detail-actions'\)/);
+  assert.match(source,/target\.closest\('\.m-detail-actions'\)/);
 });
 
 test('verified education-only account opens roster without site-admin privileges',async()=>{
