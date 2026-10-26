@@ -94,6 +94,15 @@ $('lookup').addEventListener('submit',async ev=>{
     out.textContent='';const b=document.createElement('b');b.textContent=`${r.receipt_no} · ${r.store_name}`;const s=document.createElement('span');s.className='pill st-'+r.status;s.textContent=label;out.append(b,' ',s);
   }catch{out.textContent='연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.'}
 });
+// 하단 관리자 진입: 로그인 전에는 중앙 로그인 후 신청현황 화면으로 돌아오고,
+// 이미 로그인했으면 신청현황 화면으로 바로 이동한다. 권한은 신청현황 화면과 DB가 다시 확인한다.
+(async()=>{
+  const entry=$('ai-edu-admin-entry'),label=$('ai-edu-admin-entry-label');
+  if(!entry)return;
+  const manageHref=P.route('/programs/ai-marketing-2026/manage/');
+  entry.href='https://auth.ekodi.kr/?site=cgma&direct=1&return_to='+encodeURIComponent(new URL(manageHref,location.origin).href);
+  try{await P.whenAuthReady();if(await P.currentUser()){entry.href=manageHref;label.textContent='신청현황 바로 보기';}}catch{}
+})();
 // Legacy bookmarks from the previous combined screen must remain functional.
 // Finish any central-auth OTP handoff before moving to the separate admin page.
 if(location.hash==='#manage'){
