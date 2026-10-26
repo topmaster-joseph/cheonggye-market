@@ -96,3 +96,13 @@ legend{width:100%;font-weight:800;font-size:15px;color:var(--g);padding:0 0 8px;
   .top nav{width:100%;justify-content:flex-start}
   .top nav a,.top nav .ai-edu-auth-login,.top nav .ai-edu-auth-logout{padding:8px 10px;font-size:13px;min-height:42px}
 }
+
+/* 시간 안내 둘째 줄, 하단 관리자 진입 */
+.facts dd .fact-note{display:block;margin-top:2px;font-size:12px;font-weight:500;color:#bcd6d0}
+.admin-entry{margin:34px 0 0;padding:18px;border-radius:16px;background:#fff;border:1px solid var(--line);display:grid;gap:10px;justify-items:start}
+.admin-entry h2{margin:0;font-size:17px;color:var(--navy)}
+.admin-entry p{margin:0;font-size:14px;color:var(--muted)}
+.admin-google{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 18px 0 6px;border-radius:999px;border:1.5px solid #c9d6d2;background:#fff;color:#1f2d33;font-weight:700;font-size:15px;text-decoration:none}
+.admin-google .g{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#f1f4f3;color:#4285f4;font-weight:900;font-size:18px;font-family:Arial,sans-serif}
+.admin-google:hover{border-color:var(--g)}
+.admin-google:focus-visible{outline:3px solid #f0b63c;outline-offset:2px}
