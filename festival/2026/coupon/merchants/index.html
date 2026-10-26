@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="2026 청계 누구나 두:드림 축제 5천원 쿠폰 사용 가능 상가 목록">
+<title>5천원 쿠폰 사용 가능 상가 | 청계면상인회</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Pretendard","Noto Sans KR",sans-serif;color:#1c303a;background:#f4f8f5}
+*{box-sizing:border-box}body{margin:0}a{color:#086343}
+header{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff;box-shadow:0 3px 20px #113a3518;padding:14px max(18px,calc((100% - 1024px)/2))}
+header a{font-weight:850;text-decoration:none;color:#154c40}header .pill{font-size:13px;background:#e9f6ed;padding:10px 13px;border-radius:30px}
+main{width:min(1024px,calc(100% - 32px));margin:25px auto 65px}
+.lead{background:#144a3f;color:#fff;border-radius:22px;padding:30px}
+.lead small{font-weight:800;letter-spacing:.12em}.lead h1{font-size:clamp(28px,5.5vw,48px);letter-spacing:-.05em;line-height:1.2;margin:10px 0}
+.lead p{margin:0;line-height:1.75;color:#dcefe7}
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:22px 0 14px}
+.tools input{flex:1 1 260px;font:inherit;padding:13px 15px;border-radius:12px;border:1px solid #b5c7c1;background:#fff}
+.count{font-weight:850;color:#14753a}
+.state{background:#fff;border-radius:16px;padding:22px;line-height:1.75;color:#53676b;box-shadow:0 5px 15px #1a42400e}
+.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0;margin:0;list-style:none}
+.card{background:#fff;border-radius:16px;padding:20px 22px;box-shadow:0 5px 15px #1a42400e;border-left:5px solid #0a7962}
+.card h2{font-size:19px;margin:0 0 8px;letter-spacing:-.02em}
+.card p{margin:4px 0;color:#425a5f;font-size:14px;line-height:1.65}.card b{color:#1c303a;font-weight:750}
+.badge{display:inline-block;font-size:12px;font-weight:850;background:#e4f6e8;color:#14753a;border-radius:20px;padding:3px 10px;margin-bottom:8px}
+.notice{background:#eef7f2;border-left:4px solid #238060;padding:14px 17px;border-radius:8px;margin:22px 0;font-size:14px;line-height:1.8}
+.links{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:30px}
+.links a{background:#fff;border:1px solid #cae2d4;border-radius:12px;padding:12px 19px;text-decoration:none;font-weight:800}
+footer{text-align:center;font-size:13px;color:#60716b;padding:20px}
+@media(max-width:720px){.list{grid-template-columns:1fr}.lead{padding:22px}}
+</style></head>
+<body>
+<header><a id="home" href="/">청계면상인회</a><a class="pill" id="applyTop" href="../">상가 참여 신청 →</a></header>
+<main>
+<section class="lead">
+ <small>2026 DU:DREAM · COUPON</small>
+ <h1>5천원 쿠폰 사용 가능 상가</h1>
+ <p>2026 청계 누구나 두:드림 축제(10월 28일 수요일 11:00~17:00) 쿠폰을 사용할 수 있도록 청계면상인회가 <strong>참여를 승인한 상가</strong>입니다.</p>
+</section>
+<div class="tools" role="search">
+ <label for="q" class="visually-hidden" style="position:absolute;left:-10000px">상호·품목 검색</label>
+ <input id="q" type="search" placeholder="상호나 품목으로 찾기 (예: 커피, 치킨)" autocomplete="off" disabled>
+ <span class="count" id="count" aria-live="polite"></span>
+</div>
+<div id="state" class="state" role="status">승인 상가 목록을 불러오는 중입니다.</div>
+<ul id="list" class="list" hidden></ul>
+<div class="notice">목록은 상인회 관리자가 승인한 상가만 표시하며, 연락처 등 개인정보는 공개하지 않습니다. 쿠폰 사용·정산 세부 조건은 상인회 공지를 따릅니다. 승인 직후 반영까지 최대 1분이 걸릴 수 있습니다.</div>
+<nav class="links" aria-label="관련 안내"><a id="apply" href="../">쿠폰 사용 상가 참여 신청 ↗</a><a href="tel:01035018542">문의 010-3501-8542</a></nav>
+</main>
+<footer>청계면상인회 · cgma.or.kr · 010-3501-8542</footer>
+<script>
+(()=>{
+ const prefix=location.pathname.startsWith('/cgma/')?'/cgma':'';
+ document.getElementById('home').href=prefix+'/';
+ const edge='https://renzehysxirjilvdxacv.supabase.co/functions/v1/cgma-festival-intake';
+ const edgeKey='sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_';
+ const $=id=>document.getElementById(id);
+ const state=$('state'),list=$('list'),q=$('q'),count=$('count');
+ let merchants=[];
+ const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,'');
+ function card(m){
+  const li=document.createElement('li');li.className='card';
+  const badge=document.createElement('span');badge.className='badge';badge.textContent='쿠폰 사용 가능';
+  const h=document.createElement('h2');h.textContent=m.shopName;
+  const loc=document.createElement('p');const lb=document.createElement('b');lb.textContent='위치 ';loc.append(lb,document.createTextNode(m.location));
+  const it=document.createElement('p');const ib=document.createElement('b');ib.textContent='품목 ';it.append(ib,document.createTextNode(m.items));
+  li.append(badge,h,loc,it);return li;
+ }
+ function render(){
+  const key=norm(q.value);
+  const shown=key?merchants.filter(m=>norm(m.shopName+m.items+m.location).includes(key)):merchants;
+  list.replaceChildren(...shown.map(card));
+  count.textContent=key?`검색 결과 ${shown.length}곳 / 전체 ${merchants.length}곳`:`전체 ${merchants.length}곳`;
+  list.hidden=shown.length===0;
+  state.hidden=shown.length>0;
+  if(!shown.length)state.textContent=merchants.length?'검색 조건에 맞는 상가가 없습니다.':'아직 승인된 쿠폰 사용 상가가 없습니다. 상인회 심사가 끝나는 대로 이곳에 표시됩니다.';
+ }
+ async function load(){
+  try{
+   const res=await fetch(edge+'/public/coupon-merchants',{headers:{accept:'application/json',apikey:edgeKey}});
+   const data=await res.json();
+   if(!res.ok||data.ok!==true||!Array.isArray(data.merchants))throw Error('bad');
+   merchants=data.merchants.filter(m=>m&&typeof m.shopName==='string');
+   q.disabled=false;render();
+  }catch{
+   state.textContent='목록을 불러오지 못했습니다. 잠시 후 새로고침하거나 상인회(010-3501-8542)로 문의해 주세요.';
+  }
+ }
+ q.addEventListener('input',render);
+ load();
+})();
+</script>
+</body>
+</html>

@@ -209,6 +209,16 @@ export function createHandler({projectUrl,serviceKey,anonKey,fetchImpl=fetch,now
         return response({ok:true,boothOpen:s.booth_open,couponOpen:s.coupon_open,capacity:5,couponValue:5000,deadline:null},200,origin);
       }catch{return response({ok:false,error:'backend_unavailable'},503,origin);}
     }
+    // Public approved-merchant list: shop name, location and items only — never phone, receipt or applicant data.
+    if(request.method==='GET'&&route==='public/coupon-merchants'){
+      try{
+        const rows = await db('cgma_festival_2026_coupon_public?select=shop_name,location_text,items&order=shop_name.asc&limit=500');
+        const merchants = (Array.isArray(rows)?rows:[]).map(r=>({shopName:String(r.shop_name??''),location:String(r.location_text??''),items:String(r.items??'')}));
+        const res = response({ok:true,eventId:EVENT,couponValue:5000,count:merchants.length,merchants},200,origin);
+        res.headers.set('cache-control','public, max-age=60');
+        return res;
+      }catch{return response({ok:false,error:'backend_unavailable'},503,origin);}
+    }
     if(request.method==='POST'&&route==='share/view'){
       try{return await shareView(request,origin);}
       catch{return response({ok:false,error:'backend_unavailable'},503,origin);}
