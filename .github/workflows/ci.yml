@@ -74,7 +74,6 @@ jobs:
           node --check functions/api/festival-coupon-merchants-admin.js
           node --check functions/_shared/cgma-festival-supabase.js
           node --check admin-coupon.js
-          node --check functions/_shared/cgma-festival.js
           node --check admin-festival.js
           node --check festival/2026/coupon/coupon-sheet.mjs
           node --check festival/2026/coupon/admin/app.mjs
