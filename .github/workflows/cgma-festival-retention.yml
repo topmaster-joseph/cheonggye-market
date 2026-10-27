@@ -1,4 +1,8 @@
 name: CGMA Festival Applicant Retention
+# Festival applicant data is stored in Supabase and deleted there by the pg_cron job
+# recorded in supabase/migrations/20261015171402_cgma_festival_2026_retention_cron.sql.
+# This workflow verifies that the job stays recorded and, once the deadline has passed,
+# that the public approved-merchant list is empty. It fails if retention has not happened.
 on:
   schedule:
     - cron: '15 3 * * *'
@@ -6,18 +10,29 @@ on:
 permissions:
   contents: read
 jobs:
-  expire:
+  verify:
     runs-on: ubuntu-latest
     timeout-minutes: 6
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v7
-      - name: Require authorized retention DB access
+      - name: Retention job is recorded for both applicant tables
         run: |
-          test -n "$CLOUDFLARE_API_TOKEN"
-          test -n "$CLOUDFLARE_ACCOUNT_ID"
-      - name: Delete expired festival applicant personal data
+          f=supabase/migrations/20261015171402_cgma_festival_2026_retention_cron.sql
+          grep -q "cgma-festival-2026-applicant-retention" "$f"
+          grep -q "DELETE FROM public.cgma_festival_2026_booth WHERE now() >= timestamptz '2027-01-28 00:00:00+09'" "$f"
+          grep -q "DELETE FROM public.cgma_festival_2026_coupon_merchant WHERE now() >= timestamptz '2027-01-28 00:00:00+09'" "$f"
+          if grep -rqn "cgma_festival2026_applications" functions; then
+            echo "::error::A Cloudflare D1 copy of festival applicants reappeared; it would bypass Supabase retention"; exit 1
+          fi
+      - name: Applicant data is gone after the deadline
         run: |
-          npx --yes wrangler@4.129.0 d1 execute cheonggye-market-notices --remote --command="DELETE FROM cgma_festival2026_applications WHERE date('now') >= '2027-01-28' AND event_id='cgma-du-dream-2026';"
+          # The cron runs at 16:12 UTC (01:12 KST on 2027-01-28); check from the following day.
+          if [ "$(TZ=Asia/Seoul date +%Y%m%d)" -lt 20270129 ]; then
+            echo "Retention deadline not reached; nothing to verify yet."; exit 0
+          fi
+          body=$(curl -fsS --retry 2 --retry-delay 15 --retry-all-errors -H 'Origin: https://cgma.or.kr' \
+            https://renzehysxirjilvdxacv.supabase.co/functions/v1/cgma-festival-intake/public/coupon-merchants)
+          count=$(printf '%s' "$body" | jq -r '.count')
+          if [ "$count" != "0" ]; then
+            echo "::error::Coupon merchant rows still public after the retention deadline (count=$count)"; exit 1
+          fi
