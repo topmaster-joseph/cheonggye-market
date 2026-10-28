@@ -100,7 +100,7 @@ $('lookup').addEventListener('submit',async ev=>{
   const entry=$('ai-edu-admin-entry'),label=$('ai-edu-admin-entry-label');
   if(!entry)return;
   const manageHref=P.route('/programs/ai-marketing-2026/manage/');
-  entry.href='https://auth.ekodi.kr/?site=cgma&direct=1&return_to='+encodeURIComponent(new URL(manageHref,location.origin).href);
+  entry.href='https://ekodi.kr/auth/?site=cgma&direct=1&return_to='+encodeURIComponent(new URL(manageHref,location.origin).href);
   try{await P.whenAuthReady();if(await P.currentUser()){entry.href=manageHref;label.textContent='신청현황 바로 보기';}}catch{}
 })();
 // Legacy bookmarks from the previous combined screen must remain functional.
