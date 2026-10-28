@@ -63,7 +63,8 @@ function setup({href='https://cgma.or.kr/programs/ai-marketing-2026/#manage',sto
 test('management deep link stores view in allowlisted return_to query, not a fragile hash',()=>{
   const h=setup();
   const auth=new URL(h.api.loginUrl());
-  assert.equal(auth.origin,'https://auth.ekodi.kr');
+  assert.equal(auth.origin,'https://ekodi.kr');
+  assert.equal(auth.pathname,'/auth/');
   assert.equal(auth.searchParams.get('site'),'cgma');
   assert.equal(auth.searchParams.get('direct'),'1');
   const back=new URL(auth.searchParams.get('return_to'));
