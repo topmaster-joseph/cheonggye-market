@@ -132,6 +132,27 @@ jobs:
           check_route "$BASE_URL" "/programs/ai-marketing-2026/manage/" 'noindex,nofollow,noarchive'
           check_route "$BASE_URL" "/programs/ai-marketing-2026/manage/app.js" "cgma_ai_edu_2026_admin_list"
           check_route "$BASE_URL" "/cgma-programs.js" "whenAuthReady:()=>authReady"
+          # Fail closed when any deployed login surface still points at a retired auth subdomain.
+          # Verify both the Pages upstream and the actual ekodi.kr/cgma public gateway.
+          check_auth_entry() {
+            local url="$1" expected="$2" body
+            for attempt in $(seq 1 12); do
+              body="$(curl -fsSL --max-time 15 "${url}?release=${GITHUB_SHA}&auth_check=${attempt}" 2>/dev/null || true)"
+              if [[ "$body" == *"$expected"* ]] && [[ "$body" != *"auth.ekodi.kr"* ]]; then
+                echo "OK canonical login entry: ${url}"
+                return 0
+              fi
+              sleep 5
+            done
+            echo "::error::Canonical EKODI login entry was not verified: ${url}"
+            return 1
+          }
+          for site_base in "$BASE_URL" "https://ekodi.kr/cgma"; do
+            check_auth_entry "$site_base/programs/ai-marketing-2026/manage/" 'href="https://ekodi.kr/auth/?site=cgma&amp;direct=1&amp;return_to='
+            check_auth_entry "$site_base/programs/ai-marketing-2026/" 'href="https://ekodi.kr/auth/?site=cgma&amp;direct=1&amp;return_to='
+            check_auth_entry "$site_base/programs/ai-marketing-2026/app.js" "entry.href='https://ekodi.kr/auth/?site=cgma&direct=1&return_to='"
+            check_auth_entry "$site_base/cgma-programs.js" "return 'https://ekodi.kr/auth/?site=cgma&direct=1&return_to='"
+          done
           check_route "$BASE_URL" "/ai-education/" "cgma-inline-management.js"
           check_route "$BASE_URL" "/cgma-inline-management.js" "sessionStorageKey='sb-renzehysxirjilvdxacv-auth-token'"
           check_route "$BASE_URL" "/ai-education/app.js" "const questions = ["
