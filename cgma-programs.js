@@ -98,7 +98,7 @@ function loginUrl(){
     back.hash='';
     back.searchParams.set(RETURN_KEY,'manage');
   }else if(back.hash.startsWith('#ekodi_token='))back.hash='';
-  return 'https://auth.ekodi.kr/?site=cgma&direct=1&return_to='+encodeURIComponent(back.href);
+  return 'https://ekodi.kr/auth/?site=cgma&direct=1&return_to='+encodeURIComponent(back.href);
 }
 // Shared Google-auth status for the public education registration header.
 // Only the Supabase Auth service can confirm a signed-in user; tokens alone do not
