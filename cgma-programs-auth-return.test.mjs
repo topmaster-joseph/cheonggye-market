@@ -118,3 +118,18 @@ test('cancelled login recovers manage view and provides a retry message',async()
   assert.equal(h.location.hash,'#manage');
   assert.match(h.api.authError(),/다시 로그인/);
 });
+
+
+test('CGMA AI marketing entry links never refer to auth subdomains',()=>{
+  const pages=[
+    './cgma-programs.js',
+    './programs/ai-marketing-2026/app.js',
+    './programs/ai-marketing-2026/index.html',
+    './programs/ai-marketing-2026/manage/index.html'
+  ];
+  for(const page of pages){
+    const content=readFileSync(new URL(page,import.meta.url),'utf8');
+    assert.ok(content.includes('https://ekodi.kr/auth/'),page+' must use canonical EKODI authentication');
+    assert.doesNotMatch(content,/https?:\/\/auth\.ekodi\.kr(?:\/|\?|["'])/i,page+' must not use legacy auth hostname');
+  }
+});
