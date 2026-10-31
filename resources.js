@@ -26,8 +26,12 @@
     featured.hidden=!hero;
     featured.innerHTML=hero?`<a href="${esc(href(hero))}"><span>${esc(hero.title)}</span><span aria-hidden="true">→</span></a>`:'';
     const cards=hero?visible.filter(item=>item.id!==hero.id):visible;
-    root.innerHTML=cards.length?cards.map(card).join(''):'<div class="resource-loading">조건에 맞는 자료가 없습니다.</div>';
-    if(result)result.textContent=`${visible.length}개 자료`;
+    // The mascot archive is a permanent public introduction, independent of D1's dynamic resource catalog.
+    // Never expose editable AI originals or private Drive URLs from the public resource listing.
+    const mascotVisible=(filter==='all'||filter==='member')&&(!q||'청깨비 마스코트 청계거리 브랜드 청춘이 계속되는 거리 캐릭터 저작권'.includes(q));
+    const mascotCard='<a class="resource-card" href="'+esc(route('/mascot/'))+'"><span class="resource-type">상권브랜드·캐릭터</span><h3>청깨비 · 청계거리 공식 마스코트</h3><p>청계거리 캐릭터 소개, 브랜드 가이드 원본 보관 안내와 저작권·상표 이용 기준</p><span class="resource-action">청깨비 만나기 →</span></a>';
+    root.innerHTML=(mascotVisible?mascotCard:'')+(cards.length?cards.map(card).join(''):(mascotVisible?'':'<div class="resource-loading">조건에 맞는 자료가 없습니다.</div>'));
+    if(result)result.textContent=`${visible.length+(mascotVisible?1:0)}개 자료`;
   }
   document.querySelectorAll('[data-resource-filter]').forEach(button=>button.addEventListener('click',()=>{
     document.querySelectorAll('[data-resource-filter]').forEach(item=>item.classList.remove('active'));
