@@ -31,6 +31,31 @@ try{
   result.inputs=await page.locator('input').evaluateAll(inputs=>inputs.filter(x=>{const b=x.getBoundingClientRect();return b.width>0&&b.height>0}).slice(0,65).map(x=>({id:x.id,name:x.name,placeholder:x.placeholder,aria:x.getAttribute('aria-label'),type:x.type,outer:x.outerHTML.slice(0,260)})));
   result.buttons=await page.locator('button').evaluateAll(buttons=>buttons.filter(x=>{const b=x.getBoundingClientRect();return b.width>0&&b.height>0}).slice(0,45).map(x=>({id:x.id,text:(x.innerText||x.getAttribute('aria-label')||'').trim().slice(0,70),outer:x.outerHTML.slice(0,220)})));
   await page.screenshot({path:ROOT+'/trademark-screen.png',fullPage:false});
+  // Submit one explicitly requested public trademark-name search.
+  // KIPRIS uses a dedicated trademark search field (TN), not a generic all-rights search.
+  try{
+    const detail=page.locator('#btnOpenSearchDetail');
+    if(await detail.isVisible())await detail.click({timeout:7000});
+    const field=page.locator('#sd010301_g05_text');
+    await field.waitFor({state:'visible',timeout:12000});
+    await field.fill('청깨비');
+    const exact=page.locator('#ktmExactMatch');
+    if(await exact.count())await exact.check({force:true});
+    result.searchField='TN';
+    result.exactMatch=true;
+    const searchButton=page.getByRole('button',{name:'검색하기',exact:true}).last();
+    result.matchingSearchButtons=await page.getByRole('button',{name:'검색하기',exact:true}).count();
+    await searchButton.click({timeout:12000});
+    await page.waitForTimeout(5500);
+    result.searchUrl=page.url();
+    result.searchTitle=await page.title();
+    result.searchVisibleText=(await page.locator('body').innerText()).slice(0,13500);
+    await page.screenshot({path:ROOT+'/cheongkkaebi-search.png',fullPage:false});
+    result.notes.push('TN field query submitted. Search result content captured separately, not auto-certified.');
+  }catch(error){
+    result.notes.push('TN search interaction could not be verified: '+String(error?.message||error).slice(0,500));
+  }
+
   result.notes.push('Real public page loaded. Selector reconnaissance only: result counts are not asserted without verified query.');
   result.forbiddenRequests=forbidden.length;
 }catch(e){
