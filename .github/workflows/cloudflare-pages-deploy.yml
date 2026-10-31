@@ -152,6 +152,13 @@ jobs:
             check_auth_entry "$site_base/programs/ai-marketing-2026/" 'href="https://ekodi.kr/auth/?site=cgma&amp;direct=1&amp;return_to='
             check_auth_entry "$site_base/programs/ai-marketing-2026/app.js" "entry.href='https://ekodi.kr/auth/?site=cgma&direct=1&return_to='"
             check_auth_entry "$site_base/cgma-programs.js" "return 'https://ekodi.kr/auth/?site=cgma&direct=1&return_to='"
+            # Homepage, member, client, schedule and bridge logins were still on the
+            # retired host (unreachable as of 2026-10-31); keep them on the hub too.
+            check_auth_entry "$site_base/" 'href="https://ekodi.kr/auth/?site=cgma&amp;direct=1'
+            check_auth_entry "$site_base/central-auth-bridge.js" 'https://ekodi.kr/auth/?site='
+            check_auth_entry "$site_base/member.js" 'https://ekodi.kr/auth/?site='
+            check_auth_entry "$site_base/client.js" 'https://ekodi.kr/auth/?site=cgma-client'
+            check_auth_entry "$site_base/schedule-board.js" "https://ekodi.kr/auth/?site=cgma&direct=1&return_to="
           done
           check_route "$BASE_URL" "/ai-education/" "cgma-inline-management.js"
           check_route "$BASE_URL" "/cgma-inline-management.js" "sessionStorageKey='sb-renzehysxirjilvdxacv-auth-token'"

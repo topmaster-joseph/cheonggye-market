@@ -421,7 +421,7 @@ document.getElementById('scheduleAdd')?.addEventListener('click',()=>{
 const login=document.getElementById('scheduleLogin');
 if(login){
   const back=new URL(location.href);back.hash='schedule';
-  login.href='https://auth.ekodi.kr/?site=cgma&direct=1&return_to='+encodeURIComponent(back.href);
+  login.href='https://ekodi.kr/auth/?site=cgma&direct=1&return_to='+encodeURIComponent(back.href);
 }
 
 async function refreshAuthority(){

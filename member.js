@@ -10,7 +10,7 @@ const SITE='cgma';
 const route=value=>window.CGMA_ROUTE?.route(value)||value;
 const absolute=value=>window.CGMA_ROUTE?.absolute(value)||new URL(route(value),location.origin).toString();
 const AUTH_REDIRECT=absolute('/member?apply=1');
-const AUTH_HUB=`https://auth.ekodi.kr/?site=${encodeURIComponent(SITE)}&return_to=${encodeURIComponent(AUTH_REDIRECT)}`;
+const AUTH_HUB=`https://ekodi.kr/auth/?site=${encodeURIComponent(SITE)}&return_to=${encodeURIComponent(AUTH_REDIRECT)}`;
 const MARKETING_RETURN='https://marketing.ekodi.kr/';
 const sb=createClient(SUPABASE_URL,PUBLISHABLE_KEY,{auth:{detectSessionInUrl:true,persistSession:true}});
 
@@ -49,7 +49,7 @@ function openAuthHub(){
 function marketingWorkspaceUrl(storeId){
   const id=String(storeId||'').trim();
   if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id))return '';
-  const target=new URL('https://auth.ekodi.kr/');
+  const target=new URL('https://ekodi.kr/auth/');
   target.searchParams.set('site','marketing');
   target.searchParams.set('workspace',`store:${id.toLowerCase()}`);
   target.searchParams.set('return_to',MARKETING_RETURN);
