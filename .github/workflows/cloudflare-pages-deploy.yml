@@ -176,6 +176,18 @@ jobs:
           check_route "$BASE_URL" "/admin" "data-ekodi-fixed-header"
           check_route "$BASE_URL" "/admin.html" "data-ekodi-fixed-header"
           check_route "$BASE_URL" "/member-admin" "MOVED TO ADMIN CONSOLE"
+          check_route "$BASE_URL" "/admin/" 'id="ipArchive"'
+          check_route "$BASE_URL" "/admin-ip-archive.js" "CGMA_IP_ARCHIVE"
+          # Public requests must be denied before the private Drive links can be serialized.
+          ip_archive_body="$(mktemp)"
+          ip_archive_status="$(curl -sS --max-time 15 -o "$ip_archive_body" -w '%{http_code}' "$BASE_URL/api/ip-archive")"
+          if [ "$ip_archive_status" != "401" ] || grep -Eq 'drive\\.google\\.com|1L8vAKX_' "$ip_archive_body"; then
+            echo "::error::CGMA private IP archive failed public authorization isolation"
+            rm -f "$ip_archive_body"
+            exit 1
+          fi
+          rm -f "$ip_archive_body"
+          echo "OK admin-only archive API denies public access"
           check_route "$BASE_URL" "/api/resources" "items"
           check_route "$BASE_URL" "/resource/" "resource-detail.js"
           check_route "$BASE_URL" "/mascot/" "청깨비의 이야기"
