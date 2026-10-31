@@ -54,6 +54,27 @@ try{
     result.searchVisibleText=(await page.locator('body').innerText()).slice(0,13500);
     await page.screenshot({path:ROOT+'/cheongkkaebi-search.png',fullPage:false});
     result.notes.push('TN field query submitted. Search result content captured separately, not auto-certified.');
+    // Additional bounded public TN lookups. Treat results independently; a text zero does not clear similarity risk.
+    result.additionalQueries=[];
+    for(const term of ['청개비','목깨비','청계거리']){
+      await page.waitForTimeout(2200);
+      await page.goto(TARGET,{waitUntil:'domcontentloaded',timeout:25000});
+      await page.waitForTimeout(1100);
+      const f=page.locator('#sd010301_g05_text');
+      if(!(await f.isVisible()))await page.locator('#btnOpenSearchDetail').click({force:true,timeout:4500});
+      await f.fill(term);
+      const x=page.locator('#ktmExactMatch');
+      if(await x.count() && await x.isChecked())await x.uncheck({force:true});
+      await page.getByRole('button',{name:'검색하기',exact:true}).last().click({timeout:10000});
+      await page.waitForTimeout(3700);
+      const text=(await page.locator('body').innerText());
+      const heading=await page.title();
+      const hit=text.match(/.{0,90}(?:검색결과가 없습니다|총\\s*[0-9,]+\\s*건|검색결과\\s*[0-9,]+).{0,90}/);
+      const item={term,heading,url:page.url(),empty:text.includes('검색결과가 없습니다'),snippet:hit?.[0]||'',bodyTail:text.slice(-4800,-800)};
+      result.additionalQueries.push(item);
+    }
+    await page.screenshot({path:ROOT+'/variants-result.png',fullPage:false});
+
   }catch(error){
     result.notes.push('TN search interaction could not be verified: '+String(error?.message||error).slice(0,500));
   }
