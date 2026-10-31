@@ -1,0 +1,44 @@
+// EKODI-owned isolated Chromium for public KIPRIS trademark reconnaissance.
+// Read-only KIPRIS search UI; no login, credentials, application or payment.
+import { chromium } from 'playwright';
+import { writeFile, mkdir } from 'node:fs/promises';
+
+const TARGET='https://www.kipris.or.kr/khome/search/searchResult.do?tab=trademark';
+const ROOT='artifacts/kipris-native';
+await mkdir(ROOT,{recursive:true});
+const result={executedAt:new Date().toISOString(),executor:'EKODI-owned GitHub Actions native Chromium',target:TARGET,query:'청깨비',verified:false,notes:[],inputs:[],buttons:[],evidence:null};
+const browser=await chromium.launch({headless:true});
+const ctx=await browser.newContext({viewport:{width:1440,height:900},locale:'ko-KR',acceptDownloads:false});
+const page=await ctx.newPage();
+const forbidden=[];
+try{
+  await page.route('**/*',async route=>{
+    const req=route.request(),u=new URL(req.url()),method=req.method().toUpperCase();
+    // Permit normal page navigation. KIPRIS search POST is only a read-only search on its exact path.
+    const kiprisSearch=u.hostname==='www.kipris.or.kr'&&u.pathname.startsWith('/khome/search/');
+    if(!['GET','HEAD','OPTIONS'].includes(method)&&!(method==='POST'&&kiprisSearch)){
+      forbidden.push({method,host:u.hostname,path:u.pathname});
+      await route.abort('blockedbyclient');return;
+    }
+    await route.continue();
+  });
+  const response=await page.goto(TARGET,{waitUntil:'domcontentloaded',timeout:35000});
+  await page.waitForTimeout(3500);
+  result.http=response?.status()??null;
+  result.url=page.url();
+  result.title=await page.title();
+  result.bodyStart=(await page.locator('body').innerText().catch(()=>'' )).slice(0,1600);
+  result.inputs=await page.locator('input').evaluateAll(inputs=>inputs.filter(x=>{const b=x.getBoundingClientRect();return b.width>0&&b.height>0}).slice(0,65).map(x=>({id:x.id,name:x.name,placeholder:x.placeholder,aria:x.getAttribute('aria-label'),type:x.type,outer:x.outerHTML.slice(0,260)})));
+  result.buttons=await page.locator('button').evaluateAll(buttons=>buttons.filter(x=>{const b=x.getBoundingClientRect();return b.width>0&&b.height>0}).slice(0,45).map(x=>({id:x.id,text:(x.innerText||x.getAttribute('aria-label')||'').trim().slice(0,70),outer:x.outerHTML.slice(0,220)})));
+  await page.screenshot({path:ROOT+'/trademark-screen.png',fullPage:false});
+  result.notes.push('Real public page loaded. Selector reconnaissance only: result counts are not asserted without verified query.');
+  result.forbiddenRequests=forbidden.length;
+}catch(e){
+  result.notes.push('Navigation failed: '+String(e?.message||e).slice(0,300));
+}finally{
+  await writeFile(ROOT+'/recon.json',JSON.stringify(result,null,2));
+  console.log('EKODI_KIPRIS_RECON_BEGIN');
+  console.log(JSON.stringify(result));
+  console.log('EKODI_KIPRIS_RECON_END');
+  await ctx.close();await browser.close();
+}
