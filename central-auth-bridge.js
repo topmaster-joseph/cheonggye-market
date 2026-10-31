@@ -11,8 +11,8 @@ const cgmaRoute=value=>window.CGMA_ROUTE?.route(value)||value;
 const cgmaAbsolute=value=>window.CGMA_ROUTE?.absolute(value)||new URL(cgmaRoute(value),location.origin).toString();
 const returnTo=cgmaAbsolute('/');
 const MEMBER_APPLY=cgmaAbsolute('/member?apply=1');
-const authUrl=`https://auth.ekodi.kr/?site=${encodeURIComponent(site)}&direct=1&return_to=${encodeURIComponent(returnTo)}`;
-const memberAuthUrl=`https://auth.ekodi.kr/?site=${encodeURIComponent(site)}&direct=1&return_to=${encodeURIComponent(MEMBER_APPLY)}`;
+const authUrl=`https://ekodi.kr/auth/?site=${encodeURIComponent(site)}&direct=1&return_to=${encodeURIComponent(returnTo)}`;
+const memberAuthUrl=`https://ekodi.kr/auth/?site=${encodeURIComponent(site)}&direct=1&return_to=${encodeURIComponent(MEMBER_APPLY)}`;
 
 function status(text,type=''){
   if(!statusEl)return;

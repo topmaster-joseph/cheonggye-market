@@ -30,7 +30,7 @@ function makePage(initialUser){
   const api={
     currentUser:async()=>user,
     signOut:async()=>{signOutCount++;user=null},
-    loginUrl:()=> 'https://auth.ekodi.kr/?site=cgma&direct=1&return_to=https%3A%2F%2Fcgma.or.kr%2Fprograms%2Fai-marketing-2026%2F',
+    loginUrl:()=> 'https://ekodi.kr/auth/?site=cgma&direct=1&return_to=https%3A%2F%2Fcgma.or.kr%2Fprograms%2Fai-marketing-2026%2F',
     rpc:async(fn)=>{
       rpcCalls.push(fn);
       if(fn==='cgma_ai_edu_2026_public_stats')return {is_open:true,capacity:15,active:1,waiting:0};

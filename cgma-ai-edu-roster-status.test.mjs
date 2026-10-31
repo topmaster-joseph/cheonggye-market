@@ -28,7 +28,7 @@ async function mount({guest=false,bulkFail=false,individualFail=false,confirm=tr
     isAdmin:async()=>!guest,
     currentUser:async()=>guest?null:{id:'user'},
     signOut:async()=>{},
-    authError:()=>'',loginUrl:()=> 'https://auth.ekodi.kr/?site=cgma',
+    authError:()=>'',loginUrl:()=> 'https://ekodi.kr/auth/?site=cgma',
     async rpc(name,body,{auth}={}){
       calls.push({name,body,auth});
       if(guest)throw Error('unauthorized');

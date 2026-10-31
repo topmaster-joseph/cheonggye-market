@@ -29,7 +29,7 @@ function boot({allowed=false,scoped=false,loggedIn=allowed||scoped,signOutFailur
     signOut:async()=>{logoutCalls++;if(signOutFailure)throw Error('cannot sign out')},
     token:()=>scoped?'scoped-verified-access-token':null,
     authError:()=>authMessage,
-    loginUrl:()=> 'https://auth.ekodi.kr/?site=cgma&direct=1&return_to=https%3A%2F%2Fcgma.or.kr%2Fprograms%2Fai-marketing-2026%2Fmanage%2F',
+    loginUrl:()=> 'https://ekodi.kr/auth/?site=cgma&direct=1&return_to=https%3A%2F%2Fcgma.or.kr%2Fprograms%2Fai-marketing-2026%2Fmanage%2F',
     async rpc(name,body,{auth}={}){
       events.push({name,body,auth});
       if(!allowed&&!scoped)throw Error('unauthorized');
@@ -70,7 +70,7 @@ test('a guest cannot load applicant records and instead sees central Google admi
   assert.equal(page.events.length,0,'no applicant API call before authorization');
   assert.equal(page.elt('manage').hidden,false,'visible sign-in gate');
   assert.match(page.elt('manage').innerHTML,/관리자 인증이 필요합니다/);
-  assert.match(page.elt('manage').innerHTML,/auth\.ekodi\.kr/);
+  assert.match(page.elt('manage').innerHTML,/https:\/\/ekodi\.kr\/auth\/\?site=cgma/);
   assert.doesNotMatch(page.elt('manage').innerHTML,/휴대폰 번호|신청자명단|엑셀\(CSV\)/);
 });
 

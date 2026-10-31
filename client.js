@@ -7,7 +7,7 @@ const SUPABASE_URL='https://renzehysxirjilvdxacv.supabase.co';
 const PUBLISHABLE_KEY='sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_';
 const route=value=>window.CGMA_ROUTE?.route(value)||value;
 const absolute=value=>window.CGMA_ROUTE?.absolute(value)||new URL(route(value),location.origin).toString();
-const AUTH_URL=`https://auth.ekodi.kr/?site=cgma-client&return_to=${encodeURIComponent(absolute('/client/'))}`;
+const AUTH_URL=`https://ekodi.kr/auth/?site=cgma-client&return_to=${encodeURIComponent(absolute('/client/'))}`;
 const sb=createClient(SUPABASE_URL,PUBLISHABLE_KEY,{auth:{detectSessionInUrl:true,persistSession:true}});
 const ROLE_LABELS={client_admin:'고객 관리자',client_editor:'콘텐츠 편집자',client_viewer:'조회·검수자'};
 
