@@ -34,9 +34,11 @@ try{
   // Submit one explicitly requested public trademark-name search.
   // KIPRIS uses a dedicated trademark search field (TN), not a generic all-rights search.
   try{
-    const detail=page.locator('#btnOpenSearchDetail');
-    if(await detail.isVisible())await detail.click({timeout:7000});
     const field=page.locator('#sd010301_g05_text');
+    const detail=page.locator('#btnOpenSearchDetail');
+    // KIPRIS may render its advanced-search modal open by default. Clicking a covered
+    // "상세검색" toggle would be intercepted by that overlay, so only open when required.
+    if(!(await field.isVisible()) && await detail.isVisible())await detail.click({timeout:7000});
     await field.waitFor({state:'visible',timeout:12000});
     await field.fill('청깨비');
     const exact=page.locator('#ktmExactMatch');
