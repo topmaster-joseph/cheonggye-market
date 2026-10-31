@@ -1,9 +1,9 @@
 (()=>{
 'use strict';
-const panels=['controlTower','merchantManager','memberReview','noticeManager','festivalManager','couponManager','resourceManager','siteModeManager','languageManager','petitionManager','educationSurveyManager'];
+const panels=['controlTower','merchantManager','memberReview','noticeManager','festivalManager','couponManager','resourceManager','ipArchive','siteModeManager','languageManager','petitionManager','educationSurveyManager'];
 const groups=Object.freeze({
   review:{panels:['memberReview','festivalManager'],metrics:['pending']},
-  oversight:{panels:['controlTower','petitionManager'],metrics:['petition']},
+  oversight:{panels:['controlTower','petitionManager','ipArchive'],metrics:['petition']},
   settings:{panels:['languageManager'],metrics:[]}
 });
 const params=new URLSearchParams(location.search);
@@ -66,8 +66,10 @@ function setup(){
   };
   if(due){new MutationObserver(syncDue).observe(due,{childList:true,subtree:true,characterData:true});syncDue()}
   const hash=location.hash.slice(1);
-  if(panels.includes(hash))setTab(groupForTarget(hash),hash);
+  const requestedSection=panels.includes(hash)?hash:params.get('section');
+  if(panels.includes(requestedSection))setTab(groupForTarget(requestedSection),requestedSection);
   else setTab('review');
+  if(panels.includes(requestedSection))requestAnimationFrame(()=>document.getElementById(requestedSection)?.scrollIntoView({block:'start'}));
   window.addEventListener('hashchange',()=>{
     const target=location.hash.slice(1);
     if(panels.includes(target))openTarget(target);

@@ -32,6 +32,8 @@ jobs:
           node --check resources.js
           node --check resource-detail.js
           node --check admin-resources.js
+          node --check admin-ip-archive.js
+          node --check functions/api/ip-archive.js
           node --check admin-petition.js
           node --check admin-merchants.js
           node --check admin-notices.js
@@ -90,6 +92,8 @@ jobs:
         run: node --test store-experiment-model.test.mjs
       - name: Verify CGMA mascot archive, intro links and copyright guardrails
         run: node --test cgma-mascot-archive.test.mjs
+      - name: Verify CGMA private intellectual property archive security
+        run: node --test cgma-admin-ip-archive.test.mjs
       - name: Test CGMA progressive homepage and navigation
         run: node --test cgma-home-progressive.test.mjs
       - name: Test compact admin dashboard contract
