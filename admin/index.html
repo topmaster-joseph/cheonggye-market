@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../styles.css">
   <link rel="stylesheet" href="../admin-control.css?v=20260908-review-due-queue-v16">
   <link rel="stylesheet" href="../admin-resources.css?v=20260906-control-plane">
+  <link rel="stylesheet" href="../admin-ip-archive.css?v=20261101-v1">
   <style>[hidden]{display:none!important}@media(max-width:800px){.admin-side{position:fixed;top:0;left:0;right:0;padding-top:calc(10px + env(safe-area-inset-top,0px))}}</style>
 <style>
 #festivalManager .festival-table{width:100%;min-width:850px;border-collapse:collapse;font-size:13px;text-align:left}
@@ -48,6 +49,7 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
         <span class="admin-nav-label">운영 감독</span>
         <a href="#controlTower" data-admin-group="oversight">상권 운영 현황</a>
         <a href="#petitionManager" data-admin-group="oversight">민원·동의 접수</a>
+        <a href="#ipArchive" data-admin-group="oversight">지식재산권 자료실</a>
         <span class="admin-nav-label">제한 설정</span>
         <a href="#languageManager" data-admin-group="settings">다국어 게시 검증</a>
         <a href="../#top">사용자 화면에서 직접 관리 ↗</a>
@@ -183,6 +185,19 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
           <section><div class="admin-member-section-title"><div><small>STORE CLAIM</small><h3>기존 점포 연결 신청</h3><p>이미 등록된 점포를 신청자의 계정과 연결하는 소유·운영 권한 확인입니다.</p></div><span id="claimCount">0건</span></div><div class="admin-member-grid" id="claimPending"></div></section>
         </div>
       </section>
+      <section class="admin-resource-panel cgma-ip-archive" id="ipArchive" hidden aria-labelledby="ipArchiveTitle">
+        <header class="admin-resource-head">
+          <div>
+            <small>CGMA · PRIVATE INTELLECTUAL PROPERTY ARCHIVE</small>
+            <h2 id="ipArchiveTitle">청깨비 지식재산권 자료실</h2>
+            <p>청계면상인회 브랜드 원본과 상표출원 준비·권리검토 기록입니다. 관리자 인증 후에만 보관 위치를 불러옵니다.</p>
+          </div>
+          <a class="admin-action" href="../mascot/" target="_blank" rel="noopener noreferrer">청깨비 공개 소개 ↗</a>
+        </header>
+        <p class="cgma-ip-note">원본 자료는 구글 드라이브에 별도 보관되어 있습니다. 관리자 화면에서 링크를 볼 수 있어도 드라이브의 파일 열람 권한은 별도로 적용됩니다. 상표출원·등록은 아직 완료되지 않았습니다.</p>
+        <p id="ipArchiveStatus" class="admin-resource-status" role="status">관리자 인증 후 비공개 자료를 확인합니다.</p>
+        <div id="ipArchiveList" class="cgma-ip-list" aria-live="polite"></div>
+      </section>
       <section class="admin-resource-panel" id="resourceManager" hidden>
         <header class="admin-resource-head"><div><small>CGMA CONTENT</small><h2>공식 자료실 관리</h2><p>지원사업, 골목축제, 도시재생, 소통채널 자료를 홈페이지 안에서 관리합니다.</p></div><button class="admin-action" id="addResourceBtn" type="button">+ 새 자료</button></header>
         <form class="admin-resource-form" id="resourceAdminForm" hidden>
@@ -216,6 +231,7 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
   <script src="../admin-site-mode.js?v=20260907-maintenance-preview"></script>
   <script src="../admin-language-management.js?v=20260912-language-publication-v1"></script>
   <script src="../admin-resources.js?v=20260906-control-plane"></script>
+  <script src="../admin-ip-archive.js?v=20261101-v1"></script>
   <script src="../admin-petition.js?v=20260906-control-plane"></script>
   <script src="../admin-education-survey.js?v=20261017-ranked-v3"></script>
   <script src="../admin-dashboard.js?v=20261017-user-first-v1"></script>
@@ -254,6 +270,7 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
         window.CGMA_SITE_MODE_ADMIN?.start(session);
         window.CGMA_LANGUAGE_ADMIN?.start(session,result);
         window.CGMA_RESOURCE_ADMIN?.start(session);
+        window.CGMA_IP_ARCHIVE?.start(session);
         window.CGMA_PETITION_ADMIN?.start(session);
         window.CGMA_EDUCATION_SURVEY_ADMIN?.start(session);
         import('../member-admin.js?v=20260906-unified-admin-shell-v1').then(()=>{
