@@ -88,6 +88,8 @@ jobs:
         run: node --test store-action-model.test.mjs
       - name: Test merchant experiment model
         run: node --test store-experiment-model.test.mjs
+      - name: Verify CGMA mascot archive, intro links and copyright guardrails
+        run: node --test cgma-mascot-archive.test.mjs
       - name: Test CGMA progressive homepage and navigation
         run: node --test cgma-home-progressive.test.mjs
       - name: Test compact admin dashboard contract
