@@ -1,0 +1,13 @@
+/* CGMA admin-only IP file register; actual document locations arrive through authenticated API. */
+.cgma-ip-archive .cgma-ip-note{line-height:1.75;color:#52675c;font-size:.92rem;margin:12px 0}
+.cgma-ip-archive .cgma-ip-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0}
+.cgma-ip-card{min-width:0;border:1px solid #dce8df;background:#fcfefa;border-radius:16px;padding:18px}
+.cgma-ip-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:.76rem;color:#345e4b}
+.cgma-ip-meta span{background:#e8f4e8;border-radius:99px;padding:4px 10px;font-weight:800}
+.cgma-ip-meta small{color:#61736b}
+.cgma-ip-card h3{font-size:1.02rem;line-height:1.5;margin:12px 0 6px;color:#173c30}
+.cgma-ip-card p{line-height:1.7;margin:0 0 14px;color:#61736b;font-size:.84rem}
+.cgma-ip-card a{display:inline-block;color:#096745;text-decoration:underline;font-size:.85rem;font-weight:800}
+.cgma-ip-card a:focus-visible{outline:3px solid #236b4b;outline-offset:3px}
+.cgma-ip-archive #ipArchiveStatus[data-state="error"]{color:#9a322b}
+@media(max-width:760px){.cgma-ip-archive .cgma-ip-list{grid-template-columns:1fr}.cgma-ip-card{padding:15px}}
