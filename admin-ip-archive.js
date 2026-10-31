@@ -46,6 +46,8 @@
     started=true;
     const token=session?.access_token;
     if(!token){setStatus('관리자 로그인 후 자료를 조회할 수 있습니다.',true);return}
+    // The administrator application initially hides all panels before validating access.
+    document.getElementById('ipArchive').hidden=false;
     setStatus('비공개 자료 목록을 불러오는 중입니다.');
     try{
       const response=await fetch(route('/api/ip-archive'),{
