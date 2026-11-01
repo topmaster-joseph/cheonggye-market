@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="../styles.css">
   <link rel="stylesheet" href="../admin-control.css?v=20260908-review-due-queue-v16">
   <link rel="stylesheet" href="../admin-resources.css?v=20260906-control-plane">
-  <link rel="stylesheet" href="../admin-ip-archive.css?v=20261101-v1">
+  <link rel="stylesheet" href="../admin-ip-archive.css?v=20261102-v2">
   <style>[hidden]{display:none!important}@media(max-width:800px){.admin-side{position:fixed;top:0;left:0;right:0;padding-top:calc(10px + env(safe-area-inset-top,0px))}}</style>
 <style>
 #festivalManager .festival-table{width:100%;min-width:850px;border-collapse:collapse;font-size:13px;text-align:left}
@@ -197,6 +197,23 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
         <p class="cgma-ip-note">원본 자료는 구글 드라이브에 별도 보관되어 있습니다. 관리자 화면에서 링크를 볼 수 있어도 드라이브의 파일 열람 권한은 별도로 적용됩니다. 상표출원·등록은 아직 완료되지 않았습니다.</p>
         <p id="ipArchiveStatus" class="admin-resource-status" role="status">관리자 인증 후 비공개 자료를 확인합니다.</p>
         <div id="ipArchiveList" class="cgma-ip-list" aria-live="polite"></div>
+        <section class="cgma-ip-sharing" aria-labelledby="ipSharingTitle">
+          <h3 id="ipSharingTitle">외부 자료 공유</h3>
+          <p>자료·수신자·유효기간을 지정합니다. 관리자는 Google Drive에서 해당 이메일에 <strong>뷰어 권한</strong>을 별도로 부여해야 합니다. 전체 공개 방식은 지원하지 않습니다.</p>
+          <form id="ipShareForm" class="cgma-ip-share-form">
+            <label>수신자 이메일<input type="email" name="recipient_email" maxlength="254" autocomplete="off" placeholder="recipient@example.com" required></label>
+            <label>유효기간<select name="expires_in_days"><option value="1">1일</option><option value="7" selected>7일</option><option value="30">30일</option></select></label>
+            <fieldset class="cgma-ip-share-docs"><legend>공유 자료 선택</legend><div id="ipShareChoices"></div></fieldset>
+            <label class="wide">공유 목적<textarea name="purpose" rows="2" minlength="2" maxlength="240" required placeholder="예: 변리사에게 상표출원 검토 의뢰"></textarea></label>
+            <label class="wide cgma-ip-share-ack"><input type="checkbox" name="confirm_limited_access" required> 링크 만료·회수는 EKODI에만 적용되며, 실제 파일 권한은 Google Drive에서 별도 부여·철회함을 확인합니다.</label>
+            <label class="wide cgma-ip-share-ack"><input type="checkbox" name="confirm_original_rights"> 디자인 원본 공유 시 제작사·저작권자 권리 및 외부 이용허락을 별도로 확인합니다.</label>
+            <button class="admin-action" type="submit">제한 공유 링크 발급</button>
+          </form>
+          <p id="ipShareStatus" class="admin-resource-status" role="status">외부 공유 기능을 준비하고 있습니다.</p>
+          <div id="ipShareResult" class="cgma-ip-share-result" hidden aria-live="polite"></div>
+          <h4>초대 이력</h4>
+          <div id="ipShareHistory" class="cgma-ip-share-history"></div>
+        </section>
       </section>
       <section class="admin-resource-panel" id="resourceManager" hidden>
         <header class="admin-resource-head"><div><small>CGMA CONTENT</small><h2>공식 자료실 관리</h2><p>지원사업, 골목축제, 도시재생, 소통채널 자료를 홈페이지 안에서 관리합니다.</p></div><button class="admin-action" id="addResourceBtn" type="button">+ 새 자료</button></header>
@@ -232,6 +249,7 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
   <script src="../admin-language-management.js?v=20260912-language-publication-v1"></script>
   <script src="../admin-resources.js?v=20260906-control-plane"></script>
   <script src="../admin-ip-archive.js?v=20261101-v1"></script>
+  <script src="../admin-ip-sharing.js?v=20261102-v1"></script>
   <script src="../admin-petition.js?v=20260906-control-plane"></script>
   <script src="../admin-education-survey.js?v=20261017-ranked-v3"></script>
   <script src="../admin-dashboard.js?v=20261017-user-first-v1"></script>
@@ -271,6 +289,7 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
         window.CGMA_LANGUAGE_ADMIN?.start(session,result);
         window.CGMA_RESOURCE_ADMIN?.start(session);
         window.CGMA_IP_ARCHIVE?.start(session);
+        window.CGMA_IP_SHARING?.start(session);
         window.CGMA_PETITION_ADMIN?.start(session);
         window.CGMA_EDUCATION_SURVEY_ADMIN?.start(session);
         import('../member-admin.js?v=20260906-unified-admin-shell-v1').then(()=>{
