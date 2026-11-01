@@ -178,6 +178,20 @@ jobs:
           check_route "$BASE_URL" "/member-admin" "MOVED TO ADMIN CONSOLE"
           check_route "$BASE_URL" "/admin/" 'id="ipArchive"'
           check_route "$BASE_URL" "/admin-ip-archive.js" "CGMA_IP_ARCHIVE"
+          check_route "$BASE_URL" "/admin-ip-sharing.js" "CGMA_IP_SHARING"
+          check_route "$BASE_URL" "/ip-share/" 'noindex,nofollow,noarchive'
+          for api_path in "/api/ip-shares" "/api/ip-share?token=invalid"; do
+            expect_code="401"; [[ "$api_path" == *"token=invalid"* ]] && expect_code="404"
+            share_response="$(mktemp)"
+            share_code="$(curl -sS --max-time 15 -o "$share_response" -w '%{http_code}' "$BASE_URL$api_path")"
+            if [ "$share_code" != "$expect_code" ] || grep -Eq 'drive\\.google\\.com|@example\\.org' "$share_response"; then
+              echo "::error::CGMA public IP share endpoint leaked data: $api_path (HTTP $share_code)"
+              rm -f "$share_response"
+              exit 1
+            fi
+            rm -f "$share_response"
+          done
+          echo "OK admin-only share management and invalid public token isolation"
           # Public requests must be denied before the private Drive links can be serialized.
           ip_archive_body="$(mktemp)"
           ip_archive_status="$(curl -sS --max-time 15 -o "$ip_archive_body" -w '%{http_code}' "$BASE_URL/api/ip-archive")"
