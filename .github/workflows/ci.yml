@@ -105,6 +105,8 @@ jobs:
         run: node --test cgma-home-progressive.test.mjs
       - name: Test compact admin dashboard contract
         run: node --test cgma-admin-dashboard.test.mjs
+      - name: Verify first-party embedded admin authorization handoff
+        run: node --test cgma-admin-embedded-session.test.mjs
       - name: Test inline management session without third-party SDK
         run: node --test cgma-inline-management-session.test.mjs
       - name: Test public-surface notice board contract

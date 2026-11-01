@@ -267,10 +267,29 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
       try{const {error}=await client.auth.verifyOtp({token_hash:tokenHash,type:hash.get('ekodi_type')||'email'});if(error)throw error;return {present:true,ok:true}}
       catch(error){console.error('CGMA admin auth handoff',error);return {present:true,ok:false}}
     }
+    async function embeddedSession(){
+      if(new URLSearchParams(location.search).get('inline')!=='1'||window.parent===window)return null;
+      if(location.origin!=='https://ekodi.kr')return null;
+      // Parent and child are both the first-party EKODI origin; token is never written to a URL or storage.
+      return new Promise(resolve=>{
+        let settled=false;
+        const finish=value=>{if(settled)return;settled=true;clearTimeout(timer);window.removeEventListener('message',receive);resolve(value);};
+        const receive=event=>{
+          if(event.source!==window.parent||event.origin!==location.origin)return;
+          if(event.data?.type!=='ekodi:cgma-admin:session')return;
+          const token=event.data?.accessToken;
+          finish(typeof token==='string'&&token.length>20&&token.length<12000?{access_token:token}:null);
+        };
+        const timer=setTimeout(()=>finish(null),5000);
+        window.addEventListener('message',receive);
+        window.parent.postMessage({type:'ekodi:cgma-admin:ready',section:new URLSearchParams(location.search).get('section')||''},location.origin);
+      });
+    }
     (async()=>{
-      const handoff=await consumeHandoff();
+      const embedded=await embeddedSession();
+      const handoff=embedded?{present:false,ok:true}:await consumeHandoff();
       if(handoff.present&&!handoff.ok)return deny('통합인증 연결이 만료되었거나 이미 사용되었습니다. 다시 로그인해 주세요.');
-      const {data}=await client.auth.getSession(),session=data.session,token=session?.access_token;
+      const {data}=embedded?{data:{session:embedded}}:await client.auth.getSession(),session=data.session,token=session?.access_token;
       if(!token)return deny('먼저 EKODI에 로그인해 주세요.');
       try{
         const response=await fetch(route('/api/admin-session'),{headers:{Authorization:`Bearer ${token}`}}),result=await response.json();
