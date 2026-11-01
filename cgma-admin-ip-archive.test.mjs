@@ -63,7 +63,9 @@ test('private links are never embedded in public HTML or client JS',()=>{
   assert.match(admin,/id="ipArchive"/);
   assert.match(admin,/CGMA_IP_ARCHIVE\?\.start\(session\)/);
   assert.match(admin,/href="#ipArchive"/);
-  assert.match(groups,/panels:\['controlTower','petitionManager','ipArchive'\]/);
+  assert.match(groups,/oversight:\{label:'운영 감독',items:\[\['controlTower'/);
+  assert.match(groups,/\['petitionManager','민원·동의 접수'\]/);
+  assert.match(groups,/\['ipArchive','지식재산권 자료실'\]/);
   assert.match(groups,/params\.get\('section'\)/);
   for(const file of [admin,client,home,publicResources]){
     for(const id of secretLinks)assert.ok(!file.includes(id),'private Drive ID leaked in client');
