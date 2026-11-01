@@ -221,7 +221,9 @@ jobs:
           grep -Fq 'data-admin-tab="review"' admin/index.html
           grep -Fq 'data-admin-tab="oversight"' admin/index.html
           grep -Fq 'data-admin-tab="settings"' admin/index.html
-          grep -Fq 'admin-dashboard.js?v=20261017-user-first-v1' admin/index.html
+          grep -Fq 'admin-dashboard.js?v=20261102-ux1' admin/index.html
+          grep -Fq 'admin-navigation.css?v=20261102-ux1' admin/index.html
+          grep -Fq 'id="adminSubtabs"' admin/index.html
           grep -Fq 'cgma-embedded-workbench' admin/index.html
           grep -Fq 'api/admin-session' cgma-inline-management.js
           grep -Fq 'res.ok&&grant.allowed===true' cgma-inline-management.js
