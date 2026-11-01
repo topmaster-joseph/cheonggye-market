@@ -1,0 +1,59 @@
+/* CGMA focused admin navigation — one task visible at a time. */
+.admin-main{padding:1.45rem clamp(1rem,3vw,2.7rem) 3rem;max-width:1440px}
+.admin-main h1{font-size:clamp(1.75rem,3vw,2.65rem);line-height:1.15;margin:.25rem 0 .15rem}
+.admin-kicker{font-size:.69rem;letter-spacing:.07em}
+.admin-context-breadcrumb{color:#63766f;font-size:.8rem;margin:.3rem 0 0}
+.admin-title-row{align-items:center}
+.admin-title-actions{align-self:center}
+.admin-view-link{padding:.58rem .85rem;font-size:.78rem}
+.access-state{background:none;border:0;border-radius:0;padding:0;margin:.35rem 0 0;color:#587369;font-size:.76rem}
+.access-state:empty{display:none}
+.admin-toolbar{margin:.75rem 0 .4rem}
+.admin-workspace-tabs{gap:.28rem;padding:.24rem;background:#fff}
+.admin-workspace-tabs button{padding:.58rem .9rem}
+.admin-subtabs{display:flex;align-items:center;gap:.35rem;padding:0 0 .55rem;border-bottom:1px solid var(--admin-line);flex-wrap:wrap}
+.admin-subtabs button{appearance:none;cursor:pointer;font:inherit;font-size:.82rem;font-weight:750;border:1px solid transparent;background:transparent;color:#51655d;padding:.5rem .8rem;border-radius:10px}
+.admin-subtabs button.is-active{background:#e6efe9;border-color:#c7dad0;color:var(--admin-green);font-weight:900}
+.admin-workspace-tabs button:focus-visible,.admin-subtabs button:focus-visible,.admin-side a:focus-visible,.admin-outbound-links a:focus-visible{outline:2px solid #ff6038;outline-offset:2px}
+.admin-outbound-links{display:flex;align-items:center;gap:.2rem .85rem;flex-wrap:wrap;padding:.65rem 0 .15rem}
+.admin-outbound-links a{color:#45665a;text-decoration:underline;text-underline-offset:.18rem;font-size:.76rem;font-weight:650}
+.admin-outbound-links a:hover{color:#103c30}
+.admin-side nav a.is-active{font-weight:900;background:rgba(255,255,255,.18);box-shadow:inset 3px 0 0 var(--admin-lime)}
+.admin-side nav a[aria-current=page]{font-weight:900}
+.admin-metrics{display:grid;grid-template-columns:minmax(200px,320px);margin:.55rem 0 0}
+.admin-metric{min-height:0;border-radius:12px;padding:.65rem .9rem;display:flex;gap:.6rem;align-items:baseline;flex-wrap:wrap;color:var(--admin-green)}
+.admin-metric::before{top:.6rem;bottom:.6rem;width:3px}
+.admin-metric span{font-size:.74rem}
+.admin-metric b{font-size:1.3rem;margin:0}
+.admin-metric p{font-size:.7rem;flex-basis:100%}
+a.admin-metric{text-decoration:none}
+a.admin-metric:hover{border-color:#a8c4b7}
+.admin-resource-panel{margin-top:.8rem;padding:1.1rem;border-radius:18px}
+.admin-resource-head{margin-bottom:.75rem}
+.admin-resource-head h2{font-size:clamp(1.3rem,2vw,1.8rem)}
+.admin-resource-head p{font-size:.83rem;line-height:1.5}
+.admin-control-tower{margin:.8rem 0;padding:1rem}
+.admin-member-summary{display:inline-flex;align-items:center;flex-wrap:wrap;gap:.4rem;padding:.5rem .7rem;margin:.45rem 0;border-radius:10px;background:#eef3ec;color:#234c40}
+.admin-member-summary strong{font-size:1.15rem;color:#154b3a}
+.admin-member-summary span{font-size:.75rem;color:#3c6557}
+.admin-member-summary+ .admin-resource-status{margin-top:.3rem}
+html.cgma-embedded-workbench .admin-subtabs,
+html.cgma-embedded-workbench .admin-outbound-links{display:none!important}
+@media(min-width:801px){
+ .admin-side{width:268px}
+ .admin-main{margin-left:268px}
+ .admin-side-foot{display:grid}
+}
+@media(max-width:800px){
+ .admin-main{padding:1rem .85rem 2.5rem}
+ .admin-title-row{display:flex;align-items:flex-start;flex-wrap:wrap}
+ .admin-title-actions{margin:0;justify-content:flex-start}
+ .admin-workspace-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;box-sizing:border-box}
+ .admin-workspace-tabs button{font-size:.78rem;padding:.62rem .3rem}
+ .admin-subtabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+ .admin-subtabs button{flex:0 0 auto;white-space:nowrap}
+ .admin-outbound-links{padding:.55rem 0;gap:.4rem .8rem}
+ .admin-metrics{grid-template-columns:minmax(0,1fr)}
+ .admin-metric{min-height:0}
+ .admin-side nav a.is-active{box-shadow:inset 0 -3px 0 var(--admin-lime)}
+}

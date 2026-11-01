@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="../admin-control.css?v=20260908-review-due-queue-v16">
   <link rel="stylesheet" href="../admin-resources.css?v=20260906-control-plane">
   <link rel="stylesheet" href="../admin-ip-archive.css?v=20261102-v2">
+  <link rel="stylesheet" href="../admin-navigation.css?v=20261102-ux1">
   <style>[hidden]{display:none!important}@media(max-width:800px){.admin-side{position:fixed;top:0;left:0;right:0;padding-top:calc(10px + env(safe-area-inset-top,0px))}}</style>
 <style>
 #festivalManager .festival-table{width:100%;min-width:850px;border-collapse:collapse;font-size:13px;text-align:left}
@@ -52,15 +53,11 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
         <a href="#ipArchive" data-admin-group="oversight">지식재산권 자료실</a>
         <span class="admin-nav-label">제한 설정</span>
         <a href="#languageManager" data-admin-group="settings">다국어 게시 검증</a>
-        <a href="../#top">사용자 화면에서 직접 관리 ↗</a>
-        <a href="../programs/#manage">행사·활동 등록·관리 ↗</a>
-        <a href="../programs/ai-marketing-2026/manage/">AI 교육 신청현황 ↗</a>
       </nav>
-      <div class="admin-side-foot"><a href="../">사용자 화면 바로가기 ↗</a><a href="../member" target="_blank" rel="noopener">정회원 신청 화면 ↗</a></div>
+      <div class="admin-side-foot"><a href="../">상인회 사용자 화면 ↗</a><a href="../member/">정회원 신청 화면 ↗</a></div>
     </aside>
     <main class="admin-main" id="dashboard">
-      <div class="admin-title-row"><div><span class="admin-kicker">CHEONGGYE MERCHANT ASSOCIATION</span><h1>승인·운영 감독</h1></div><div class="admin-title-actions"><span id="adminGlobalPeriod"></span><a class="admin-view-link" href="../">사용자 화면에서 관리 ↗</a></div></div>
-      <p class="admin-user-first-note">일상적인 점포·공지·자료·설문 관리는 <a href="../">상인회 사용자 화면</a>에서 직접 처리합니다. 이 화면은 승인과 운영 감독에 집중합니다.</p>
+      <div class="admin-title-row"><div><span class="admin-kicker">청계면상인회 / 관리자</span><h1>승인·운영 감독</h1><p id="adminContextBreadcrumb" class="admin-context-breadcrumb">심사·승인 / 정회원 신청 승인</p></div><div class="admin-title-actions"><a class="admin-view-link" href="../">사용자 화면 ↗</a></div></div>
       <p class="access-state" id="accessState"></p>
       <div class="admin-toolbar">
         <div class="admin-workspace-tabs" role="tablist" aria-label="관리자 전용 영역">
@@ -70,13 +67,15 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
         </div>
 
       </div>
-      <section class="admin-metrics" aria-label="운영 현황">
+      <nav class="admin-subtabs" id="adminSubtabs" role="tablist" aria-label="세부 관리 업무"></nav>
+      <nav class="admin-outbound-links" aria-label="사용자 화면 업무 바로가기"><a href="../">점포·공지·자료 관리 ↗</a><a href="../programs/#manage">행사·활동 등록·관리 ↗</a><a href="../programs/ai-marketing-2026/manage/">AI 교육 신청현황 ↗</a><a href="../member/">정회원 신청 화면 ↗</a></nav>
+      <section class="admin-metrics" aria-label="현재 업무 현황">
         <article class="admin-metric" data-admin-metric="merchant"><span>공개 점포</span><b id="merchantCount">…</b><p>상권지도·명부 공개 점포</p></article>
         <article class="admin-metric" data-admin-metric="regular"><span>정회원 점포</span><b id="regularMerchantCount">…</b><p>정회원으로 공개된 점포</p></article>
-        <article class="admin-metric" data-admin-metric="pending"><span>정회원 승인 대기</span><b id="memberPendingCount">…</b><p>신규·기존 점포 신청 검토</p></article>
+        <a class="admin-metric" data-admin-metric="pending" href="#memberReview"><span>정회원 승인 대기</span><b id="memberPendingCount">…</b><p>신규·기존 점포 신청 검토</p></a>
         <article class="admin-metric" data-admin-metric="notice"><span>공지·행사</span><b id="noticeCount">…</b><p>홈페이지 공개 게시물</p></article>
         <article class="admin-metric" data-admin-metric="resource"><span>공식 자료</span><b id="resourceCount">…</b><p>자료실 관리 항목</p></article>
-        <article class="admin-metric" data-admin-metric="petition"><span>동의 접수</span><b id="petitionCount">…</b><p>공영주차장 온라인 접수</p></article>
+        <a class="admin-metric" data-admin-metric="petition" href="#petitionManager"><span>동의 접수</span><b id="petitionCount">…</b><p>공영주차장 온라인 접수</p></a>
       </section>
       <section class="admin-control-tower" id="controlTower" aria-labelledby="controlTowerTitle">
         <header class="admin-tower-head"><div><small>MARKET CONTROL TOWER</small><h2 id="controlTowerTitle">상권 운영 신호</h2><p>점포를 순위화하지 않고, 익명 반응에서 지금 확인할 운영 개입 후보만 찾습니다.</p></div><span id="towerPeriod" class="admin-member-authority">최근 7일</span></header>
@@ -252,11 +251,11 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
   <script src="../admin-ip-sharing.js?v=20261102-v1"></script>
   <script src="../admin-petition.js?v=20260906-control-plane"></script>
   <script src="../admin-education-survey.js?v=20261017-ranked-v3"></script>
-  <script src="../admin-dashboard.js?v=20261017-user-first-v1"></script>
+  <script src="../admin-dashboard.js?v=20261102-ux1"></script>
   <script>
     const client=window.supabase.createClient('https://renzehysxirjilvdxacv.supabase.co','sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_');
     const route=value=>window.CGMA_ROUTE?.route(value)||value;
-    const returnUrl=()=>{const url=new URL(location.href);url.hash='';return url.toString()};
+    const returnUrl=()=>{const url=new URL(location.href);if(url.hash.startsWith('#ekodi_token='))url.hash='';return url.toString()};
     const authUrl=()=>`https://ekodi.kr/auth/?site=cgma&direct=1&return_to=${encodeURIComponent(returnUrl())}`;
     const loginLink=document.querySelector('#adminLoginLink');if(loginLink)loginLink.href=authUrl();
     async function consumeHandoff(){
@@ -294,8 +293,6 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
         window.CGMA_EDUCATION_SURVEY_ADMIN?.start(session);
         import('../member-admin.js?v=20260906-unified-admin-shell-v1').then(()=>{
           window.CGMA_MEMBER_REVIEW?.start(session,result);
-          const requestedSection=new URL(location.href).searchParams.get('section');
-          if(location.hash==='#memberReview'||requestedSection==='memberReview')requestAnimationFrame(()=>document.querySelector('#memberReview')?.scrollIntoView({block:'start'}));
         }).catch(error=>console.error('CGMA member review module',error));
       }catch(error){console.error(error);return deny('권한 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')}
     })();

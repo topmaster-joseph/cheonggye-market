@@ -13,9 +13,11 @@ test('CGMA retains only three administrator oversight groups and delegates daily
   assert.match(html,/id="openNoticeBoard"/);
   assert.doesNotMatch(html,/id="noticeAdminForm"|id="noticeAdminList"/);
   assert.match(html,/cgma-embedded-workbench/);
-  assert.match(html,/admin-dashboard\.js\?v=20261017-user-first-v1/);
+  assert.match(html,/admin-dashboard\.js\?v=20261102-ux1/);
+  assert.match(html,/id="adminSubtabs"/);
+  assert.match(html,/admin-navigation\.css\?v=20261102-ux1/);
   assert.doesNotMatch(js,/quickAddNotice|addNoticeBtn/);
-  assert.match(js,/setTab\('inline',embeddedId\)/);
+  assert.match(js,/show\(panels\.includes\(embeddedId\)\?embeddedId:null\)/);
 });
 
 test('public content sections authenticate via the current server gate before displaying management actions',async()=>{
@@ -57,11 +59,14 @@ test('desktop sidebar is fixed and never scrolls',()=>{
 test('tab runtime preserves existing admin modules while switching visible groups',()=>{
   for(const id of ['controlTower','merchantManager','memberReview','noticeManager','resourceManager','siteModeManager','languageManager','petitionManager'])assert.match(js,new RegExp(id));
   assert.match(js,/classList\.toggle\('admin-tab-hidden'/);
-  assert.match(js,/groupForTarget/);
+  assert.match(js,/routeTo\(id\)/);
+  assert.match(js,/key!==id/);
+  assert.match(js,/url\.searchParams\.delete\('section'\)/);
+  assert.match(html,/href="\.\.\/programs\/ai-marketing-2026\/manage\/"/);
 });
 
 test('empty review queue collapses without hiding non-empty work',()=>{
-  assert.match(js,/classList\.toggle\('is-empty',Number\.isFinite\(count\)&&count===0\)/);
+  assert.match(js,/classList\.toggle\('is-empty',Number\.parseInt\(due\.textContent/);
   assert.match(css,/\.tower-review-due\.is-empty \.tower-review-due-list\{display:none\}/);
 });
 
