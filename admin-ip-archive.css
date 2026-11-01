@@ -11,3 +11,34 @@
 .cgma-ip-card a:focus-visible{outline:3px solid #236b4b;outline-offset:3px}
 .cgma-ip-archive #ipArchiveStatus[data-state="error"]{color:#9a322b}
 @media(max-width:760px){.cgma-ip-archive .cgma-ip-list{grid-template-columns:1fr}.cgma-ip-card{padding:15px}}
+
+/* Explicit, recipient-scoped external invitations. Never imply that tokens grant Drive access. */
+.cgma-ip-sharing{margin-top:28px;padding-top:22px;border-top:1px solid #cdded4}
+.cgma-ip-sharing h3{font-size:1.25rem;margin:0 0 8px;color:#173c30}
+.cgma-ip-sharing h4{font-size:1.04rem;margin:25px 0 12px}
+.cgma-ip-sharing>p{line-height:1.72;font-size:.88rem;color:#4a6758}
+.cgma-ip-share-form{display:grid;grid-template-columns:1fr 160px;gap:13px;align-items:start;margin:17px 0}
+.cgma-ip-share-form>label{display:flex;flex-direction:column;font-weight:700;font-size:.85rem;gap:6px;color:#214936}
+.cgma-ip-share-form label.wide,.cgma-ip-share-docs{grid-column:1/-1}
+.cgma-ip-share-form input[type=email],.cgma-ip-share-form textarea,.cgma-ip-share-form select,.cgma-ip-share-result input{width:100%;border:1px solid #cbdccf;background:#fff;color:#1e4636;padding:11px;border-radius:9px;font:inherit;min-width:0}
+.cgma-ip-share-docs{border:1px solid #d9e5dc;border-radius:11px;padding:13px}
+.cgma-ip-share-docs legend{font-weight:800;color:#214936;padding:0 8px}
+#ipShareChoices{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.cgma-ip-share-choice{display:flex;gap:8px;align-items:flex-start;line-height:1.5;color:#305344;font-size:.83rem}
+.cgma-ip-share-form label.cgma-ip-share-ack{flex-direction:row;align-items:flex-start;gap:8px;font-size:.82rem;font-weight:500;line-height:1.62}
+.cgma-ip-share-form button[type=submit]{justify-self:start;cursor:pointer}
+.cgma-ip-share-form button:disabled{opacity:.6;cursor:wait}
+.cgma-ip-share-result{display:flex;flex-direction:column;align-items:flex-start;gap:10px;background:#edf8ee;border:1px solid #bcdcc7;border-radius:12px;padding:16px}
+.cgma-ip-share-result strong{color:#135039}
+.cgma-ip-share-result input{font-size:.83rem}
+.cgma-ip-share-result button{border:1px solid #145d45;border-radius:8px;background:#145d45;color:white;font:inherit;font-weight:700;padding:9px 14px;cursor:pointer}
+.cgma-ip-share-result a{color:#15573f;font-weight:750;text-decoration:underline;overflow-wrap:anywhere}
+.cgma-ip-share-result p{line-height:1.65;font-size:.83rem;margin:7px 0}
+.cgma-ip-share-history{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cgma-ip-share-history-item{background:#fbfcfb;border:1px solid #dae5dd;border-radius:12px;padding:13px}
+.cgma-ip-share-history-item strong{display:block;overflow-wrap:anywhere;font-size:.92rem}
+.cgma-ip-share-history-item p{font-size:.82rem;line-height:1.5;margin:6px 0}
+.cgma-ip-share-history-item small{display:block;font-size:.72rem;color:#566c5d;line-height:1.5}
+.cgma-ip-share-history-item button{margin-top:8px;background:white;border:1px solid #b37979;border-radius:8px;color:#a03232;padding:7px 10px;cursor:pointer}
+#ipShareStatus[data-state=error]{color:#a23a31}
+@media(max-width:760px){.cgma-ip-share-form,.cgma-ip-share-history,#ipShareChoices{grid-template-columns:1fr}.cgma-ip-share-form>label{grid-column:1/-1}}
