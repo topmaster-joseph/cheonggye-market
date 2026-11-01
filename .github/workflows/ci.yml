@@ -34,6 +34,11 @@ jobs:
           node --check admin-resources.js
           node --check admin-ip-archive.js
           node --check functions/api/ip-archive.js
+          node --check admin-ip-sharing.js
+          node --check ip-share/share.js
+          node --check functions/api/ip-shares.js
+          node --check functions/api/ip-share.js
+          node --check functions/_shared/cgma-ip-share.js
           node --check admin-petition.js
           node --check admin-merchants.js
           node --check admin-notices.js
@@ -94,6 +99,8 @@ jobs:
         run: node --test cgma-mascot-archive.test.mjs
       - name: Verify CGMA private intellectual property archive security
         run: node --test cgma-admin-ip-archive.test.mjs
+      - name: Verify CGMA controlled external IP sharing security
+        run: node --test cgma-ip-external-share.test.mjs
       - name: Test CGMA progressive homepage and navigation
         run: node --test cgma-home-progressive.test.mjs
       - name: Test compact admin dashboard contract

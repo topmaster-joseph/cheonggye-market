@@ -3,7 +3,7 @@ import { cgmaAdmin } from '../_shared/cgma-admin.js';
 // EKODI/05_COMMUNITY/청계면상인회_브랜드자료실.
 // Private, bounded register of existing uploaded files. Do not publish these
 // locations in HTML, JS bundles, site maps or /api/resources.
-const DOCUMENTS = Object.freeze([
+export const DOCUMENTS = Object.freeze([
   {
     id:'cgma-ip-archive-folder',
     category:'보관함',
