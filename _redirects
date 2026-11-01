@@ -10,3 +10,6 @@
 /payment-fail  /payment-fail.html  200
 
 /notices/*  /index.html  200
+
+# Isolated CGMA admin workbench; never redirect authenticated /cgma/admin here.
+/operations-admin/*  /admin/index.html  200
