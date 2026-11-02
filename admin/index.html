@@ -258,6 +258,35 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
     const returnUrl=()=>{const url=new URL(location.href);if(url.hash.startsWith('#ekodi_token='))url.hash='';return url.toString()};
     const authUrl=()=>`https://ekodi.kr/auth/?site=cgma&direct=1&return_to=${encodeURIComponent(returnUrl())}`;
     const loginLink=document.querySelector('#adminLoginLink');if(loginLink)loginLink.href=authUrl();
+    // The EKODI workspace admin owns this exact same-origin iframe.
+    // Pages still validates the bearer token against the existing CGMA reviewer API.
+    async function embeddedSession(){
+      const url=new URL(location.href);
+      const enabled=url.origin==='https://ekodi.kr' && url.pathname==='/cgma/operations-admin/' && url.searchParams.get('inline')==='1';
+      if(!enabled)throw new Error('CGMA_EMBEDDED_ORIGIN_REQUIRED');
+      const section=url.searchParams.get('section');
+      const allowed=new Set(['memberReview','festivalManager','controlTower','petitionManager','ipArchive','educationSurveyManager']);
+      if(!allowed.has(section)||window.parent===window)throw new Error('CGMA_EMBEDDED_SECTION_FORBIDDEN');
+      document.documentElement.classList.add('cgma-embedded-workbench');
+      return new Promise((resolve,reject)=>{
+        const timer=setTimeout(()=>{window.removeEventListener('message',receive);reject(new Error('CGMA_EMBEDDED_AUTH_TIMEOUT'));},12000);
+        function receive(event){
+          if(event.source!==window.parent||event.origin!=='https://ekodi.kr')return;
+          if(event.data?.type!=='ekodi:cgma-admin:session')return;
+          const accessToken=event.data.accessToken;
+          if(typeof accessToken!=='string'||accessToken.length<16||accessToken.length>8192){clearTimeout(timer);window.removeEventListener('message',receive);reject(new Error('CGMA_EMBEDDED_TOKEN_INVALID'));return;}
+          clearTimeout(timer);window.removeEventListener('message',receive);resolve({access_token:accessToken});
+        }
+        window.addEventListener('message',receive);
+        window.parent.postMessage({type:'ekodi:cgma-admin:ready',section},'https://ekodi.kr');
+      });
+    }
+    function reportEmbeddedHeight(){
+      if(!document.documentElement.classList.contains('cgma-embedded-workbench'))return;
+      const report=()=>window.parent.postMessage({type:'ekodi:cgma-admin:height',height:Math.min(5000,Math.max(260,document.body.scrollHeight))},'https://ekodi.kr');
+      if(typeof ResizeObserver==='function')new ResizeObserver(report).observe(document.body);
+      requestAnimationFrame(report);
+    }
     async function consumeHandoff(){
       const hash=new URLSearchParams(location.hash.replace(/^#/,'')),tokenHash=hash.get('ekodi_token');
       if(!tokenHash)return {present:false,ok:true};
@@ -270,7 +299,11 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
     (async()=>{
       const handoff=await consumeHandoff();
       if(handoff.present&&!handoff.ok)return deny('통합인증 연결이 만료되었거나 이미 사용되었습니다. 다시 로그인해 주세요.');
-      const {data}=await client.auth.getSession(),session=data.session,token=session?.access_token;
+      const inline=new URLSearchParams(location.search).get('inline')==='1';
+      let session;
+      if(inline){try{session=await embeddedSession()}catch(error){console.warn('CGMA embedded authentication',error.message);return deny('통합 관리자 인증 연결에 실패했습니다.')}}
+      else{const {data}=await client.auth.getSession();session=data.session;}
+      const token=session?.access_token;
       if(!token)return deny('먼저 EKODI에 로그인해 주세요.');
       try{
         const response=await fetch(route('/api/admin-session'),{headers:{Authorization:`Bearer ${token}`}}),result=await response.json();
@@ -278,6 +311,7 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
         document.querySelector('#adminDenied').hidden=true;document.querySelector('#adminLoading').hidden=true;document.querySelector('#adminApp').hidden=false;
         const authorityLabel=result.authority==='platform'?'EKODI 최고관리자 위임':'청계면상인회 관리자';
         const accessState=document.querySelector('#accessState');accessState.textContent=`현재 권한: ${authorityLabel}`;accessState.title=`${result.email||'로그인 계정'} · ${authorityLabel} · 청계면상인회 조회 및 수정 가능`;
+        if(inline)reportEmbeddedHeight();
         window.CGMA_ADMIN_OVERVIEW?.start(session);
         window.CGMA_CONTROL_TOWER?.start(session);
         window.CGMA_MERCHANT_ADMIN?.start(session);

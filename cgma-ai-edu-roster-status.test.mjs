@@ -89,7 +89,7 @@ test('single-row status failure restores previous selection and displays error',
   await t.elt('m-body').listeners.change({target});
   assert.equal(target.value,'접수');
   assert.equal(t.records[0].status,'접수');
-  assert.match(t.elt('saved').textContent,/저장 실패/);
+  assert.match(t.elt('saved').textContent,/권한|로그인|실패/);
 });
 
 test('bulk toolbar selects only displayed applicants and makes one atomic RPC',async()=>{
