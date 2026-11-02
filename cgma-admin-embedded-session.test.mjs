@@ -15,8 +15,8 @@ test('CGMA private workbench uses nonredirecting Pages HTML alias',()=>{
 
 test('first-party embedded session never relies on tokens in URLs or permanent browser storage',()=>{
   assert.match(html,/async function embeddedSession\(\)/);
-  assert.match(html,/location\.origin!=='https:\/\/ekodi\.kr'/);
-  assert.match(html,/event\.source!==window\.parent\|\|event\.origin!==location\.origin/);
+  assert.match(html,/url\.origin==='https:\/\/ekodi\.kr'/);
+  assert.match(html,/event\.source!==window\.parent\|\|event\.origin!=='https:\/\/ekodi\.kr'/);
   assert.match(html,/event\.data\?\.type!=='ekodi:cgma-admin:session'/);
   assert.match(html,/window\.parent\.postMessage\(\{type:'ekodi:cgma-admin:ready'/);
   assert.doesNotMatch(html,/location\.(?:href|hash|search|assign)\s*=\s*(?:.*accessToken|.*session\.access_token)/);
@@ -24,7 +24,7 @@ test('first-party embedded session never relies on tokens in URLs or permanent b
 });
 
 test('standalone admin login remains and server tenant permission is rechecked',()=>{
-  assert.match(html,/embedded\?\{present:false,ok:true\}:await consumeHandoff\(\)/);
+  assert.ok(html.includes('if(inline){try{session=await embeddedSession()}'));
   assert.match(html,/client\.auth\.getSession\(\)/);
   assert.match(html,/fetch\(route\('\/api\/admin-session'\)/);
   assert.match(html,/if\(!response\.ok\|\|!result\.allowed\)return deny/);

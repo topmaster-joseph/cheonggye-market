@@ -11,5 +11,5 @@
 
 /notices/*  /index.html  200
 
-# Isolated CGMA admin workbench; never redirect authenticated /cgma/admin here.
+# Retain one source admin HTML; deliver only embedded workbench on the new route.
 /operations-admin/*  /admin/index.html  200

@@ -31,18 +31,20 @@ function makePage(initialUser){
     currentUser:async()=>user,
     signOut:async()=>{signOutCount++;user=null},
     loginUrl:()=> 'https://ekodi.kr/auth/?site=cgma&direct=1&return_to=https%3A%2F%2Fcgma.or.kr%2Fprograms%2Fai-marketing-2026%2F',
+    route:value=>value,
+    whenAuthReady:()=>new Promise(()=>{}),
     rpc:async(fn)=>{
       rpcCalls.push(fn);
       if(fn==='cgma_ai_edu_2026_public_stats')return {is_open:true,capacity:15,active:1,waiting:0};
       throw Error('no applicant roster access');
     }
   };
-  runInNewContext(app,{window:{CGMA_PROGRAMS:api},document,location:{hash:''},console,Date,URL});
+  runInNewContext(app,{window:{CGMA_PROGRAMS:api},document,location:{hash:'',origin:'https://cgma.or.kr',pathname:'/programs/ai-marketing-2026/',replace(){}},console,Date,URL});
   return {el,rpcCalls,get signOutCount(){return signOutCount}};
 }
 
 test('public registration HTML shows working login link even without JavaScript',()=>{
-  assert.match(html,/<a[^>]+id="ai-edu-login"[^>]+href="https:\/\/auth\.ekodi\.kr\//);
+  assert.match(html,/<a[^>]+id="ai-edu-login"[^>]+href="https:\/\/ekodi\.kr\/auth\//);
   assert.match(html,/<button[^>]+id="ai-edu-logout" hidden>로그아웃<\/button>/);
   assert.match(html,/id="ai-edu-auth-status"[^>]+aria-live="polite"/);
   assert.match(html,/href="\.\/manage\/">신청현황 관리/);
@@ -54,7 +56,7 @@ test('logged-out applicant sees Google login, not logout, and no private API run
   const p=makePage(null);await tick();
   assert.equal(p.el('ai-edu-login').hidden,false);
   assert.equal(p.el('ai-edu-logout').hidden,true);
-  assert.match(p.el('ai-edu-login').href,/auth\.ekodi\.kr/);
+  assert.match(p.el('ai-edu-login').href,/ekodi\.kr\/auth/);
   assert.deepEqual(p.rpcCalls,['cgma_ai_edu_2026_public_stats']);
 });
 
