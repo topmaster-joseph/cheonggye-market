@@ -54,10 +54,10 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
         <span class="admin-nav-label">제한 설정</span>
         <a href="#languageManager" data-admin-group="settings">다국어 게시 검증</a>
       </nav>
-      <div class="admin-side-foot"><a href="../">상인회 사용자 화면 ↗</a><a href="../member/">정회원 신청 화면 ↗</a></div>
+
     </aside>
     <main class="admin-main" id="dashboard">
-      <div class="admin-title-row"><div><span class="admin-kicker">청계면상인회 / 관리자</span><h1>승인·운영 감독</h1><p id="adminContextBreadcrumb" class="admin-context-breadcrumb">심사·승인 / 정회원 신청 승인</p></div><div class="admin-title-actions"><a class="admin-view-link" href="../">사용자 화면 ↗</a></div></div>
+      <div class="admin-title-row"><div><span class="admin-kicker">청계면상인회 / 관리자</span><h1 id="adminViewTitle">심사·승인</h1><p id="adminContextBreadcrumb" class="admin-context-breadcrumb">심사·승인 / 정회원 신청 승인</p></div><div class="admin-title-actions"><a class="admin-view-link" href="../">사용자 화면에서 관리 ↗</a></div></div>
       <p class="access-state" id="accessState"></p>
       <div class="admin-toolbar">
         <div class="admin-workspace-tabs" role="tablist" aria-label="관리자 전용 영역">
@@ -68,7 +68,7 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
 
       </div>
       <nav class="admin-subtabs" id="adminSubtabs" role="tablist" aria-label="세부 관리 업무"></nav>
-      <nav class="admin-outbound-links" aria-label="사용자 화면 업무 바로가기"><a href="../">점포·공지·자료 관리 ↗</a><a href="../programs/#manage">행사·활동 등록·관리 ↗</a><a href="../programs/ai-marketing-2026/manage/">AI 교육 신청현황 ↗</a><a href="../member/">정회원 신청 화면 ↗</a></nav>
+      <nav class="admin-outbound-links" aria-label="사용자 화면 업무 바로가기"><a href="../programs/#manage">행사·활동 등록·관리 ↗</a><a href="../programs/ai-marketing-2026/manage/">AI 교육 신청현황 ↗</a><a href="../member/">정회원 신청 화면 ↗</a></nav>
       <section class="admin-metrics" aria-label="현재 업무 현황">
         <article class="admin-metric" data-admin-metric="merchant"><span>공개 점포</span><b id="merchantCount">…</b><p>상권지도·명부 공개 점포</p></article>
         <article class="admin-metric" data-admin-metric="regular"><span>정회원 점포</span><b id="regularMerchantCount">…</b><p>정회원으로 공개된 점포</p></article>
@@ -170,7 +170,7 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
       </section>
       <section class="admin-resource-panel" id="languageManager" hidden>
         <header class="admin-resource-head"><div><small>LANGUAGE CONTROL · SHARED LEDGER</small><h2>다국어 번역·게시</h2><p>청계면상인회 사이트의 번역 진행 상태와 실제 게시 여부를 관리합니다. EKODI 최고관리자 화면과 같은 중앙 원장을 사용합니다.</p></div><button class="admin-action" id="languageAdminRefresh" type="button">새로고침</button></header>
-        <div class="admin-member-summary"><strong id="languagePublishedCount">0개</strong><span>현재 게시 언어</span><strong id="languageReadyCount">0개</strong><span>번역완료 언어</span></div>
+        <div class="admin-member-summary"><strong id="languagePublishedCount">—</strong><span>현재 게시 언어</span><strong id="languageReadyCount">—</strong><span>번역완료 언어</span></div>
         <p class="admin-resource-status" id="languageAdminStatus" role="status">다국어 상태를 확인합니다.</p>
         <div class="admin-resource-list" id="languageAdminList"></div>
         <p class="admin-section-note">한국어 원문은 항상 공개됩니다. 번역 검증이 끝나지 않은 언어는 게시할 수 없으며, 원문이 바뀌면 기존 번역은 자동 비게시됩니다.</p>
@@ -245,13 +245,13 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
   <script src="../admin-festival.js?v=20261016-intake-v1"></script>
   <script src="../admin-coupon.js?v=20261016-coupon-v1"></script>
   <script src="../admin-site-mode.js?v=20260907-maintenance-preview"></script>
-  <script src="../admin-language-management.js?v=20260912-language-publication-v1"></script>
+  <script src="../admin-language-management.js?v=20261103-visible-state-v1"></script>
   <script src="../admin-resources.js?v=20260906-control-plane"></script>
   <script src="../admin-ip-archive.js?v=20261101-v1"></script>
   <script src="../admin-ip-sharing.js?v=20261102-v1"></script>
   <script src="../admin-petition.js?v=20260906-control-plane"></script>
   <script src="../admin-education-survey.js?v=20261017-ranked-v3"></script>
-  <script src="../admin-dashboard.js?v=20261102-ux1"></script>
+  <script src="../admin-dashboard.js?v=20261103-visible-state-v1"></script>
   <script>
     const client=window.supabase.createClient('https://renzehysxirjilvdxacv.supabase.co','sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_');
     const route=value=>window.CGMA_ROUTE?.route(value)||value;

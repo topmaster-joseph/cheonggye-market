@@ -13,7 +13,7 @@ test('CGMA retains only three administrator oversight groups and delegates daily
   assert.match(html,/id="openNoticeBoard"/);
   assert.doesNotMatch(html,/id="noticeAdminForm"|id="noticeAdminList"/);
   assert.match(html,/cgma-embedded-workbench/);
-  assert.match(html,/admin-dashboard\.js\?v=20261102-ux1/);
+  assert.match(html,/admin-dashboard\.js\?v=20261103-visible-state-v1/);
   assert.match(html,/id="adminSubtabs"/);
   assert.match(html,/admin-navigation\.css\?v=20261102-ux1/);
   assert.doesNotMatch(js,/quickAddNotice|addNoticeBtn/);

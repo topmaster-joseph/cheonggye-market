@@ -91,12 +91,21 @@ function show(id){
     panel.classList.toggle('admin-tab-hidden',key!==id);
     panel.setAttribute('role','tabpanel');
     panel.tabIndex=-1;
-    panel.setAttribute('aria-labelledby','cgma-tab-'+key);
+    if(key===id&&!inline&&group!=='legacy'){
+      panel.setAttribute('aria-labelledby','cgma-tab-'+key);
+      panel.removeAttribute('aria-label');
+    }else{
+      panel.removeAttribute('aria-labelledby');
+      panel.setAttribute('aria-label',owner[key].label);
+    }
   });
   document.querySelector('.admin-command-grid')?.classList.add('admin-tab-hidden');
   document.querySelector('.admin-section-note')?.classList.add('admin-tab-hidden');
   const crumbs=document.getElementById('adminContextBreadcrumb');
-  if(crumbs)crumbs.textContent=(groups[group]?.label||'기존 업무')+' / '+label;
+  const groupLabel=groups[group]?.label||'기존 업무';
+  const heading=document.getElementById('adminViewTitle');
+  if(heading)heading.textContent=groupLabel;
+  if(crumbs)crumbs.textContent=groupLabel+' / '+label;
   document.title=label+' | 청계면상인회 관리자';
 }
 function syncFromUrl(){

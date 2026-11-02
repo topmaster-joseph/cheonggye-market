@@ -10,7 +10,7 @@ const COOKIE_KEY='ekodi_locale';
 const QUERY_KEY='lang';
 const SUPPORTED=new Set(['ko-KR','en','zh-CN','ja','vi','ne']);
 const READY=new Set(['ko-KR','en']);
-const PUBLICATION_STATUS_URL='https://api.ekodi.kr/api/i18n/v1/status?service=cgma';
+const PUBLICATION_STATUS_URL='https://ekodi.kr/api/i18n/v1/status?service=cgma';
 const language=document.getElementById('siteLanguage');
 let activeLocale='ko-KR';
 let publishedReady=new Set(['ko-KR']);

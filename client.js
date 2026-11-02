@@ -1,6 +1,6 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-const API='https://api.ekodi.kr';
+const API='https://ekodi.kr';
 const TENANT='cgma';
 const STORAGE_KEY='ekodi-customer-token';
 const SUPABASE_URL='https://renzehysxirjilvdxacv.supabase.co';
