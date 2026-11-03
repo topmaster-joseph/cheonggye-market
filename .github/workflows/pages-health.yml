@@ -46,8 +46,8 @@ jobs:
             curl -sSIL --max-time 15 "${BASE_URL}${path}" || true
             echo "===== TITLE/BODY ${path} ====="
             body="$(curl -sSL --max-time 15 "${BASE_URL}${path}" 2>&1 || true)"
-            printf '%s' "$body" | grep -o '<title>[^<]*</title>' | head -1 || true
-            printf '%s\n' "$body" | head -c 700 || true
+            grep -om1 '<title>[^<]*</title>' <<< "$body" || true
+            printf '%s\n' "${body:0:700}"
             echo
           }
           diagnose "/"
@@ -70,8 +70,7 @@ jobs:
             local expected="$2"
             local body=""
             for attempt in $(seq 1 5); do
-              body="$(curl -fsSL --max-time 15 "${BASE_URL}${path}" 2>/dev/null || true)"
-              if printf '%s' "$body" | grep -Fq "$expected"; then
+              if body="$(curl -fsSL --max-time 15 "${BASE_URL}${path}" 2>/dev/null)" && [[ "$body" == *"$expected"* ]]; then
                 echo "OK ${path} contains: ${expected}"
                 return 0
               fi
@@ -86,6 +85,10 @@ jobs:
           check_route "/ai" "청계상권 Marketing AI | 현재 비활성화"
           check_route "/member" "회원 계정 · 정회원 신청 | 청계면상인회"
           check_route "/store-admin" "내 가게 운영 | 청계상권 AI"
+          check_route "/admin/" 'id="adminViewTitle"'
+          check_route "/client/" 'id="authTitle"'
+          check_route "/programs/" 'id="programsHub"'
+          check_route "/programs/ai-marketing-2026/manage/" 'id="manager-title"'
 
       - name: Write health summary
         if: steps.credentials.outputs.configured == 'true' && success()
@@ -96,4 +99,8 @@ jobs:
             echo "- /ai ✅"
             echo "- /member ✅"
             echo "- /store-admin ✅"
+            echo "- /admin/ ✅"
+            echo "- /client/ ✅"
+            echo "- /programs/ ✅"
+            echo "- /programs/ai-marketing-2026/manage/ ✅"
           } >> "$GITHUB_STEP_SUMMARY"
