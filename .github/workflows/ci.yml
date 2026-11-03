@@ -103,8 +103,8 @@ jobs:
         run: node --test cgma-ip-external-share.test.mjs
       - name: Test CGMA progressive homepage and navigation
         run: node --test cgma-home-progressive.test.mjs
-      - name: Test compact admin dashboard contract
-        run: node --test cgma-admin-dashboard.test.mjs cgma-admin-visible-state.test.mjs
+      - name: Test compact admin dashboard contract and exact central auth return
+        run: node --test cgma-admin-dashboard.test.mjs cgma-admin-visible-state.test.mjs cgma-admin-auth-return.test.mjs
       - name: Verify Cloudflare Pages health probes and guarded admin links
         run: node --test cgma-pages-health.test.mjs
       - name: Test inline management session without third-party SDK
@@ -223,7 +223,7 @@ jobs:
           grep -Fq 'data-admin-tab="review"' admin/index.html
           grep -Fq 'data-admin-tab="oversight"' admin/index.html
           grep -Fq 'data-admin-tab="settings"' admin/index.html
-          grep -Fq 'admin-dashboard.js?v=20261103-visible-state-v1' admin/index.html
+          grep -Fq 'admin-dashboard.js?v=20261103-authreturn-v2' admin/index.html
           grep -Fq 'admin-language-management.js?v=20261103-visible-state-v1' admin/index.html
           grep -Fq 'admin-navigation.css?v=20261102-ux1' admin/index.html
           grep -Fq 'id="adminSubtabs"' admin/index.html

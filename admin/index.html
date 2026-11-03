@@ -251,19 +251,41 @@ html.cgma-embedded-workbench .admin-control-tower.admin-tab-hidden{display:none!
   <script src="../admin-ip-sharing.js?v=20261102-v1"></script>
   <script src="../admin-petition.js?v=20260906-control-plane"></script>
   <script src="../admin-education-survey.js?v=20261017-ranked-v3"></script>
-  <script src="../admin-dashboard.js?v=20261103-visible-state-v1"></script>
+  <script src="../admin-dashboard.js?v=20261103-authreturn-v2"></script>
   <script>
     const client=window.supabase.createClient('https://renzehysxirjilvdxacv.supabase.co','sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_');
     const route=value=>window.CGMA_ROUTE?.route(value)||value;
-    const returnUrl=()=>{const url=new URL(location.href);if(url.hash.startsWith('#ekodi_token='))url.hash='';return url.toString()};
+    const RETURN_PANEL='cgma_return_panel';
+    const adminNav=()=>window.CGMA_ADMIN_NAV;
+    const returnUrl=()=>{
+      const url=new URL(location.href);
+      const panel=adminNav()?.currentPanel();
+      if(url.hash.startsWith('#ekodi_token='))url.hash='';
+      else if(adminNav()?.isPanel(panel)){
+        url.hash='';
+        if(url.searchParams.get('inline')!=='1')url.searchParams.delete('section');
+        url.searchParams.set(RETURN_PANEL,panel);
+      }
+      return url.toString();
+    };
+    function restoreReturnPanel(){
+      const url=new URL(location.href);
+      const panel=url.searchParams.get(RETURN_PANEL);
+      const hasHandoff=new URLSearchParams(url.hash.replace(/^#/,'')).has('ekodi_token');
+      if(panel===null&&!hasHandoff)return;
+      url.searchParams.delete(RETURN_PANEL);
+      url.hash=adminNav()?.isPanel(panel)?panel:'';
+      history.replaceState({},document.title,url.pathname+url.search+url.hash);
+      window.dispatchEvent(new Event('hashchange'));
+    }
     const authUrl=()=>`https://ekodi.kr/auth/?site=cgma&direct=1&return_to=${encodeURIComponent(returnUrl())}`;
     const loginLink=document.querySelector('#adminLoginLink');if(loginLink)loginLink.href=authUrl();
     async function consumeHandoff(){
       const hash=new URLSearchParams(location.hash.replace(/^#/,'')),tokenHash=hash.get('ekodi_token');
-      if(!tokenHash)return {present:false,ok:true};
+      if(!tokenHash){restoreReturnPanel();return {present:false,ok:true}};
       document.querySelector('#adminLoading h1').textContent='로그인 연결 중';
       document.querySelector('#adminLoading p').textContent='EKODI 통합인증 정보를 이 관리자 공간에 연결하고 있습니다.';
-      history.replaceState({},document.title,location.pathname+location.search);
+      restoreReturnPanel();
       try{const {error}=await client.auth.verifyOtp({token_hash:tokenHash,type:hash.get('ekodi_type')||'email'});if(error)throw error;return {present:true,ok:true}}
       catch(error){console.error('CGMA admin auth handoff',error);return {present:true,ok:false}}
     }
