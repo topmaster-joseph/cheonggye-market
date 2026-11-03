@@ -161,6 +161,10 @@ function setup(){
   window.addEventListener('hashchange',syncFromUrl);
   window.addEventListener('popstate',syncFromUrl);
 }
+window.CGMA_ADMIN_NAV=Object.freeze({
+  isPanel:id=>typeof id==='string'&&Object.prototype.hasOwnProperty.call(owner,id),
+  currentPanel:()=>currentFromUrl()
+});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});
 else setup();
 })();
