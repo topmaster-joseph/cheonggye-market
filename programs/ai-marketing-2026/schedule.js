@@ -43,27 +43,27 @@ const HOLIDAYS={'2026-12-25':'성탄절','2027-01-01':'신정','2026-10-03':'개
 function editor(host,{sessions,note,onSave,onDone}){
   const list=normalize(sessions);
   host.innerHTML='<form class="sched-editor" novalidate aria-label="교육 일정 수정">'+
-    '<p class="sched-help">날짜·시간·주제를 고친 뒤 <b>일정 저장</b>을 누르세요. 회차 번호는 그대로 유지되어 신청자의 참석 가능 회차·출석이 새 날짜에 그대로 연결됩니다. 신청 화면과 행사 목록에 바로 반영됩니다.</p>'+
-    '<div class="sched-tools"><label>1회차부터 <select data-shift><option value="0">간격 그대로</option><option value="7">모두 1주 미루기</option><option value="-7">모두 1주 당기기</option></select></label>'+
-    '<label>시간 일괄 <input type="time" data-all-start value="'+esc(list[0].start)+'"> ~ <input type="time" data-all-end value="'+esc(list[0].end)+'"></label><button type="button" class="btn" data-apply-time>모든 회차에 적용</button></div>'+
-    '<div class="sched-rows">'+list.map(s=>'<fieldset class="sched-row" data-no="'+s.no+'"><legend>'+s.no+'회</legend>'+
-      '<label>날짜 <input type="date" name="date" required value="'+esc(s.date)+'"><small class="sched-dow"></small></label>'+
-      '<label>시작 <input type="time" name="start" required value="'+esc(s.start)+'"></label>'+
-      '<label>종료 <input type="time" name="end" required value="'+esc(s.end)+'"></label>'+
-      '<label class="wide">주제 <input name="title" maxlength="60" required value="'+esc(s.title)+'"></label>'+
-      '<label class="wide">실습 결과물 <input name="detail" maxlength="120" value="'+esc(s.detail)+'"></label></fieldset>').join('')+'</div>'+
-    '<label class="sched-note">안내 문구 <textarea name="note" rows="2" maxlength="300">'+esc(note||'')+'</textarea></label>'+
-    '<p class="sched-msg" role="status" aria-live="polite"></p>'+
-    '<div class="sched-actions"><button type="submit" class="btn primary">일정 저장</button><button type="button" class="btn" data-cancel>닫기</button></div></form>';
+    '<div class="sched-bar"><span class="sched-bar-title">일정 수정</span>'+
+    '<button type="button" class="btn sm" data-shift="-7">◀ 1주 당기기</button><button type="button" class="btn sm" data-shift="7">1주 미루기 ▶</button>'+
+    '<span class="sched-bar-time">시간 일괄 <input type="time" data-all-start value="'+esc(list[0].start)+'" aria-label="일괄 시작">~<input type="time" data-all-end value="'+esc(list[0].end)+'" aria-label="일괄 종료"><button type="button" class="btn sm" data-apply-time>적용</button></span></div>'+
+    '<div class="sched-grid" role="table" aria-label="회차별 일정"><div class="sched-head" role="row"><span>회</span><span>날짜</span><span>시간</span><span>주제</span><span>실습 결과물</span></div>'+
+    list.map(s=>'<div class="sched-row" role="row" data-no="'+s.no+'"><b class="sched-no">'+s.no+'</b>'+
+      '<span class="sched-date"><input type="date" name="date" required value="'+esc(s.date)+'" aria-label="'+s.no+'회 날짜"><small class="sched-dow"></small></span>'+
+      '<span class="sched-time"><input type="time" name="start" required value="'+esc(s.start)+'" aria-label="'+s.no+'회 시작">~<input type="time" name="end" required value="'+esc(s.end)+'" aria-label="'+s.no+'회 종료"></span>'+
+      '<input name="title" maxlength="60" required value="'+esc(s.title)+'" aria-label="'+s.no+'회 주제">'+
+      '<input name="detail" maxlength="120" value="'+esc(s.detail)+'" aria-label="'+s.no+'회 실습 결과물"></div>').join('')+'</div>'+
+    '<label class="sched-note"><span>안내 문구</span><input name="note" maxlength="300" value="'+esc(note||'')+'"></label>'+
+    '<div class="sched-actions"><p class="sched-msg" role="status" aria-live="polite">회차 번호는 유지되어 참석 가능 회차·출석이 새 날짜에 그대로 연결됩니다.</p><button type="button" class="btn sm" data-cancel>닫기</button><button type="submit" class="btn primary">일정 저장</button></div></form>';
   const form=host.querySelector('form'),msg=host.querySelector('.sched-msg');
   const rowsEl=()=>[...form.querySelectorAll('.sched-row')];
-  const syncDow=()=>rowsEl().forEach(r=>{const v=r.querySelector('[name=date]').value,d=parse(v);r.querySelector('.sched-dow').textContent=d?DAYS[d.getDay()]+'요일'+(HOLIDAYS[v]?' · '+HOLIDAYS[v]+'(공휴일)':''):''});
+  const syncDow=()=>rowsEl().forEach(r=>{const v=r.querySelector('[name=date]').value,d=parse(v);const el=r.querySelector('.sched-dow');el.textContent=d?DAYS[d.getDay()]+(HOLIDAYS[v]?' '+HOLIDAYS[v]:''):'';el.title=HOLIDAYS[v]?HOLIDAYS[v]+'(공휴일)':'';el.classList.toggle('holiday',!!HOLIDAYS[v]);r.classList.toggle('is-holiday',!!HOLIDAYS[v])});
   syncDow();form.addEventListener('input',e=>{if(e.target.name==='date')syncDow()});
-  form.querySelector('[data-shift]').addEventListener('change',e=>{const k=+e.target.value;if(!k)return;
+  form.querySelectorAll('[data-shift]').forEach(b=>b.addEventListener('click',()=>{const k=+b.dataset.shift;
     rowsEl().forEach(r=>{const i=r.querySelector('[name=date]'),d=parse(i.value);if(!d)return;d.setDate(d.getDate()+k);i.value=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')});
-    e.target.value='0';syncDow();msg.textContent=(k>0?'모든 회차를 1주 미뤘습니다':'모든 회차를 1주 당겼습니다')+'. 확인 후 [일정 저장]을 누르세요.'});
+    syncDow();msg.textContent=(k>0?'모든 회차를 1주 미뤘습니다':'모든 회차를 1주 당겼습니다')+'. 확인 후 [일정 저장]을 누르세요.'}));
   form.querySelector('[data-apply-time]').addEventListener('click',()=>{const a=form.querySelector('[data-all-start]').value,b=form.querySelector('[data-all-end]').value;rowsEl().forEach(r=>{r.querySelector('[name=start]').value=a;r.querySelector('[name=end]').value=b});msg.textContent='모든 회차 시간을 바꿨습니다. [일정 저장]을 눌러야 반영됩니다.'});
   form.querySelector('[data-cancel]').addEventListener('click',()=>{host.innerHTML='';onDone&&onDone(null)});
+  form.querySelector('[name=title]').focus({preventScroll:true});
   form.addEventListener('submit',async e=>{e.preventDefault();
     const next=rowsEl().map(r=>({no:+r.dataset.no,date:r.querySelector('[name=date]').value,start:r.querySelector('[name=start]').value,end:r.querySelector('[name=end]').value,title:r.querySelector('[name=title]').value.trim(),detail:r.querySelector('[name=detail]').value.trim()}));
     for(const s of next){
