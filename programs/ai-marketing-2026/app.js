@@ -1,10 +1,10 @@
-// 상인 AI 마케팅 교육(2026.11.6~12.18) 참가 신청 공개 화면. 관리자는 별도 권한 확인 페이지로 이동합니다.
+// 상인 AI 마케팅 교육(2026.11.13~12.23) 참가 신청 공개 화면. 관리자는 별도 권한 확인 페이지로 이동합니다.
 // 원본: Supabase cgma_ai_edu_2026_* (RLS 직접접근 차단, security definer RPC만).
 (()=>{
 'use strict';
 const P=window.CGMA_PROGRAMS;
 const $=id=>document.getElementById(id);
-const SESSIONS=[[1,'11/6 금'],[2,'11/13 금'],[3,'11/20 금'],[4,'11/25 수'],[5,'11/27 금'],[6,'12/4 금'],[7,'12/11 금'],[8,'12/18 금']];
+const SESSIONS=[[1,'11/13 금'],[2,'11/20 금'],[3,'11/27 금'],[4,'12/2 수'],[5,'12/4 금'],[6,'12/11 금'],[7,'12/18 금'],[8,'12/23 수']];
 const INTERESTS=['사진·이미지','숏폼 영상','영상 편집','홍보문구','인스타그램','네이버 플레이스','리뷰 답글','예약·톡톡'];
 const digits=v=>String(v||'').replace(/\D/g,'');
 const fmtPhone=v=>{const d=digits(v).slice(0,11);if(d.length<4)return d;if(d.length<8)return d.slice(0,3)+'-'+d.slice(3);return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4)};
@@ -77,7 +77,7 @@ $('apply').addEventListener('submit',async ev=>{
     f.hidden=true;$('done-no').textContent=r.receipt_no;
     if(r.duplicate){$('done-title').textContent='이미 신청하신 번호입니다';$('done-msg').textContent=`이 휴대폰 번호로 접수된 신청이 있습니다. 현재 상태: ${r.status}. 내용을 바꾸려면 상인회로 연락해 주세요.`}
     else if(r.status==='대기'){$('done-title').textContent='대기자로 접수되었습니다';$('done-msg').textContent='정원이 차서 대기 순번으로 접수되었습니다. 자리가 나면 순서대로 문자로 연락드립니다.'}
-    else{$('done-title').textContent='신청이 접수되었습니다';$('done-msg').textContent=`참가가 확정되면 ${fmtPhone(d.phone)} 번호로 안내 문자를 보내드립니다. 첫 수업은 11월 6일(금)입니다.`}
+    else{$('done-title').textContent='신청이 접수되었습니다';$('done-msg').textContent=`참가가 확정되면 ${fmtPhone(d.phone)} 번호로 안내 문자를 보내드립니다. 첫 수업은 11월 13일(금)입니다.`}
     $('done').hidden=false;$('done').focus();loadSeats();
   }catch(e){showErr(errText[e.code]||'접수 중 연결이 끊겼습니다. 잠시 후 다시 [신청하기]를 눌러 주세요. (같은 번호로 두 번 접수되지는 않습니다)')}
   finally{btn.disabled=false;btn.textContent='신청하기'}
