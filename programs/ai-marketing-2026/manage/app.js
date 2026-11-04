@@ -5,7 +5,9 @@
 const P=window.CGMA_PROGRAMS;
 const $=id=>document.getElementById(id);
 const esc=P.esc;
-const SESSIONS=[[1,'11/13 금'],[2,'11/20 금'],[3,'11/27 금'],[4,'12/4 금'],[5,'12/11 금'],[6,'12/18 금'],[7,'12/25 금'],[8,'1/1 금']];
+const S=window.CGMA_AIEDU_SCHEDULE;
+// 회차 일정은 서버 settings.sessions가 원본. 회차 번호(1~8)는 출석·참석가능 값과 그대로 연결됩니다.
+const sessionList=()=>S?S.normalize(settings&&settings.sessions):[];
 const digits=v=>String(v||'').replace(/\D/g,'');
 const fmtPhone=v=>{const d=digits(v).slice(0,11);if(d.length<4)return d;if(d.length<8)return d.slice(0,3)+'-'+d.slice(3);return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4)};
 const rpc=(fn,body,auth)=>P.rpc(fn,body,{auth});
@@ -56,6 +58,7 @@ if(headerLogout){
 function panelShell(){
   panel.innerHTML=`<div class="row" style="justify-content:space-between"><h2>신청현황 관리 <small style="font-weight:400;font-size:13px">관리자에게만 보입니다 · 변경 이력 기록</small></h2><div class="row"><button class="btn" id="m-refresh" type="button">새로고침</button><button class="btn" id="m-csv" type="button">엑셀(CSV) 받기</button><button class="btn" id="m-copy" type="button">확정자 번호 복사</button></div></div>
   <div class="tiles" id="m-tiles"></div>
+  <section class="m-sched" aria-labelledby="m-sched-title"><div class="row" style="justify-content:space-between"><h3 id="m-sched-title">교육 일정 <small id="m-sched-summary"></small></h3><button class="btn" id="m-sched-edit" type="button">일정 수정</button></div><ol class="plan m-sched-plan" id="m-sched-plan"></ol><div id="m-sched-editor" class="sched-editor-host"></div></section>
   <div class="row"><label class="row">정원 <input id="m-cap" type="number" min="1" max="200" inputmode="numeric"> 명</label><label class="row switch"><input type="checkbox" id="m-open"> 신청 받기</label><button class="btn" id="m-save" type="button">설정 저장</button></div>
   <p class="msg" id="m-msg" aria-live="polite"></p>
   <div class="row"><input id="m-q" placeholder="이름·상호·번호 검색" aria-label="검색" style="flex:1 1 200px;min-height:40px;font-size:15px"><select id="m-st" aria-label="상태 필터" style="width:auto!important"><option value="">전체 상태</option><option>접수</option><option>확정</option><option>대기</option><option>취소</option></select></div>
@@ -81,6 +84,7 @@ function panelShell(){
     else ids.forEach(id=>selectedIds.delete(id));
     renderRows();
   };
+  $('m-sched-edit').onclick=toggleScheduleEditor;
   $('m-save').onclick=saveSettings;$('m-csv').onclick=csv;$('m-copy').onclick=copyPhones;
   const body=$('m-body');
   body.addEventListener('change',async ev=>{
@@ -141,6 +145,7 @@ async function loadAdmin(){
 function renderAll(){
   const cnt=s=>rows.filter(r=>r.status===s).length,act=rows.filter(r=>r.status!=='취소').length,seat=cnt('접수')+cnt('확정');
   $('m-tiles').innerHTML=[['유효 신청',act],['확정',cnt('확정')],['접수',cnt('접수')],['대기',cnt('대기')],['남은 자리',Math.max(0,settings.capacity-seat)+' / '+settings.capacity],['취소',cnt('취소')]].map(([k,v])=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+  renderSchedule();
   $('m-cap').value=settings.capacity;$('m-open').checked=settings.is_open;renderRows();
 }
 function filtered(){const q=digits($('m-q').value)||$('m-q').value.trim().toLowerCase(),st=$('m-st').value;return rows.filter(r=>(!st||r.status===st)&&(!q||(r.name+r.store_name+r.phone+r.receipt_no+r.business_type).toLowerCase().includes(q)))}
@@ -197,7 +202,7 @@ function renderRows(){
       '<td class="m-state-cell"><select data-status-row aria-label="'+esc(r.name)+' 접수상태 변경"'+(statusBusy?' disabled':'')+'>'+stateOptions+'</select><small class="saved" aria-live="polite"></small></td>'+
       '<td><button class="m-expand" type="button" data-expand="'+id+'" aria-expanded="'+open+'" aria-controls="m-detail-'+id+'">'+(open?'접기 ▲':'자세히 ▼')+'</button></td></tr>';
     if(!open)return summary;
-    const att=SESSIONS.map(([n,dd])=>{
+    const att=sessionList().map(se=>{const n=se.no,dd=S.label(se);
       const on=(r.attendance||[]).includes(n),can=(r.available_sessions||[]).includes(n);
       return '<button type="button" data-att="'+n+'" class="'+(on?'on ':'')+(can?'can':'')+'" aria-pressed="'+on+'" title="'+n+'회 '+dd+(can?' · 참석 가능':'')+'">'+n+'</button>';
     }).join('');
@@ -225,10 +230,28 @@ async function patch(id,p,cell){
   try{const r=await rpc('cgma_ai_edu_2026_admin_update',{p_pin:null,p_id:id,p_patch:p},true);if(!r.ok)throw new Error(r.error);Object.assign(rows.find(x=>x.id===id),p);tag.textContent='저장됨';setTimeout(()=>{tag.textContent=''},1500);return true}
   catch(e){tag.textContent=['login_required','denied','locked'].includes(e.message)?'권한 오류 — 다시 로그인':'저장 실패 — 다시 시도';tag.style.color='var(--danger)';return false}
 }
+function renderSchedule(){
+  if(!S||!$('m-sched-plan'))return;
+  const list=sessionList();
+  S.renderPlan($('m-sched-plan'),list);
+  // DB가 일정 저장을 지원할 때만(서버가 sessions를 돌려줄 때) 수정 버튼을 엽니다.
+  const ready=Array.isArray(settings&&settings.sessions)&&settings.sessions.length===8;
+  $('m-sched-edit').hidden=!ready;
+  $('m-sched-summary').textContent=S.period(list)+(S.uniformTime(list)?' · '+S.uniformTime(list):'');
+}
+function toggleScheduleEditor(){
+  const host=$('m-sched-editor'),btn=$('m-sched-edit');
+  if(!S||!host)return;
+  if(host.firstChild){host.innerHTML='';btn.textContent='일정 수정';return}
+  btn.textContent='수정 닫기';
+  S.editor(host,{sessions:settings.sessions,note:settings.schedule_note||'',
+    onSave:async(next,note)=>{const r=await rpc('cgma_ai_edu_2026_admin_sessions',{p_sessions:next,p_note:note},true);if(!r||!r.ok)throw new Error(r&&r.error||'unavailable');settings={...settings,sessions:r.sessions,schedule_note:r.schedule_note};renderSchedule();renderRows();$('m-msg').textContent='교육 일정을 저장했습니다. 신청 화면에도 바로 반영됩니다. 신청자에게 변경 안내 문자를 보내 주세요.';return r},
+    onDone:r=>{if(!r)btn.textContent='일정 수정'}});
+}
 async function saveSettings(){
   const cap=parseInt($('m-cap').value,10),msg=$('m-msg');
   if(!(cap>=1&&cap<=200)){msg.textContent='정원은 1~200 사이 숫자로 적어 주세요.';return}
-  try{const r=await rpc('cgma_ai_edu_2026_admin_update',{p_pin:null,p_id:null,p_patch:{capacity:cap,is_open:$('m-open').checked}},true);if(!r.ok)throw new Error(r.error);settings={capacity:cap,is_open:$('m-open').checked};msg.textContent='설정을 저장했습니다.';renderAll()}
+  try{const r=await rpc('cgma_ai_edu_2026_admin_update',{p_pin:null,p_id:null,p_patch:{capacity:cap,is_open:$('m-open').checked}},true);if(!r.ok)throw new Error(r.error);settings={...settings,capacity:cap,is_open:$('m-open').checked};msg.textContent='설정을 저장했습니다.';renderAll()}
   catch{msg.textContent='설정을 저장하지 못했습니다.'}
 }
 function csv(){

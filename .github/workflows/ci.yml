@@ -123,6 +123,8 @@ jobs:
         run: node --test cgma-programs-auth-return.test.mjs
       - name: Test CGMA public intake / standalone roster isolation and admin authorization
         run: node --test cgma-programs-management-split.test.mjs
+      - name: Test AI education editable session schedule (shared editor, audited RPC)
+        run: node --test cgma-ai-edu-schedule-edit.test.mjs
       - name: Test market control tower model
         run: node --test cgma-market-health.test.mjs
       - name: Test canonical store identity model
