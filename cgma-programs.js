@@ -175,7 +175,7 @@ const FIELDS=[
   ['title','제목','text',{required:true,maxlength:80}],
   ['category','분류','select',{options:CATEGORIES}],
   ['status','상태','select',{options:['준비','모집중','마감','종료']}],
-  ['period_label','기간 표시','text',{maxlength:60,placeholder:'예: 11.6(금) – 12.18(금) · 매주 2시간'}],
+  ['period_label','기간 표시','text',{maxlength:60,placeholder:'예: 11.13(금) – 1.1(금) · 매주 금 2시간'}],
   ['starts_on','시작일','date',{}],
   ['ends_on','종료일','date',{}],
   ['summary','소개 (300자 이내)','textarea',{maxlength:300}],

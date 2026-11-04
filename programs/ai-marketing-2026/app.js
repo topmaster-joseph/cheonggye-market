@@ -1,10 +1,10 @@
-// 상인 AI 마케팅 교육(2026.11.6~12.18) 참가 신청 공개 화면. 관리자는 별도 권한 확인 페이지로 이동합니다.
+// 상인 AI 마케팅 교육(2026.11.13~2027.1.1, 매주 금요일) 참가 신청 공개 화면. 관리자는 별도 권한 확인 페이지로 이동합니다.
 // 원본: Supabase cgma_ai_edu_2026_* (RLS 직접접근 차단, security definer RPC만).
 (()=>{
 'use strict';
 const P=window.CGMA_PROGRAMS;
 const $=id=>document.getElementById(id);
-const SESSIONS=[[1,'11/6 금'],[2,'11/13 금'],[3,'11/20 금'],[4,'11/25 수'],[5,'11/27 금'],[6,'12/4 금'],[7,'12/11 금'],[8,'12/18 금']];
+const SESSIONS=[[1,'11/13 금'],[2,'11/20 금'],[3,'11/27 금'],[4,'12/4 금'],[5,'12/11 금'],[6,'12/18 금'],[7,'12/25 금'],[8,'1/1 금']];
 const INTERESTS=['사진·이미지','숏폼 영상','영상 편집','홍보문구','인스타그램','네이버 플레이스','리뷰 답글','예약·톡톡'];
 const digits=v=>String(v||'').replace(/\D/g,'');
 const fmtPhone=v=>{const d=digits(v).slice(0,11);if(d.length<4)return d;if(d.length<8)return d.slice(0,3)+'-'+d.slice(3);return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4)};
