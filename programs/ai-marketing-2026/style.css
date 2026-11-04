@@ -106,25 +106,41 @@ legend{width:100%;font-weight:800;font-size:15px;color:var(--g);padding:0 0 8px;
 .admin-google .g{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#f1f4f3;color:#4285f4;font-weight:900;font-size:18px;font-family:Arial,sans-serif}
 .admin-google:hover{border-color:var(--g)}
 .admin-google:focus-visible{outline:3px solid #f0b63c;outline-offset:2px}
-/* 일정 바로 수정 (2026-11-04) */
+/* 일정 바로 수정 — 컴팩트 표 (2026-11-04) */
 .plan-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .plan li.is-done{opacity:.6}.plan li.is-today{border-color:var(--g);box-shadow:0 0 0 2px #0f6b5222}
 .tag-today{font-style:normal;font-size:12px;background:var(--g);color:#fff;border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:middle}
-.sched-edit-btn,.sched-editor .btn{min-height:40px;padding:6px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;font:inherit;font-weight:700;cursor:pointer}
-.sched-editor .btn.primary{background:var(--g);border-color:var(--g);color:#fff}
-.sched-editor{border:1px solid var(--line);border-radius:14px;background:#fbfcfb;padding:14px;margin:0 0 12px;display:grid;gap:12px}
-.sched-help{margin:0;color:var(--muted);font-size:14px}
-.sched-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px}
-.sched-rows{display:grid;gap:8px}
-.sched-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0;background:#fff}
-.sched-row legend{font-weight:800;color:var(--g);padding:0 4px}
-.sched-row label,.sched-note{display:grid;gap:3px;font-size:13px;color:var(--muted)}
-.sched-row .wide{grid-column:span 3}
-.sched-row input,.sched-note textarea,.sched-tools input,.sched-tools select{font:inherit;font-size:15px;color:inherit;min-height:38px;padding:4px 8px;border:1px solid var(--line);border-radius:8px;background:#fff}
-.sched-dow{color:var(--g);font-weight:700}
-.sched-msg{margin:0;font-weight:700;color:var(--g)}
-.sched-actions{display:flex;gap:8px;flex-wrap:wrap}
-.m-sched{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:12px 0;background:#fff}
-.m-sched h3{margin:0;font-size:17px}.m-sched h3 small{font-weight:400;color:var(--muted);font-size:13px;margin-left:6px}
-.m-sched-plan{margin-top:10px}
-@media(max-width:560px){.sched-row{grid-template-columns:1fr 1fr}.sched-row label:first-of-type,.sched-row .wide{grid-column:span 2}}
+.sched-edit-btn,.sched-editor .btn{min-height:34px;padding:4px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;font:inherit;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.sched-editor .btn{width:auto!important;flex:none}.sched-editor .btn.primary{background:var(--g);border-color:var(--g);color:#fff;padding:4px 18px}
+.sched-editor-host:not(:empty)+.plan{display:none}
+.sched-editor{border:1px solid var(--line);border-radius:12px;background:#fff;padding:10px;margin:0 0 12px;display:grid;gap:8px;font-size:14px}
+.sched-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.sched-bar-title{font-weight:800;color:var(--g);margin-right:auto}
+.sched-bar-time{display:inline-flex;align-items:center;gap:4px;color:var(--muted);font-weight:700;white-space:nowrap}
+.ai-edu .sched-editor input:not([type=radio]):not([type=checkbox]){width:100%!important;min-width:0;min-height:32px!important;height:32px;padding:2px 6px!important;font-size:14px!important;border:1px solid var(--line)!important;border-radius:6px!important;background:#fff!important;box-shadow:none!important}
+.ai-edu .sched-editor input[type=time]:not([type=radio]):not([type=checkbox]){width:112px!important}
+.ai-edu .sched-editor input[type=date]:not([type=radio]):not([type=checkbox]){width:128px!important}
+.sched-grid{display:grid;gap:3px;overflow-x:auto}
+.sched-head,.sched-row{display:grid;grid-template-columns:24px 196px 244px minmax(150px,1.1fr) minmax(140px,1fr);gap:6px;align-items:center;min-width:800px}
+.sched-head{font-size:12px;font-weight:800;color:var(--muted);padding:0 6px}
+.sched-row{padding:3px 6px;border-radius:8px}.sched-row:nth-child(odd){background:#f5f8f6}
+.sched-row.is-holiday{background:#fdf0ec}
+.sched-no{color:var(--g);text-align:center;font-variant-numeric:tabular-nums}
+.sched-date,.sched-time{display:flex;align-items:center;gap:4px;white-space:nowrap}
+.sched-dow{font-size:12px;font-weight:700;color:var(--g);min-width:16px;white-space:nowrap}.sched-dow.holiday{color:var(--danger)}
+.sched-note{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--muted);font-size:13px}.sched-note span{white-space:nowrap}
+.sched-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sched-msg{margin:0 auto 0 0;font-size:13px;color:var(--muted);flex:1 1 220px}
+.m-sched{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0;background:#fff}
+.m-sched h3{margin:0;font-size:16px}.m-sched h3 small{font-weight:400;color:var(--muted);font-size:13px;margin-left:6px}
+.m-sched-plan{margin-top:8px}.m-sched .sched-editor-host:not(:empty){margin-top:8px}
+.m-sched-plan li{padding:7px 12px}
+@media(max-width:760px){
+  .sched-head{display:none}
+  .sched-head,.sched-row{min-width:0}
+  .sched-row{grid-template-columns:22px 1fr;grid-template-areas:"no date" "no time" "no title" "no detail";row-gap:4px;padding:6px}
+  .sched-no{grid-area:no;align-self:start;padding-top:6px}.sched-date{grid-area:date}.sched-time{grid-area:time}
+  .sched-row [name=title]{grid-area:title}.sched-row [name=detail]{grid-area:detail}
+  .ai-edu .sched-editor input[type=time]:not([type=radio]):not([type=checkbox]){width:118px!important}
+  .sched-bar-time{flex-wrap:wrap}.ai-edu .sched-editor input[type=date]:not([type=radio]):not([type=checkbox]){width:124px!important}
+}
