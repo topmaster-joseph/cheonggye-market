@@ -106,3 +106,25 @@ legend{width:100%;font-weight:800;font-size:15px;color:var(--g);padding:0 0 8px;
 .admin-google .g{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#f1f4f3;color:#4285f4;font-weight:900;font-size:18px;font-family:Arial,sans-serif}
 .admin-google:hover{border-color:var(--g)}
 .admin-google:focus-visible{outline:3px solid #f0b63c;outline-offset:2px}
+/* 일정 바로 수정 (2026-11-04) */
+.plan-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.plan li.is-done{opacity:.6}.plan li.is-today{border-color:var(--g);box-shadow:0 0 0 2px #0f6b5222}
+.tag-today{font-style:normal;font-size:12px;background:var(--g);color:#fff;border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+.sched-edit-btn,.sched-editor .btn{min-height:40px;padding:6px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;font:inherit;font-weight:700;cursor:pointer}
+.sched-editor .btn.primary{background:var(--g);border-color:var(--g);color:#fff}
+.sched-editor{border:1px solid var(--line);border-radius:14px;background:#fbfcfb;padding:14px;margin:0 0 12px;display:grid;gap:12px}
+.sched-help{margin:0;color:var(--muted);font-size:14px}
+.sched-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px}
+.sched-rows{display:grid;gap:8px}
+.sched-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0;background:#fff}
+.sched-row legend{font-weight:800;color:var(--g);padding:0 4px}
+.sched-row label,.sched-note{display:grid;gap:3px;font-size:13px;color:var(--muted)}
+.sched-row .wide{grid-column:span 3}
+.sched-row input,.sched-note textarea,.sched-tools input,.sched-tools select{font:inherit;font-size:15px;color:inherit;min-height:38px;padding:4px 8px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.sched-dow{color:var(--g);font-weight:700}
+.sched-msg{margin:0;font-weight:700;color:var(--g)}
+.sched-actions{display:flex;gap:8px;flex-wrap:wrap}
+.m-sched{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:12px 0;background:#fff}
+.m-sched h3{margin:0;font-size:17px}.m-sched h3 small{font-weight:400;color:var(--muted);font-size:13px;margin-left:6px}
+.m-sched-plan{margin-top:10px}
+@media(max-width:560px){.sched-row{grid-template-columns:1fr 1fr}.sched-row label:first-of-type,.sched-row .wide{grid-column:span 2}}

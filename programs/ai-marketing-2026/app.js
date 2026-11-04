@@ -4,7 +4,9 @@
 'use strict';
 const P=window.CGMA_PROGRAMS;
 const $=id=>document.getElementById(id);
-const SESSIONS=[[1,'11/13 금'],[2,'11/20 금'],[3,'11/27 금'],[4,'12/4 금'],[5,'12/11 금'],[6,'12/18 금'],[7,'12/25 금'],[8,'1/1 금']];
+// 회차 일정은 서버(cgma_ai_edu_2026_settings.sessions)가 원본이며, 승인된 관리자는 이 화면에서 바로 고칩니다.
+const S=window.CGMA_AIEDU_SCHEDULE;
+let sessions=S?S.normalize(null):[],scheduleNote='';
 const INTERESTS=['사진·이미지','숏폼 영상','영상 편집','홍보문구','인스타그램','네이버 플레이스','리뷰 답글','예약·톡톡'];
 const digits=v=>String(v||'').replace(/\D/g,'');
 const fmtPhone=v=>{const d=digits(v).slice(0,11);if(d.length<4)return d;if(d.length<8)return d.slice(0,3)+'-'+d.slice(3);return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4)};
@@ -42,13 +44,33 @@ if(loginLink&&logoutButton){
 
 ['f-phone','l-phone'].forEach(id=>$(id).addEventListener('input',e=>{e.target.value=fmtPhone(e.target.value)}));
 const box=$('sessions');
-SESSIONS.forEach(([n,d])=>{const l=document.createElement('label');l.innerHTML=`<input type="checkbox" name="available_sessions" id="f-s-${n}" value="${n}"><b>${n}회 · ${d}</b>`;box.append(l)});
+function renderSessionChoices(){
+  const checked=new Set([...box.querySelectorAll('input:checked')].map(i=>i.value));
+  box.innerHTML='';
+  sessions.forEach(s=>{const l=document.createElement('label');l.innerHTML=`<input type="checkbox" name="available_sessions" id="f-s-${s.no}" value="${s.no}"${checked.has(String(s.no))?' checked':''}><b>${s.no}회 · ${S.label(s)}</b>`;box.append(l)});
+}
+function renderSchedule(){
+  if(!S)return;
+  S.renderPlan($('plan'),sessions);
+  const period=$('fact-period');if(period)period.textContent=S.period(sessions);
+  const time=$('fact-time');if(time)time.textContent=S.uniformTime(sessions)||'회차별 시간 확인';
+  const note=$('sched-note');if(note&&scheduleNote)note.textContent=scheduleNote;
+  renderSessionChoices();
+}
+function applyServerSchedule(data){
+  if(!S||!data)return;
+  if(Array.isArray(data.sessions)&&data.sessions.length===8)sessions=S.normalize(data.sessions);
+  if(typeof data.schedule_note==='string')scheduleNote=data.schedule_note;
+  renderSchedule();
+}
+if(S)renderSessionChoices();
 $('all-sessions').addEventListener('click',()=>{const bs=box.querySelectorAll('input');const all=[...bs].every(b=>b.checked);bs.forEach(b=>{b.checked=!all});$('all-sessions').textContent=all?'전체 선택':'전체 해제'});
 
 async function loadSeats(){
   const el=$('seats');
   try{
     const s=await rpc('cgma_ai_edu_2026_public_stats',{});
+    applyServerSchedule(s);
     if(!s.is_open){el.textContent='신청이 마감되었습니다.';el.className='seats closed';$('submit').disabled=true;return}
     const left=Math.max(0,s.capacity-s.active);
     el.innerHTML=left>0?`선착순 <b>${s.capacity}명</b> · 남은 자리 <b>${left}석</b>`:`정원 ${s.capacity}명이 찼습니다 · 지금 신청하면 <b>대기 ${s.waiting+1}번</b>으로 접수됩니다`;
@@ -77,7 +99,7 @@ $('apply').addEventListener('submit',async ev=>{
     f.hidden=true;$('done-no').textContent=r.receipt_no;
     if(r.duplicate){$('done-title').textContent='이미 신청하신 번호입니다';$('done-msg').textContent=`이 휴대폰 번호로 접수된 신청이 있습니다. 현재 상태: ${r.status}. 내용을 바꾸려면 상인회로 연락해 주세요.`}
     else if(r.status==='대기'){$('done-title').textContent='대기자로 접수되었습니다';$('done-msg').textContent='정원이 차서 대기 순번으로 접수되었습니다. 자리가 나면 순서대로 문자로 연락드립니다.'}
-    else{$('done-title').textContent='신청이 접수되었습니다';$('done-msg').textContent=`참가가 확정되면 ${fmtPhone(d.phone)} 번호로 안내 문자를 보내드립니다. 첫 수업은 11월 6일(금)입니다.`}
+    else{$('done-title').textContent='신청이 접수되었습니다';$('done-msg').textContent=`참가가 확정되면 ${fmtPhone(d.phone)} 번호로 안내 문자를 보내드립니다. 첫 수업은 ${S?S.longLabel(sessions[0]):'1회차 일정 안내'}입니다.`}
     $('done').hidden=false;$('done').focus();loadSeats();
   }catch(e){showErr(errText[e.code]||'접수 중 연결이 끊겼습니다. 잠시 후 다시 [신청하기]를 눌러 주세요. (같은 번호로 두 번 접수되지는 않습니다)')}
   finally{btn.disabled=false;btn.textContent='신청하기'}
@@ -94,6 +116,26 @@ $('lookup').addEventListener('submit',async ev=>{
     out.textContent='';const b=document.createElement('b');b.textContent=`${r.receipt_no} · ${r.store_name}`;const s=document.createElement('span');s.className='pill st-'+r.status;s.textContent=label;out.append(b,' ',s);
   }catch{out.textContent='연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.'}
 });
+// 일정 바로 수정: 서버가 관리자(상인회 사이트 관리자 또는 교육 신청현황 담당자)로 확인한 경우에만 버튼을 보입니다.
+// 저장 권한은 cgma_ai_edu_2026_admin_sessions RPC가 다시 검증하고 변경 이력을 남깁니다.
+(async()=>{
+  const btn=$('sched-edit'),host=$('sched-editor');
+  if(!S||!btn||!host)return;
+  try{
+    if(P.whenAuthReady)await P.whenAuthReady();
+    if(!(await P.currentUser()))return;
+    if((await rpc('cgma_ai_edu_2026_can_manage',{},true))!==true)return;
+  }catch{return}
+  btn.hidden=false;
+  btn.addEventListener('click',()=>{
+    if(host.firstChild){host.innerHTML='';btn.textContent='일정 수정';return}
+    btn.textContent='수정 닫기';
+    S.editor(host,{sessions,note:scheduleNote,
+      onSave:async(next,note)=>{const r=await rpc('cgma_ai_edu_2026_admin_sessions',{p_sessions:next,p_note:note},true);if(!r||!r.ok)throw new Error(r&&r.error||'unavailable');applyServerSchedule(r);return r},
+      onDone:r=>{if(!r){btn.textContent='일정 수정'}}});
+    host.scrollIntoView({block:'start',behavior:'smooth'});
+  });
+})();
 // 하단 관리자 진입: 로그인 전에는 중앙 로그인 후 신청현황 화면으로 돌아오고,
 // 이미 로그인했으면 신청현황 화면으로 바로 이동한다. 권한은 신청현황 화면과 DB가 다시 확인한다.
 (async()=>{
