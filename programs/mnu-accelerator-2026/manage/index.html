@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
+<title>MNU 특공대 1기 신청현황 관리 | 청계면상인회</title>
+<style>
+:root{font-family:system-ui,"Noto Sans KR",sans-serif;color:#18372b;background:#f4f7f3}*{box-sizing:border-box}body{margin:0}
+header{background:#fff;padding:14px max(18px,calc((100% - 1100px)/2));display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #dde7dd}
+header a{color:#075c41;text-decoration:none;font-weight:800}header nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+main{max-width:1100px;margin:26px auto;padding:0 16px 55px}h1{font-size:clamp(23px,4vw,32px)}h2{font-size:19px}
+.panel{background:white;border:1px solid #dae5dc;padding:20px;border-radius:16px;margin-top:15px}
+.login{background:#087848;color:white;padding:11px 15px;border-radius:9px;display:inline-block;text-decoration:none;font-weight:800}
+button{padding:9px 13px;font:inherit;cursor:pointer;font-weight:700;background:#fff;border:1px solid #a9b9ac;border-radius:9px}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}
+input[type=search]{min-height:41px;padding:8px 11px;flex:1;border-radius:9px;border:1px solid #9faea3;font:inherit;min-width:150px}
+.wrap{overflow:auto;max-width:100%}table{border-collapse:collapse;width:100%;min-width:560px}th,td{text-align:left;border-bottom:1px solid #e2eae3;padding:11px 9px;font-size:14px}th{background:#ecf5ee}td a{color:#066241}
+#status{font-weight:700;color:#9b2626}.muted{font-size:14px;color:#57705e}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><a href="../../../">청계면상인회</a><nav><a href="../">신청 페이지</a><a href="../../">행사·참여</a><a id="login-top" href="https://ekodi.kr/auth/?site=cgma">Google 로그인</a><button id="logout" type="button" hidden>로그아웃</button></nav></header>
+<main>
+<h1>MNU 특공대 1기 신청현황</h1><p class="muted">상호·성명·연락처는 청계면상인회 권한이 확인된 관리자에게만 표시됩니다.</p>
+<section class="panel" id="gate"><h2>관리자 로그인</h2><p>청계면상인회 관리자 계정으로 로그인해야 신청자 명단을 볼 수 있습니다.</p><a class="login" id="login" href="https://ekodi.kr/auth/?site=cgma">EKODI Google 로그인</a></section>
+<section class="panel" id="content" hidden>
+<h2>접수 내역 <small id="count"></small></h2>
+<div class="toolbar"><input id="search" type="search" placeholder="상호·성명·연락처 검색" aria-label="신청자 검색"><button id="refresh" type="button">새로고침</button><button id="csv" type="button">CSV 다운로드</button></div>
+<p id="status" role="status" aria-live="polite" hidden></p>
+<div class="wrap"><table><thead><tr><th>번호</th><th>상호</th><th>성명</th><th>연락처</th><th>신청일시</th></tr></thead><tbody id="rows"></tbody></table></div>
+<p class="muted">신청자 정보는 제3자에게 공유하지 마세요. 공식 교육 등록 여부는 별도로 확인해야 합니다.</p>
+</section></main>
+<script src="../../../site-path.js?v=20260902-root-path"></script>
+<script src="../../../cgma-programs.js?v=20261024-form-auth-v1"></script>
+<script src="./app.js?v=20261105-mnu-v1"></script>
+</body></html>
