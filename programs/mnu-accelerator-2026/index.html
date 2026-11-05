@@ -15,7 +15,7 @@ main{width:min(940px,calc(100% - 30px));margin:18px auto 60px}.hero{background:l
 .eyebrow{margin:0;color:#e6fba1;font-weight:850;font-size:13px}h1{font-size:clamp(30px,5.5vw,48px);line-height:1.27;letter-spacing:-.06em;margin:8px 0 13px}.lead{font-size:clamp(16px,2.7vw,19px);max-width:720px;margin:0 0 15px}
 .deadline{display:inline-flex;background:#ffe353;color:#14351b;padding:7px 14px;border-radius:11px;font-weight:900}
 .gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}.gallery:empty{display:none}
-.gallery figure{margin:0;background:#fff;border:1px solid #e3e9e2;border-radius:14px;overflow:hidden;display:grid;align-content:start}.gallery a{display:block}.gallery img{display:block;width:100%;height:auto}.gallery figcaption{padding:9px 12px;font-size:13px;font-weight:750}
+.gallery figure,.schedule-tile{margin:0;background:#fff;border:1px solid #e3e9e2;border-radius:14px;overflow:hidden;display:grid;align-content:start}.gallery a{display:block}.gallery img{display:block;width:100%;height:auto}.gallery figcaption{padding:9px 12px;font-size:13px;font-weight:750}.schedule-tile{padding:18px;gap:9px}.schedule-tile h2{font-size:20px}.schedule-tile p{margin:0;font-size:14px}.schedule-tile ul{margin:4px 0 0;padding-left:18px;font-size:14px}.schedule-tile li{margin-bottom:7px}
 .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
 .card,.form-card{background:#fff;border:1px solid #e0e9de;border-radius:17px;padding:22px;box-shadow:0 5px 20px #1b3e2d0a}
 .chip{display:inline-block;border-radius:20px;background:#def3e5;color:#00683d;padding:3px 10px;font-size:13px;font-weight:850;margin-bottom:10px}
@@ -31,7 +31,7 @@ button{font:inherit;font-weight:850;cursor:pointer}.primary{min-height:50px;back
 .small{font-size:13px;color:#53695c}.honeypot{position:absolute;left:-9999px;height:1px;width:1px;overflow:hidden}
 footer{text-align:center;margin-top:22px;font-size:13px;color:#607367}
 [hidden]{display:none!important}
-@media(max-width:650px){.cards{grid-template-columns:1fr}.gallery{grid-template-columns:1fr 1fr}.top{align-items:flex-start}.top nav{gap:7px}.card,.form-card{padding:17px}main{width:calc(100% - 22px)}}
+@media(max-width:650px){.cards{grid-template-columns:1fr}.gallery{grid-template-columns:1fr}.top{align-items:flex-start}.top nav{gap:7px}.card,.form-card{padding:17px}main{width:calc(100% - 22px)}}
 </style>
 </head>
 <body>
@@ -43,10 +43,18 @@ footer{text-align:center;margin-top:22px;font-size:13px;color:#607367}
 <p class="lead">11월 무료 교육을 시작으로, 우리 가게의 온라인 진출과 홍보를 함께 실천하는 1년 동행 모임입니다.</p>
 <strong class="deadline">모집 마감 11월 10일(화)</strong>
 </section>
-<section class="gallery" aria-label="모집 안내 이미지">
-<figure><a href="./assets/mnu-main.webp" target="_blank" rel="noopener"><img src="./assets/mnu-main.webp" loading="lazy" alt="2026년 목포대 디지털특성화대학 졸업생·MNU 특공대 1기 팀원 모집 안내" onerror="this.closest('figure').remove()"></a><figcaption>모집 안내 포스터</figcaption></figure>
-<figure><a href="./assets/mnu-detail-1.webp" target="_blank" rel="noopener"><img src="./assets/mnu-detail-1.webp" loading="lazy" alt="목포 11월 액셀러레이터반 4회 교육시간표 포스터" onerror="this.closest('figure').remove()"></a><figcaption>목포 액셀러레이터반</figcaption></figure>
-<figure><a href="./assets/mnu-detail-2.webp" target="_blank" rel="noopener"><img src="./assets/mnu-detail-2.webp" loading="lazy" alt="광주 11월 스케일업반 4회 교육시간표 포스터" onerror="this.closest('figure').remove()"></a><figcaption>광주 스케일업반</figcaption></figure>
+<section class="gallery" aria-label="모집 포스터와 교육 시간표">
+<figure><a href="./assets/mnu-main.png" target="_blank" rel="noopener noreferrer" aria-label="모집 포스터 원본 크게 보기"><img src="./assets/mnu-main.png" width="1056" height="1466" loading="lazy" alt="2026년 목포대학교 디지털특성화대학 졸업생과 MNU 특공대 1기 팀원 모집 안내 포스터"></a><figcaption>모집 포스터 · 눌러서 크게 보기</figcaption></figure>
+<article class="schedule-tile" aria-label="목포 액셀러레이터반 교육 시간표 요약">
+<span class="chip">목포 · 수요일</span><h2>액셀러레이터반</h2>
+<strong>11월 4일 · 11일 · 18일 · 25일</strong><p>13:00~18:00 · 목포청년센터 누리</p>
+<ul><li>AI 홍보영상·이미지 제작</li><li>스마트플레이스·블로그 상위 노출</li><li>숏폼 영상 제작과 SNS 채널 운영</li><li>온라인 물류·반품과 글로벌 셀링</li></ul>
+</article>
+<article class="schedule-tile" aria-label="광주 스케일업반 교육 시간표 요약">
+<span class="chip">광주 · 월요일</span><h2>스케일업반</h2>
+<strong>11월 9일 · 16일 · 23일 · 30일</strong><p>13:00~18:00 · 사회적기업성장센터(광주)</p>
+<ul><li>AI 이미지·홍보영상 제작</li><li>상세페이지·CRM과 온라인 물류</li><li>숏폼 바이럴 마케팅</li><li>라이브커머스 기획·실전 판매</li></ul>
+</article>
 </section>
 <div class="cards">
 <section class="card"><span class="chip">11월 무료 실습교육</span><h2>목포 · 광주 교육 안내</h2>

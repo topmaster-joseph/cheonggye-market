@@ -20,11 +20,16 @@ test('public application collects exactly three contact inputs',()=>{
   assert.match(app,/p_privacy_ack:true/);
   assert.doesNotMatch(app,/localStorage|sessionStorage|innerHTML/);
 });
-test('gallery is accessible and has both supplemental image slots',()=>{
-  assert.match(html,/assets\/mnu-main\.webp/);
-  assert.match(html,/assets\/mnu-detail-1\.webp/);
-  assert.match(html,/assets\/mnu-detail-2\.webp/);
+test('verified original recruitment poster and course schedules are rendered',()=>{
+  assert.match(html,/assets\/mnu-main\.png/);
+  assert.doesNotMatch(html,/assets\/mnu-detail-[12]\.webp/);
   assert.match(html,/<section class="gallery"/);
+  for(const date of ['11월 4일','11월 9일','11월 25일','11월 30일'])assert.ok(html.includes(date));
+  const asset=join(root,'programs/mnu-accelerator-2026/assets/mnu-main.png');
+  assert.equal(existsSync(asset),true,'Original poster must exist in the deployed repository');
+  const bytes=readFileSync(asset);
+  assert.equal(bytes.length,2780288);
+  assert.equal(bytes.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
 });
 test('admin panel fails closed until checked for server authority',()=>{
   assert.match(manage,/id="content" hidden/);
