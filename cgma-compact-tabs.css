@@ -1,0 +1,93 @@
+/* CGMA one-glance information navigation, owner-approved public association only.
+ * Cheonggye and CGPASS remain unpublished; no link invites visitors there.
+ */
+body.cgma-user-page .cgma-section-tabs{
+  position:sticky;top:72px;z-index:28;
+  width:min(1180px,calc(100% - 28px));margin:10px auto 0;
+  display:flex;gap:6px;align-items:stretch;overflow-x:auto;
+  padding:8px;border:1px solid #d6e2db;border-radius:15px;
+  background:rgba(250,252,249,.97);box-shadow:0 3px 14px #183a2b12;
+  scrollbar-width:thin;overscroll-behavior-x:contain;
+}
+body.cgma-user-page .cgma-section-tabs>a{
+  flex:1 0 auto;display:flex;align-items:center;justify-content:center;
+  min-height:42px;padding:8px 12px;border-radius:10px;
+  color:#214639;font-size:13px;line-height:1.35;font-weight:800;
+  text-align:center;text-decoration:none;white-space:nowrap;
+}
+body.cgma-user-page .cgma-section-tabs>a:hover,
+body.cgma-user-page .cgma-section-tabs>a:focus-visible{
+  background:#e8f2ec;outline:2px solid #8eb5a1;outline-offset:-2px;
+}
+body.cgma-user-page .cgma-section-tabs>a.active,
+body.cgma-user-page .cgma-section-tabs>a[aria-current],
+body.cgma-user-page:not([data-home-view]) .cgma-section-tabs>a[data-cgma-home-tab]{
+  background:#164e3a;color:#fff;
+}
+body.cgma-user-page .cgma-home-stage{
+  max-width:1180px;grid-template-columns:minmax(0,1.14fr) minmax(330px,.86fr);
+  gap:12px;margin-top:10px;padding:0 14px;align-items:start;
+}
+body.cgma-user-page .cgma-home-stage>.hero.cgma-photo-hero{
+  height:345px;min-height:345px;max-height:345px;border-radius:15px;
+}
+body.cgma-user-page .cgma-home-stage .cgma-banner-copy{
+  padding:20px 26px;width:min(100%,720px);gap:8px;
+}
+body.cgma-user-page .cgma-home-stage .cgma-hero-message{
+  font-size:clamp(1.7rem,2.3vw,2.35rem);line-height:1.25;
+}
+body.cgma-user-page .cgma-home-stage .cgma-hero-desc{
+  font-size:13px;line-height:1.55;
+}
+body.cgma-user-page .cgma-home-stage .cgma-hero-cta{
+  min-height:36px;padding:7px 12px;font-size:12px;gap:10px;
+}
+body.cgma-user-page .cgma-home-stage .cgma-community-label{
+  font-size:11px;padding:5px 9px;
+}
+body.cgma-user-page .cgma-home-stage .cgma-hero-photo-note{
+  font-size:10px;padding:5px 8px;
+}
+body.cgma-user-page .cgma-home-calendar{
+  min-height:0;max-height:345px;overflow:auto;padding:13px 15px;border-radius:15px;
+}
+body.cgma-user-page .cgma-home-calendar-grid{padding:8px 0 4px}
+body.cgma-user-page .cgma-home-quick{max-width:1180px;padding:12px 14px 2px}
+body.cgma-user-page .home-services{gap:8px;grid-template-columns:repeat(4,minmax(0,1fr))}
+body.cgma-user-page .home-services .cgma-quick-link{min-height:72px;padding:12px;gap:9px}
+body.cgma-user-page .home-services .cgma-quick-link>span{width:34px;height:34px;flex-basis:34px;font-size:1.15rem}
+body.cgma-user-page .home-services .cgma-quick-link b{font-size:13px}
+body.cgma-user-page .home-services .cgma-quick-link b small{font-size:11px;margin-top:3px}
+body.cgma-user-page .home-services .cgma-quick-link i{display:none}
+/* The regional platform and benefit program are deliberately private.
+ * Keep the association public, but stop promoting unreleased routes. */
+body.cgma-user-page .cgma-pass-link,
+body.cgma-user-page .cgma-member-benefits{display:none!important}
+body.cgma-user-page .section[id]{scroll-margin-top:154px}
+@media(min-width:850px){
+  body.cgma-user-page .header nav>a[href^="#"]{display:none!important}
+}
+@media(max-width:960px){
+  body.cgma-user-page .cgma-section-tabs{top:60px}
+  body.cgma-user-page .cgma-home-stage{grid-template-columns:1fr}
+  body.cgma-user-page .cgma-home-stage>.hero.cgma-photo-hero{height:260px;min-height:260px;max-height:260px}
+  body.cgma-user-page .cgma-home-calendar{max-height:310px}
+  body.cgma-user-page .cgma-home-stage .cgma-banner-copy{padding:14px 19px}
+}
+@media(max-width:720px){
+  body.cgma-user-page .cgma-section-tabs{
+    top:58px;width:calc(100% - 16px);border-radius:12px;margin-top:6px;padding:6px;
+    scroll-snap-type:x proximity;
+  }
+  body.cgma-user-page .cgma-section-tabs>a{
+    min-height:42px;font-size:12px;padding:7px 10px;scroll-snap-align:start;
+  }
+  body.cgma-user-page .cgma-home-stage{padding:0 8px}
+  body.cgma-user-page .cgma-home-stage>.hero.cgma-photo-hero{height:235px;min-height:235px;max-height:235px}
+  body.cgma-user-page .cgma-home-stage .cgma-hero-message{font-size:1.65rem}
+  body.cgma-user-page .cgma-home-stage .cgma-hero-desc{font-size:12px}
+  body.cgma-user-page .cgma-home-calendar{max-height:275px;padding:10px}
+  body.cgma-user-page .home-services{grid-template-columns:repeat(2,minmax(0,1fr))}
+  body.cgma-user-page .section[id]{scroll-margin-top:126px}
+}
