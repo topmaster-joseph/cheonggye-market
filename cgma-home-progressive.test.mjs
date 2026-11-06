@@ -9,7 +9,7 @@ const auth=readFileSync(new URL('./central-auth-bridge.js',import.meta.url),'utf
 const homeNav=readFileSync(new URL('./cgma-home-nav.js',import.meta.url),'utf8');
 
 test('homepage exposes compact progressive services',()=>{
-  assert.equal((index.match(/data-home-section=/g)||[]).length,3);
+  assert.ok((index.match(/data-home-section=/g)||[]).length>=10,'category tabs and original service shortcuts should share navigation state');
   const services=index.match(/<div class="home-services"[\s\S]*?<\/div>/)?.[0]||'';
   assert.ok(services);
   assert.equal(services.includes('<p'),false);
