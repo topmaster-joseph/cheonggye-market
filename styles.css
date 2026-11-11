@@ -1,2 +1,7 @@
 @import url("styles-base.css");
 @import url("responsive.css");
+
+/* CGMA member-owned mascot CI; franchise marks and official wordmark untouched. */
+.brand-mark[data-cgma-ci="frog-market"]{position:relative;overflow:hidden;isolation:isolate}
+.brand-mark[data-cgma-ci="frog-market"] .cgma-market-line{position:absolute;inset:4px;width:32px;height:32px;opacity:.36;pointer-events:none;color:inherit}
+.brand-mark[data-cgma-ci="frog-market"] .cgma-mascot{position:relative;z-index:1;line-height:1;display:inline-block}
