@@ -11,6 +11,52 @@ function isCgmaPath(pathname) {
   return pathname === PREFIX || pathname.startsWith(`${PREFIX}/`);
 }
 
+const ACCOUNTING_NOTICE_PATH = `${PREFIX}/accounting`;
+function isAccountingNoticePath(pathname) {
+  return pathname === ACCOUNTING_NOTICE_PATH || pathname === ACCOUNTING_NOTICE_PATH + '/';
+}
+const ACCOUNTING_NOTICE_MARKERS = ['회계공지','연도 선택','연간 총괄','월별 소계','public-accounting-notice.js'];
+function accountingUnavailable(status) {
+  return new Response('CGMA accounting notice unavailable', { status, headers: {
+    'cache-control':'no-store','x-content-type-options':'nosniff',
+    'x-ekodi-route':'cgma-accounting-unavailable',
+  } });
+}
+async function delegatedAccountingNoticeResponse(request, env) {
+  const method = request.method.toUpperCase();
+  if (!['GET','HEAD'].includes(method)) {
+    return new Response('Method Not Allowed', { status:405, headers: {
+      allow:'GET, HEAD','cache-control':'no-store','x-content-type-options':'nosniff',
+      'x-ekodi-route':'cgma-accounting-method-blocked',
+    } });
+  }
+  if (!env?.EKODI_SHARED?.fetch) return accountingUnavailable(503);
+  // Public notice uses a minimal credential-free projection. Forward candidate
+  // version override only so the guarded 0% Shared Site canary remains truthful.
+  const target = new URL('https://ekodi.kr' + ACCOUNTING_NOTICE_PATH);
+  const headers = new Headers({ accept:'text/html' });
+  const versionOverride = request.headers.get('Cloudflare-Workers-Version-Overrides');
+  if (versionOverride) headers.set('Cloudflare-Workers-Version-Overrides',versionOverride);
+  let response;
+  try {
+    response = await env.EKODI_SHARED.fetch(new Request(target,{method,headers,redirect:'manual'}));
+  } catch { return accountingUnavailable(502); }
+  if (response.status!==200 ||
+      response.headers.get('x-ekodi-route')!=='public-accounting-notice' ||
+      !String(response.headers.get('content-type')||'').toLowerCase().includes('text/html'))
+    return accountingUnavailable(502);
+  const outputHeaders = new Headers(response.headers);
+  outputHeaders.delete('content-length');
+  outputHeaders.set('cache-control','no-store');
+  outputHeaders.set('x-content-type-options','nosniff');
+  outputHeaders.set('x-ekodi-cgma-delegation','shared-public-accounting');
+  if(method==='HEAD') return new Response(null,{status:200,headers:outputHeaders});
+  let html;
+  try{html=await response.text()}catch{return accountingUnavailable(502)}
+  if(!ACCOUNTING_NOTICE_MARKERS.every(marker=>html.includes(marker)))return accountingUnavailable(502);
+  return new Response(html,{status:200,headers:outputHeaders});
+}
+
 function isMarketingPath(pathname) {
   return pathname === `${PREFIX}/marketing` || pathname.startsWith(`${PREFIX}/marketing/`);
 }
@@ -315,6 +361,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (!isCgmaPath(url.pathname)) return new Response('Not Found', { status: 404 });
+    if (isAccountingNoticePath(url.pathname)) return delegatedAccountingNoticeResponse(request,env);
     if (isAiEducationPath(url.pathname)) return delegatedAiEducationResponse(request, env);
     if (isMotorFestivalPath(url.pathname)) return delegatedMotorFestivalResponse(request, env);
     if (isBoardPath(url.pathname)) return delegatedBoardResponse(request, env);
@@ -351,4 +398,4 @@ export default {
   },
 };
 
-export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml, publicCanonical, isAiEducationPath, delegatedAiEducationResponse, isBoardPath, delegatedBoardResponse, isLivePath, delegatedLiveResponse, isMarketingPath, delegatedMarketingResponse, isOwnerAdminPath, delegatedOwnerAdminResponse, isMotorFestivalPath, delegatedMotorFestivalResponse };
+export { PREFIX, UPSTREAM_ORIGIN, upstreamUrl, canonicalLocation, rewriteHtml, publicCanonical, isAccountingNoticePath, delegatedAccountingNoticeResponse, isAiEducationPath, delegatedAiEducationResponse, isBoardPath, delegatedBoardResponse, isLivePath, delegatedLiveResponse, isMarketingPath, delegatedMarketingResponse, isOwnerAdminPath, delegatedOwnerAdminResponse, isMotorFestivalPath, delegatedMotorFestivalResponse };
