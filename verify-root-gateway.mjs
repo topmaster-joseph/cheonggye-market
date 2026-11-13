@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import gateway, { upstreamUrl, canonicalLocation, rewriteHtml, publicCanonical, isAiEducationPath, isBoardPath, isLivePath, isMarketingPath, isOwnerAdminPath } from './cgma-root-gateway.js';
+import gateway, { upstreamUrl, canonicalLocation, rewriteHtml, publicCanonical, isAccountingNoticePath, isAiEducationPath, isBoardPath, isLivePath, isMarketingPath, isOwnerAdminPath } from './cgma-root-gateway.js';
 
 assert.equal(upstreamUrl('https://ekodi.kr/cgma').toString(), 'https://cheonggye-market.pages.dev/');
 assert.equal(upstreamUrl('https://ekodi.kr/cgma/admin?x=1').toString(), 'https://cheonggye-market.pages.dev/admin?x=1');
@@ -311,3 +311,43 @@ assert.match(await (await import('node:fs/promises')).readFile(new URL('./cgma-r
   } finally { globalThis.fetch = savedFetch; }
   console.log('CGMA motor festival delegation OK');
 }
+
+ 
+// Accounting notices are handled by the CGMA-owned gateway and delegated
+// through the existing Service Binding, never by Pages SPA fallbacks.
+assert.equal(isAccountingNoticePath('/cgma/accounting'),true);
+assert.equal(isAccountingNoticePath('/cgma/accounting/'),true);
+assert.equal(isAccountingNoticePath('/cgma/accounting-extra'),false);
+assert.equal(isAccountingNoticePath('/cgma/member'),false);
+const noticeMarkup='<h1>회계공지</h1><label>연도 선택</label><button>연간 총괄</button><button>월별 소계</button><script src="/public-accounting-notice.js"></script>';
+let noticeRequests=[];
+const noticeEnv={EKODI_SHARED:{fetch:async input=>{
+  noticeRequests.push(input);
+  return new Response(noticeMarkup,{status:200,headers:{'content-type':'text/html; charset=utf-8','x-ekodi-route':'public-accounting-notice','x-content-type-options':'nosniff'}});
+}}};
+const cgmaNotice=await gateway.fetch(new Request('https://ekodi.kr/cgma/accounting',{
+  headers:{cookie:'private=not-to-send',authorization:'Bearer private','Cloudflare-Workers-Version-Overrides':'shy-thunder-39a4="candidate"'}
+}),noticeEnv);
+assert.equal(cgmaNotice.status,200);
+assert.equal(cgmaNotice.headers.get('x-ekodi-route'),'public-accounting-notice');
+assert.equal(cgmaNotice.headers.get('x-ekodi-cgma-delegation'),'shared-public-accounting');
+assert.equal(cgmaNotice.headers.get('cache-control'),'no-store');
+assert.match(await cgmaNotice.text(),/월별 소계/);
+assert.equal(noticeRequests.length,1);
+assert.equal(new URL(noticeRequests[0].url).pathname,'/cgma/accounting');
+assert.equal(noticeRequests[0].headers.get('cookie'),null);
+assert.equal(noticeRequests[0].headers.get('authorization'),null);
+assert.equal(noticeRequests[0].headers.get('Cloudflare-Workers-Version-Overrides'),'shy-thunder-39a4="candidate"');
+const cgmaNoticeHead=await gateway.fetch(new Request('https://ekodi.kr/cgma/accounting',{method:'HEAD'}),noticeEnv);
+assert.equal(cgmaNoticeHead.status,200);
+assert.equal(noticeRequests.at(-1).method,'HEAD');
+assert.equal(await cgmaNoticeHead.text(),'');
+const cgmaNoticePost=await gateway.fetch(new Request('https://ekodi.kr/cgma/accounting',{method:'POST'}),noticeEnv);
+assert.equal(cgmaNoticePost.status,405);
+assert.equal(cgmaNoticePost.headers.get('allow'),'GET, HEAD');
+assert.equal(noticeRequests.length,2);
+const badNotice=await gateway.fetch(new Request('https://ekodi.kr/cgma/accounting'),{EKODI_SHARED:{fetch:async()=>new Response('<h1>Wrong CGMA SPA</h1>',{status:200,headers:{'content-type':'text/html'}})}});
+assert.equal(badNotice.status,502);
+assert.equal(badNotice.headers.get('x-ekodi-route'),'cgma-accounting-unavailable');
+const noNoticeBinding=await gateway.fetch(new Request('https://ekodi.kr/cgma/accounting'),{});
+assert.equal(noNoticeBinding.status,503);
